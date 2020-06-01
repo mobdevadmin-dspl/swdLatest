@@ -34,6 +34,7 @@ import com.datamation.swdsfa.controller.OrderController;
 import com.datamation.swdsfa.controller.OrderDetailController;
 import com.datamation.swdsfa.controller.OutstandingController;
 import com.datamation.swdsfa.controller.ReceiptDetController;
+import com.datamation.swdsfa.controller.SalRepController;
 import com.datamation.swdsfa.controller.SalesReturnController;
 import com.datamation.swdsfa.controller.SalesReturnDetController;
 import com.datamation.swdsfa.fragment.debtordetails.HistoryDetailsFragment;
@@ -492,7 +493,9 @@ public class DebtorDetailsActivity extends AppCompatActivity {
                     if(customerLocation.getLatitude()>0 && currentLocation.getLatitude()>0) {
                         // Toast.makeText(DebtorDetailsActivity.this, "Please wait. This may take a while", Toast.LENGTH_SHORT).show();
                         //2020-05-15 validate order upload by rashmi
-                        if((NetworkUtil.isNetworkAvailable(DebtorDetailsActivity.this)) && (new OrderController(DebtorDetailsActivity.this).getUnsyncedOrderCount()>3)){
+                        //if((NetworkUtil.isNetworkAvailable(DebtorDetailsActivity.this)) && (new OrderController(DebtorDetailsActivity.this).getUnsyncedOrderCount()>3)){
+                       //2020-05-27 change condition by salesrep table status
+                        if((NetworkUtil.isNetworkAvailable(DebtorDetailsActivity.this)) && (new OrderController(DebtorDetailsActivity.this).getUnsyncedOrderCount()>3) && (new SalRepController(DebtorDetailsActivity.this).checkOrderUpload().equals("Y"))){
                             Toast.makeText(DebtorDetailsActivity.this, "Please upload previous orders", Toast.LENGTH_SHORT).show();
 
                         }else {

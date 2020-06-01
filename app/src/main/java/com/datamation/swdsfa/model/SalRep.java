@@ -26,6 +26,15 @@ public class SalRep {
     private String IS_ZERO_QOH_ALLOW;
     private String firebaseTokenID;
     private String IsApplyQOHexdVldtn;
+    private String chkOrdUpload;
+
+    public String getChkOrdUpload() {
+        return chkOrdUpload;
+    }
+
+    public void setChkOrdUpload(String chkOrdUpload) {
+        this.chkOrdUpload = chkOrdUpload;
+    }
 
     public String getIsApplyQOHexdVldtn() {
         return IsApplyQOHexdVldtn;
@@ -218,6 +227,7 @@ public class SalRep {
             user.setIS_ZERO_QOH_ALLOW(instance.getString("isZeroQOHAllow"));
             user.setFirebaseTokenID(instance.getString("firebaseTokenID"));
             user.setIsApplyQOHexdVldtn(instance.getString("IsApplyQOHexdVldtn"));
+            user.setChkOrdUpload(instance.getString("chkOrdUpload"));
 
             return user;
         }
