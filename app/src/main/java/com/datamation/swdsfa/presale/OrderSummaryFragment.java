@@ -155,16 +155,17 @@ public class OrderSummaryFragment extends Fragment {
                     customerLocation.setLongitude(0.0);
                 float distance = currentLocation.distanceTo(customerLocation);
                 float distance1 = customerLocation.distanceTo(currentLocation);
-                Log.d("<<<customer Longi<<<<", " " + customer.getLongitude());
-                Log.d("<<<customer Lati<<<<", " " + customer.getLatitude());
-                Log.d("<<<current Longi<<<<", " " + currentLongitude);
-                Log.d("<<<current Lati<<<<", " " + currentLatitude);
-                Log.d("<<<Distance<<<<", " " + distance);
-                if (distance <= 50) {
+//                Log.d("<<<customer Longi<<<<", " " + customer.getLongitude());
+//                Log.d("<<<customer Lati<<<<", " " + customer.getLatitude());
+//                Log.d("<<<current Longi<<<<", " " + currentLongitude);
+//                Log.d("<<<current Lati<<<<", " " + currentLatitude);
+//                Log.d("<<<Distance<<<<", " " + distance);
+                //
+               // if (distance <= 50) {
                     popupFeedBack(getActivity());
-                } else {
-                    Toast.makeText(getActivity(), "You are out of customer location.Please go to customer's location to continue..", Toast.LENGTH_SHORT).show();
-                }
+//                } else {
+//                    Toast.makeText(getActivity(), "You are out of customer location.Please go to customer's location to continue..", Toast.LENGTH_SHORT).show();
+//                }
 
             }
         });
