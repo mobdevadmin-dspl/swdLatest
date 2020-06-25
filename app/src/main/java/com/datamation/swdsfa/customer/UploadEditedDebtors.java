@@ -118,7 +118,7 @@ public class UploadEditedDebtors extends AsyncTask<ArrayList<Debtor>, Integer, A
                         int reslength = response.body().toString().trim().length();
 
                         String resmsg = ""+response.body().toString();
-                        if (status == 200 && !resmsg.equals("") && !resmsg.equals(null)) {
+                        if (status == 200 && !resmsg.equals("") && !resmsg.equals(null) && resmsg.equals("200")) {
                             mHandler.post(new Runnable() {
                                 @Override
                                 public void run() {
