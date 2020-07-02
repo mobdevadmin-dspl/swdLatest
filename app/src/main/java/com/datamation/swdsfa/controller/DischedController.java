@@ -208,7 +208,7 @@ public class DischedController {
         int curDate = Integer.parseInt(new SimpleDateFormat("dd").format(new Date()));
 
         //String curdate = curYear+"/"+ String.format("%02d", curMonth) + "/" + String.format("%02d", curDate);
-        String curdate = String.format("%02d", curMonth)+"/"+ String.format("%02d", curDate) + "/" + curYear;
+        String curdate = curYear +"-"+String.format("%02d", curMonth)+"-"+ String.format("%02d", curDate);
         ArrayList<Disched> list = new ArrayList<Disched>();
 
         String selectQuery = "select * from fdisched where refno in (select refno from fdiscdet where itemcode='" + itemCode + "') and '"+curdate+"' between vdatef And vdatet";
