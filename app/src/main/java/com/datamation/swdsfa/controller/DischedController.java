@@ -161,7 +161,8 @@ public class DischedController {
         int curDate = Integer.parseInt(new SimpleDateFormat("dd").format(new Date()));
 
         //String curdate = curYear+"/"+ String.format("%02d", curMonth) + "/" + String.format("%02d", curDate);
-        String curdate = String.format("%02d", curMonth)+"/"+ String.format("%02d", curDate) + "/" + curYear;
+        // Old Rashmi 08-07-2020 String curdate = String.format("%02d", curMonth)+"-"+ String.format("%02d", curDate) + "-" + curYear;
+        String curdate = curYear + "-" +  String.format("%02d", curMonth)+"-"+ String.format("%02d", curDate) ;
 
         // commented due to date format issue and M:D:Y format is available in DB
         //String selectQuery = "select * from fdisched where refno in (select refno from fdiscdet where itemcode='" + itemCode + "') and date('now') between vdatef and vdatet";
