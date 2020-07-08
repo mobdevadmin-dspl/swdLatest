@@ -211,7 +211,7 @@ public class DischedController {
         String curdate = curYear +"-"+String.format("%02d", curMonth)+"-"+ String.format("%02d", curDate);
         ArrayList<Disched> list = new ArrayList<Disched>();
 
-        String selectQuery = "select * from fdisched where refno in (select refno from fdiscdet where itemcode='" + itemCode + "') and '"+curdate+"' between vdatef And vdatet";
+        String selectQuery = "select * from fdisched where refno in (select refno from fdiscdet where itemcode='" + itemCode + "') and '"+curdate+"' between vdatef And vdatet ";
 
         String s = null;
         Cursor cursor = dB.rawQuery(selectQuery, null);
