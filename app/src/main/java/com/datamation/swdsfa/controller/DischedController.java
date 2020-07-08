@@ -196,6 +196,47 @@ public class DischedController {
 
         return DiscHed;
     }
+    //rashmi changed format for getting discounts
+    public String getRefoByItemCodeNew(String itemCode) {
+        if (dB == null) {
+            open();
+        } else if (!dB.isOpen()) {
+            open();
+        }
+        int curYear = Integer.parseInt(new SimpleDateFormat("yyyy").format(new Date()));
+        int curMonth = Integer.parseInt(new SimpleDateFormat("MM").format(new Date()));
+        int curDate = Integer.parseInt(new SimpleDateFormat("dd").format(new Date()));
+
+        String curdate = curYear +"-"+String.format("%02d", curMonth)+"-"+ String.format("%02d", curDate);
+        ArrayList<Disched> list = new ArrayList<Disched>();
+
+        String selectQuery = "select * from fdisched where refno in (select refno from fdiscdet where itemcode='" + itemCode + "') and '"+curdate+"' between vdatef And vdatet ";
+
+        String s = null;
+        Cursor cursor = dB.rawQuery(selectQuery, null);
+
+        try {
+            while (cursor.moveToNext()) {
+
+                Disched freeHed = new Disched();
+
+                s = cursor.getString(cursor.getColumnIndex(dbHelper.REFNO));
+                list.add(freeHed);
+
+            }
+        } catch (Exception e) {
+
+            Log.v(TAG + " Exception", e.toString());
+
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+            dB.close();
+        }
+
+        return s;
+    }
     //rashmi changed 2020-02-10
     public String getRefoByItemCode(String itemCode) {
         if (dB == null) {
@@ -207,8 +248,7 @@ public class DischedController {
         int curMonth = Integer.parseInt(new SimpleDateFormat("MM").format(new Date()));
         int curDate = Integer.parseInt(new SimpleDateFormat("dd").format(new Date()));
 
-        //String curdate = curYear+"/"+ String.format("%02d", curMonth) + "/" + String.format("%02d", curDate);
-        String curdate = curYear +"-"+String.format("%02d", curMonth)+"-"+ String.format("%02d", curDate);
+        String curdate = curYear+"/"+ String.format("%02d", curMonth) + "/" + String.format("%02d", curDate);
         ArrayList<Disched> list = new ArrayList<Disched>();
 
         String selectQuery = "select * from fdisched where refno in (select refno from fdiscdet where itemcode='" + itemCode + "') and '"+curdate+"' between vdatef And vdatet ";

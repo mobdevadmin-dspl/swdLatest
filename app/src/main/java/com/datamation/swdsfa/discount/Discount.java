@@ -1036,7 +1036,7 @@ public class Discount {
                 mTranSODet.add(OrderList.get(x));
                 /* Get assort item list for a item code */
                // AssortList = discDetDS.getAssortByItemCode(OrderList.get(x).getFINVDET_ITEM_CODE());
-                AssortList = discDetDS.getAssortByRefno(discHedDS.getRefoByItemCode(OrderList.get(x).getFINVDET_ITEM_CODE()));
+                AssortList = discDetDS.getAssortByRefno(discHedDS.getRefoByItemCodeNew(OrderList.get(x).getFINVDET_ITEM_CODE()));
 
                 if (AssortList.size() > 0) {
                     for (int y = x + 1; y <= OrderList.size() - 1; y++) {
@@ -1089,7 +1089,7 @@ public class Discount {
                 /* Get assort item list for a item code */
                 //AssortList = discDetDS.getAssortByItemCode(OrderList.get(x).getFORDERDET_ITEMCODE());
                 //rashmi changed 2020-02-10
-                AssortList = discDetDS.getAssortByRefno(discHedDS.getRefoByItemCode(OrderList.get(x).getFORDERDET_ITEMCODE()));
+                AssortList = discDetDS.getAssortByRefno(discHedDS.getRefoByItemCodeNew(OrderList.get(x).getFORDERDET_ITEMCODE()));
 
                 if (AssortList.size() > 0) {
                     for (int y = x + 1; y <= OrderList.size() - 1; y++) {
