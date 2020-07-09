@@ -642,8 +642,8 @@ public class DebtorDetailsActivity extends AppCompatActivity {
                 }else{
                     customer = new CustomerController(DebtorDetailsActivity.this).getCustomerGPS(SharedPref.getInstance(DebtorDetailsActivity.this).getSelectedDebCode());
                 }
-
-                if(customer.getLatitude().equals(null) || customer.getLatitude().equals("") || customer.getLatitude().equals("0.0")) {
+                //customer.getLatitude().equals("0.0")
+                if(customer.getLatitude().equals(null) || customer.getLatitude().equals("") || Double.compare(Double.parseDouble(customer.getLatitude()), Double.valueOf(0.0)) == 0 ) {
                     if (!sharedPref.getGlobalVal("Latitude").equals("") && !sharedPref.getGlobalVal("Longitude").equals("")) {
                         lati = Double.parseDouble(sharedPref.getGlobalVal("Latitude"));
                         longi = Double.parseDouble(sharedPref.getGlobalVal("Longitude"));
@@ -744,7 +744,9 @@ public class DebtorDetailsActivity extends AppCompatActivity {
                 if (gpsTracker.canGetLocation())
                 {
                     gpsTracker = new GPSTracker(context);
-                    if(customer.getLatitude().equals(null) || customer.getLatitude().equals("") || customer.getLatitude().equals("0.0")) {
+                  //  if(customer.getLatitude().equals(null) || customer.getLatitude().equals("") || customer.getLatitude().equals("0.0"))
+                        if(customer.getLatitude().equals(null) || customer.getLatitude().equals("") || Double.compare(Double.parseDouble(customer.getLatitude()), Double.valueOf(0.0)) == 0)
+                    {
                         if (!sharedPref.getGlobalVal("Latitude").equals("") && !sharedPref.getGlobalVal("Longitude").equals("")) {//first time current gps not null
                             lati = Double.parseDouble(sharedPref.getGlobalVal("Latitude"));
                             longi = Double.parseDouble(sharedPref.getGlobalVal("Longitude"));
