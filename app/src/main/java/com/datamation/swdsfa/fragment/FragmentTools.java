@@ -1115,9 +1115,7 @@ public class FragmentTools extends Fragment implements View.OnClickListener, Upl
                         controls = networkFunctions.getCompanyDetails(repcode);
                         // Log.d(LOG_TAG, "OUTLETS :: " + outlets);
                     } catch (IOException e) {
-                        e.printStackTrace();
-
-                        errors.add(e.toString());
+                        errors.add("Error getting company details"+e.toString());
                         throw e;
                     }
 
@@ -1158,7 +1156,7 @@ public class FragmentTools extends Fragment implements View.OnClickListener, Upl
                         companyController.createOrUpdateFControl(controlList);
                     } catch (JSONException | NumberFormatException e) {
 
-                        errors.add(e.toString());
+                        errors.add("Company details json error "+e.toString());
 //                        ErrorUtil.logException("LoginActivity -> Authenticate -> doInBackground() # Process Routes and Outlets",
 //                                e, routes, BugReport.SEVERITY_HIGH);
 
@@ -1178,8 +1176,7 @@ public class FragmentTools extends Fragment implements View.OnClickListener, Upl
                         outlets = networkFunctions.getCustomer(repcode);
                         // Log.d(LOG_TAG, "OUTLETS :: " + outlets);
                     } catch (IOException e) {
-                        e.printStackTrace();
-                        errors.add(e.toString());
+                        errors.add("Error getting customers "+e.toString());
                         throw e;
                     }
 
@@ -1206,7 +1203,7 @@ public class FragmentTools extends Fragment implements View.OnClickListener, Upl
 
                     } catch (JSONException | NumberFormatException e) {
 
-                        errors.add(e.toString());
+                        errors.add("Customers not downloaded "+e.toString());
 //                        ErrorUtil.logException("LoginActivity -> Authenticate -> doInBackground() # Process Routes and Outlets",
 //                                e, routes, BugReport.SEVERITY_HIGH);
 
@@ -1234,8 +1231,7 @@ public class FragmentTools extends Fragment implements View.OnClickListener, Upl
                         nearOutlets = networkFunctions.getNearCustomer();
 
                     } catch (IOException e) {
-                        e.printStackTrace();
-                        errors.add(e.toString());
+                        errors.add("Error getting near customers "+e.toString());
                         throw e;
                     }
 
@@ -1261,7 +1257,7 @@ public class FragmentTools extends Fragment implements View.OnClickListener, Upl
                         }
 
                     } catch (JSONException | NumberFormatException e) {
-                        errors.add(e.toString());
+                        errors.add("Near customer not downloaded "+e.toString());
                         throw e;
                     }
                     getActivity().runOnUiThread(new Runnable() {
@@ -1319,8 +1315,7 @@ public class FragmentTools extends Fragment implements View.OnClickListener, Upl
                         comBranches = networkFunctions.getReferences(repcode);
                         // Log.d(LOG_TAG, "OUTLETS :: " + outlets);
                     } catch (IOException e) {
-                        e.printStackTrace();
-                        errors.add(e.toString());
+                        errors.add("Error getting references "+e.toString());
                         throw e;
                     }
 
@@ -1344,7 +1339,7 @@ public class FragmentTools extends Fragment implements View.OnClickListener, Upl
                         }
                         branchController.createOrUpdateFCompanyBranch(settingList);
                     } catch (JSONException | NumberFormatException e) {
-                        errors.add(e.toString());
+                        errors.add("Reference detail not downloaded "+e.toString());
 //                        ErrorUtil.logException("LoginActivity -> Authenticate -> doInBackground() # Process Routes and Outlets",
 //                                e, routes, BugReport.SEVERITY_HIGH);
 
@@ -1359,8 +1354,7 @@ public class FragmentTools extends Fragment implements View.OnClickListener, Upl
                         itemLocs = networkFunctions.getItemLocations(repcode);
                         // Log.d(LOG_TAG, "OUTLETS :: " + outlets);
                     } catch (IOException e) {
-                        e.printStackTrace();
-                        errors.add(e.toString());
+                        errors.add("error getting item locations "+e.toString());
                         throw e;
                     }
 
@@ -1383,7 +1377,7 @@ public class FragmentTools extends Fragment implements View.OnClickListener, Upl
                         }
                         itemlocController.InsertOrReplaceItemLoc(itemLocList);
                     } catch (JSONException | NumberFormatException e) {
-                        errors.add(e.toString());
+                        errors.add("Item locations not downloaded "+e.toString());
 //                        ErrorUtil.logException("LoginActivity -> Authenticate -> doInBackground() # Process Routes and Outlets",
 //                                e, routes, BugReport.SEVERITY_HIGH);
 
@@ -1398,8 +1392,7 @@ public class FragmentTools extends Fragment implements View.OnClickListener, Upl
                         locations = networkFunctions.getLocations(repcode);
                         // Log.d(LOG_TAG, "OUTLETS :: " + outlets);
                     } catch (IOException e) {
-                        e.printStackTrace();
-                        errors.add(e.toString());
+                        errors.add("Error getting locations "+e.toString());
                         throw e;
                     }
 
@@ -1422,7 +1415,7 @@ public class FragmentTools extends Fragment implements View.OnClickListener, Upl
                         }
                         locController.createOrUpdateFLocations(locList);
                     } catch (JSONException | NumberFormatException e) {
-                        errors.add(e.toString());
+                        errors.add("Locations not downloaded "+e.toString());
 //                        ErrorUtil.logException("LoginActivity -> Authenticate -> doInBackground() # Process Routes and Outlets",
 //                                e, routes, BugReport.SEVERITY_HIGH);
 
@@ -1435,8 +1428,7 @@ public class FragmentTools extends Fragment implements View.OnClickListener, Upl
                         itemPrices = networkFunctions.getItemPrices(repcode);
                         // Log.d(LOG_TAG, "OUTLETS :: " + outlets);
                     } catch (IOException e) {
-                        e.printStackTrace();
-                        errors.add(e.toString());
+                        errors.add("Error getting item prices "+e.toString());
                         throw e;
                     }
 
@@ -1459,7 +1451,7 @@ public class FragmentTools extends Fragment implements View.OnClickListener, Upl
                         }
                         priceController.InsertOrReplaceItemPri(itemPriceList);
                     } catch (JSONException | NumberFormatException e) {
-                        errors.add(e.toString());
+                        errors.add("Item prices not downloaded "+e.toString());
 //                        ErrorUtil.logException("LoginActivity -> Authenticate -> doInBackground() # Process Routes and Outlets",
 //                                e, routes, BugReport.SEVERITY_HIGH);
 
@@ -1473,8 +1465,7 @@ public class FragmentTools extends Fragment implements View.OnClickListener, Upl
                         item = networkFunctions.getItems(repcode);
                         // Log.d(LOG_TAG, "OUTLETS :: " + outlets);
                     } catch (IOException e) {
-                        e.printStackTrace();
-                        errors.add(e.toString());
+                        errors.add("Error getting items "+e.toString());
                         throw e;
                     }
 
@@ -1497,7 +1488,7 @@ public class FragmentTools extends Fragment implements View.OnClickListener, Upl
                         }
                         itemController.InsertOrReplaceItems(itemList);
                     } catch (JSONException | NumberFormatException e) {
-                        errors.add(e.toString());
+                        errors.add("Items not downloaded "+e.toString());
 //                        ErrorUtil.logException("LoginActivity -> Authenticate -> doInBackground() # Process Routes and Outlets",
 //                                e, routes, BugReport.SEVERITY_HIGH);
 
@@ -1516,8 +1507,7 @@ public class FragmentTools extends Fragment implements View.OnClickListener, Upl
                     try {
                         reasons = networkFunctions.getReasons();
                     } catch (IOException e) {
-                        e.printStackTrace();
-                        errors.add(e.toString());
+                        errors.add("Error getting reasons "+e.toString());
                         throw e;
                     }
 
@@ -1541,7 +1531,7 @@ public class FragmentTools extends Fragment implements View.OnClickListener, Upl
                         Log.d("befor add reason tbl>>>", reasonList.toString());
                         reasonController.createOrUpdateReason(reasonList);
                     } catch (JSONException | NumberFormatException e) {
-                        errors.add(e.toString());
+                        errors.add("Reasons not downloaded "+e.toString());
 //                        ErrorUtil.logException("LoginActivity -> Authenticate -> doInBackground() # Process Routes and Outlets",
 //                                e, routes, BugReport.SEVERITY_HIGH);
 
@@ -1560,8 +1550,7 @@ public class FragmentTools extends Fragment implements View.OnClickListener, Upl
                         fddbnote = networkFunctions.getFddbNotes(repcode);
                         // Log.d(LOG_TAG, "OUTLETS :: " + outlets);
                     } catch (IOException e) {
-                        e.printStackTrace();
-                        errors.add(e.toString());
+                        errors.add("Error getting outstandings "+e.toString());
                         throw e;
                     }
 
@@ -1585,7 +1574,7 @@ public class FragmentTools extends Fragment implements View.OnClickListener, Upl
                         }
                         outstandingController.createOrUpdateFDDbNote(fddbnoteList);
                     } catch (JSONException | NumberFormatException e) {
-                        errors.add(e.toString());
+                        errors.add("Outstanding not downloaded"+e.toString());
 //                        ErrorUtil.logException("LoginActivity -> Authenticate -> doInBackground() # Process Routes and Outlets",
 //                                e, routes, BugReport.SEVERITY_HIGH);
 
@@ -1614,8 +1603,7 @@ public class FragmentTools extends Fragment implements View.OnClickListener, Upl
                     try {
                         banks = networkFunctions.getBanks();
                     } catch (IOException e) {
-                        e.printStackTrace();
-                        errors.add(e.toString());
+                        errors.add("Error getting banks "+e.toString());
                         throw e;
                     }
 
@@ -1638,7 +1626,7 @@ public class FragmentTools extends Fragment implements View.OnClickListener, Upl
                         }
                         bankController.createOrUpdateBank(bankList);
                     } catch (JSONException | NumberFormatException e) {
-                        errors.add(e.toString());
+                        errors.add("Banks not downloaded "+e.toString());
 //                        ErrorUtil.logException("LoginActivity -> Authenticate -> doInBackground() # Process Routes and Outlets",
 //                                e, routes, BugReport.SEVERITY_HIGH);
 
@@ -1649,8 +1637,7 @@ public class FragmentTools extends Fragment implements View.OnClickListener, Upl
                     try {
                         expenses = networkFunctions.getExpenses();
                     } catch (IOException e) {
-                        errors.add(e.toString());
-                        e.printStackTrace();
+                        errors.add("Error getting expense details "+e.toString());
                         throw e;
                     }
 
@@ -1673,7 +1660,7 @@ public class FragmentTools extends Fragment implements View.OnClickListener, Upl
                         }
                         expenseController.createOrUpdateFExpense(expensesList);
                     } catch (JSONException | NumberFormatException e) {
-                        errors.add(e.toString());
+                        errors.add("Expense details not downloaded"+e.toString());
 //                        ErrorUtil.logException("LoginActivity -> Authenticate -> doInBackground() # Process Routes and Outlets",
 //                                e, routes, BugReport.SEVERITY_HIGH);
 
@@ -1693,8 +1680,7 @@ public class FragmentTools extends Fragment implements View.OnClickListener, Upl
                     try {
                         route = networkFunctions.getRoutes(repcode);
                     } catch (IOException e) {
-                        e.printStackTrace();
-                        errors.add(e.toString());
+                        errors.add("Error getting routes "+e.toString());
                         throw e;
                     }
 
@@ -1718,7 +1704,7 @@ public class FragmentTools extends Fragment implements View.OnClickListener, Upl
                         }
                         routeController.createOrUpdateFRoute(routeList);
                     } catch (JSONException | NumberFormatException e) {
-                        errors.add(e.toString());
+                        errors.add("Routes not downloaded "+e.toString());
 //                        ErrorUtil.logException("LoginActivity -> Authenticate -> doInBackground() # Process Routes and Outlets",
 //                                e, routes, BugReport.SEVERITY_HIGH);
 
@@ -1730,8 +1716,7 @@ public class FragmentTools extends Fragment implements View.OnClickListener, Upl
                     try {
                         last3InvHeds = networkFunctions.getLastThreeInvHed(repcode);
                     } catch (IOException e) {
-                        e.printStackTrace();
-                        errors.add(e.toString());
+                        errors.add("Error getting last three invoices "+e.toString());
                         throw e;
                     }
                     getActivity().runOnUiThread(new Runnable() {
@@ -1754,7 +1739,7 @@ public class FragmentTools extends Fragment implements View.OnClickListener, Upl
                         }
                         invoiceHedController.createOrUpdateFinvHedL3(invoiceHedList);
                     } catch (JSONException | NumberFormatException e) {
-                        errors.add(e.toString());
+                        errors.add("Last three invoices not downloaded "+e.toString());
 //                        ErrorUtil.logException("LoginActivity -> Authenticate -> doInBackground() # Process Routes and Outlets",
 //                                e, routes, BugReport.SEVERITY_HIGH);
 
@@ -1766,8 +1751,7 @@ public class FragmentTools extends Fragment implements View.OnClickListener, Upl
                     try {
                         last3InvDets = networkFunctions.getLastThreeInvDet(repcode);
                     } catch (IOException e) {
-                        e.printStackTrace();
-                        errors.add(e.toString());
+                        errors.add("Error getting invoice details "+e.toString());
                         throw e;
                     }
                     getActivity().runOnUiThread(new Runnable() {
@@ -1789,7 +1773,7 @@ public class FragmentTools extends Fragment implements View.OnClickListener, Upl
                         }
                         invoiceDetController.createOrUpdateFinvDetL3(invoiceDetList);
                     } catch (JSONException | NumberFormatException e) {
-                        errors.add(e.toString());
+                        errors.add("Last three invoice details not downloaded "+e.toString());
 //                        ErrorUtil.logException("LoginActivity -> Authenticate -> doInBackground() # Process Routes and Outlets",
 //                                e, routes, BugReport.SEVERITY_HIGH);
 
@@ -1812,7 +1796,7 @@ public class FragmentTools extends Fragment implements View.OnClickListener, Upl
                         routedet = networkFunctions.getRouteDets(repcode);
                     } catch (IOException e) {
                         e.printStackTrace();
-                        errors.add(e.toString());
+                        errors.add("Error getting route details "+e.toString());
                         throw e;
                     }
 
@@ -1835,7 +1819,7 @@ public class FragmentTools extends Fragment implements View.OnClickListener, Upl
                         }
                         routeDetController.InsertOrReplaceRouteDet(routeList);
                     } catch (JSONException | NumberFormatException e) {
-                        errors.add(e.toString());
+                        errors.add("Route details not downloaded"+e.toString());
 //                        ErrorUtil.logException("LoginActivity -> Authenticate -> doInBackground() # Process Routes and Outlets",
 //                                e, routes, BugReport.SEVERITY_HIGH);
 
@@ -1856,8 +1840,7 @@ public class FragmentTools extends Fragment implements View.OnClickListener, Upl
                     try {
                         town = networkFunctions.getTowns(repcode);
                     } catch (IOException e) {
-                        e.printStackTrace();
-                        errors.add(e.toString());
+                        errors.add("Error getting towns"+e.toString());
                         throw e;
                     }
 
@@ -1880,7 +1863,7 @@ public class FragmentTools extends Fragment implements View.OnClickListener, Upl
                         }
                         townController.createOrUpdateFTown(townList);
                     } catch (JSONException | NumberFormatException e) {
-                        errors.add(e.toString());
+                        errors.add("Town details not downloaded "+e.toString());
 //                        ErrorUtil.logException("LoginActivity -> Authenticate -> doInBackground() # Process Routes and Outlets",
 //                                e, routes, BugReport.SEVERITY_HIGH);
 
@@ -1893,8 +1876,7 @@ public class FragmentTools extends Fragment implements View.OnClickListener, Upl
                     try {
                         freeslab = networkFunctions.getFreeSlab();
                     } catch (IOException e) {
-                        e.printStackTrace();
-                        errors.add(e.toString());
+                        errors.add("Error getting freeslab data"+e.toString());
                         throw e;
                     }
 
@@ -1917,7 +1899,7 @@ public class FragmentTools extends Fragment implements View.OnClickListener, Upl
                         }
                         freeslabController.createOrUpdateFreeSlab(freeslabList);
                     } catch (JSONException | NumberFormatException e) {
-                        errors.add(e.toString());
+                        errors.add("Freeslab data not downloaded "+e.toString());
 //                        ErrorUtil.logException("LoginActivity -> Authenticate -> doInBackground() # Process Routes and Outlets",
 //                                e, routes, BugReport.SEVERITY_HIGH);
 
@@ -1929,8 +1911,7 @@ public class FragmentTools extends Fragment implements View.OnClickListener, Upl
                     try {
                         freeMslab = networkFunctions.getFreeMslab();
                     } catch (IOException e) {
-                        e.printStackTrace();
-                        errors.add(e.toString());
+                        errors.add("Error getting freemslab data "+e.toString());
                         throw e;
                     }
 
@@ -1953,7 +1934,7 @@ public class FragmentTools extends Fragment implements View.OnClickListener, Upl
                         }
                         freeMslabController.createOrUpdateFreeMslab(freeMslabList);
                     } catch (JSONException | NumberFormatException e) {
-                        errors.add(e.toString());
+                        errors.add("Freemslab data not downloaded"+e.toString());
 //                        ErrorUtil.logException("LoginActivity -> Authenticate -> doInBackground() # Process Routes and Outlets",
 //                                e, routes, BugReport.SEVERITY_HIGH);
 
@@ -1966,8 +1947,7 @@ public class FragmentTools extends Fragment implements View.OnClickListener, Upl
                     try {
                         freehed = networkFunctions.getFreeHed(repcode);
                     } catch (IOException e) {
-                        e.printStackTrace();
-                        errors.add(e.toString());
+                        errors.add("Error getting freehed data "+e.toString());
                         throw e;
                     }
 
@@ -1990,7 +1970,7 @@ public class FragmentTools extends Fragment implements View.OnClickListener, Upl
                         }
                         freeHedController.createOrUpdateFreeHed(freeHedList);
                     } catch (JSONException | NumberFormatException e) {
-                        errors.add(e.toString());
+                        errors.add("Freehed data not downloaded "+e.toString());
 //                        ErrorUtil.logException("LoginActivity -> Authenticate -> doInBackground() # Process Routes and Outlets",
 //                                e, routes, BugReport.SEVERITY_HIGH);
 
@@ -2002,8 +1982,7 @@ public class FragmentTools extends Fragment implements View.OnClickListener, Upl
                     try {
                         freedet = networkFunctions.getFreeDet();
                     } catch (IOException e) {
-                        e.printStackTrace();
-                        errors.add(e.toString());
+                        errors.add("Error getting free details "+e.toString());
                         throw e;
                     }
 
@@ -2026,7 +2005,7 @@ public class FragmentTools extends Fragment implements View.OnClickListener, Upl
                         }
                         freedetController.createOrUpdateFreeDet(freedetList);
                     } catch (JSONException | NumberFormatException e) {
-                        errors.add(e.toString());
+                        errors.add("Free details not downloaded"+e.toString());
 //                        ErrorUtil.logException("LoginActivity -> Authenticate -> doInBackground() # Process Routes and Outlets",
 //                                e, routes, BugReport.SEVERITY_HIGH);
 
@@ -2038,8 +2017,7 @@ public class FragmentTools extends Fragment implements View.OnClickListener, Upl
                     try {
                         freedeb = networkFunctions.getFreeDebs();
                     } catch (IOException e) {
-                        e.printStackTrace();
-                        errors.add(e.toString());
+                        errors.add("Error getting free dealers"+e.toString());
                         throw e;
                     }
 
@@ -2062,7 +2040,7 @@ public class FragmentTools extends Fragment implements View.OnClickListener, Upl
                         }
                         freedebController.createOrUpdateFreeDeb(freedebList);
                     } catch (JSONException | NumberFormatException e) {
-                        errors.add(e.toString());
+                        errors.add("Free dealers not downloaded "+e.toString());
 //                        ErrorUtil.logException("LoginActivity -> Authenticate -> doInBackground() # Process Routes and Outlets",
 //                                e, routes, BugReport.SEVERITY_HIGH);
 
@@ -2074,8 +2052,7 @@ public class FragmentTools extends Fragment implements View.OnClickListener, Upl
                     try {
                         freeitem = networkFunctions.getFreeItems();
                     } catch (IOException e) {
-                        e.printStackTrace();
-                        errors.add(e.toString());
+                        errors.add("Error getting free items "+e.toString());
                         throw e;
                     }
 
@@ -2098,7 +2075,7 @@ public class FragmentTools extends Fragment implements View.OnClickListener, Upl
                         }
                         freeitemController.createOrUpdateFreeItem(freeitemList);
                     } catch (JSONException | NumberFormatException e) {
-                        errors.add(e.toString());
+                        errors.add("Free items not downloaded "+e.toString());
 //                        ErrorUtil.logException("LoginActivity -> Authenticate -> doInBackground() # Process Routes and Outlets",
 //                                e, routes, BugReport.SEVERITY_HIGH);
 
@@ -2110,8 +2087,7 @@ public class FragmentTools extends Fragment implements View.OnClickListener, Upl
                     try {
                         debdisc = networkFunctions.getDiscDeb(repcode);
                     } catch (IOException e) {
-                        errors.add(e.toString());
-                        e.printStackTrace();
+                        errors.add("Error getting discount dealers "+e.toString());
                         throw e;
                     }
 
@@ -2134,7 +2110,7 @@ public class FragmentTools extends Fragment implements View.OnClickListener, Upl
                         }
                         discdebController.createOrUpdateDiscdeb(discdebList);
                     } catch (JSONException | NumberFormatException e) {
-                        errors.add(e.toString());
+                        errors.add("Discount dealers not downloaded "+e.toString());
 //                        ErrorUtil.logException("LoginActivity -> Authenticate -> doInBackground() # Process Routes and Outlets",
 //                                e, routes, BugReport.SEVERITY_HIGH);
 
@@ -2146,8 +2122,7 @@ public class FragmentTools extends Fragment implements View.OnClickListener, Upl
                     try {
                         discdet = networkFunctions.getDiscDet();
                     } catch (IOException e) {
-                        e.printStackTrace();
-                        errors.add(e.toString());
+                        errors.add("Error getting discount details "+e.toString());
                         throw e;
                     }
 
@@ -2171,7 +2146,7 @@ public class FragmentTools extends Fragment implements View.OnClickListener, Upl
                         }
                         discdetController.createOrUpdateDiscdet(discdetList);
                     } catch (JSONException | NumberFormatException e) {
-                        errors.add(e.toString());
+                        errors.add("Discount dets not downloaded "+e.toString());
 //                        ErrorUtil.logException("LoginActivity -> Authenticate -> doInBackground() # Process Routes and Outlets",
 //                                e, routes, BugReport.SEVERITY_HIGH);
 
@@ -2183,8 +2158,7 @@ public class FragmentTools extends Fragment implements View.OnClickListener, Upl
                     try {
                         disched = networkFunctions.getDiscHed(repcode);
                     } catch (IOException e) {
-                        e.printStackTrace();
-                        errors.add(e.toString());
+                        errors.add("Error getting discount headers "+e.toString());
                         throw e;
                     }
 
@@ -2207,7 +2181,7 @@ public class FragmentTools extends Fragment implements View.OnClickListener, Upl
                         }
                         dischedController.createOrUpdateDisched(dischedList);
                     } catch (JSONException | NumberFormatException e) {
-                        errors.add(e.toString());
+                        errors.add("Discount schemes not downloaded "+ e.toString());
 //                        ErrorUtil.logException("LoginActivity -> Authenticate -> doInBackground() # Process Routes and Outlets",
 //                                e, routes, BugReport.SEVERITY_HIGH);
 
@@ -2219,8 +2193,7 @@ public class FragmentTools extends Fragment implements View.OnClickListener, Upl
                     try {
                         discslab = networkFunctions.getDiscSlab();
                     } catch (IOException e) {
-                        e.printStackTrace();
-                        errors.add(e.toString());
+                        errors.add("Error getting discoutslab data "+ e.toString());
                         throw e;
                     }
 
@@ -2243,7 +2216,7 @@ public class FragmentTools extends Fragment implements View.OnClickListener, Upl
                         }
                         discslabController.createOrUpdateDiscslab(discslabList);
                     } catch (JSONException | NumberFormatException e) {
-                        errors.add(e.toString());
+                        errors.add("Discount slab details not downloaded "+e.toString());
 //                        ErrorUtil.logException("LoginActivity -> Authenticate -> doInBackground() # Process Routes and Outlets",
 //                                e, routes, BugReport.SEVERITY_HIGH);
 
@@ -2261,8 +2234,7 @@ public class FragmentTools extends Fragment implements View.OnClickListener, Upl
                     try {
                         itenaryhed = networkFunctions.getItenaryHed(repcode);
                     } catch (IOException e) {
-                        e.printStackTrace();
-                        errors.add(e.toString());
+                        errors.add("Error getting iteanary data"+e.toString());
                         throw e;
                     }
 
@@ -2284,7 +2256,7 @@ public class FragmentTools extends Fragment implements View.OnClickListener, Upl
                         }
                         itenaryHedController.createOrUpdateFItenrHed(itenaryHedList);
                     } catch (JSONException | NumberFormatException e) {
-                        errors.add(e.toString());
+                        errors.add("Iteanery data not downloaded "+e.toString());
 //                        ErrorUtil.logException("LoginActivity -> Authenticate -> doInBackground() # Process Routes and Outlets",
 //                                e, routes, BugReport.SEVERITY_HIGH);
 
@@ -2298,8 +2270,7 @@ public class FragmentTools extends Fragment implements View.OnClickListener, Upl
                     try {
                         tmInvSale = networkFunctions.getTMInvoiceSale(repcode);
                     } catch (IOException e) {
-                        e.printStackTrace();
-                        errors.add(e.toString());
+                        errors.add("Error getting this month invoice data "+e.toString());
                         throw e;
                     }
 
@@ -2311,7 +2282,7 @@ public class FragmentTools extends Fragment implements View.OnClickListener, Upl
                         SharedPref.getInstance(getActivity()).setTMInvSale(tminvoiceSale);
                         /////////////////MMS2019-11-14////////////////
                     } catch (JSONException | NumberFormatException e) {
-                        errors.add(e.toString());
+                        errors.add("This month invoice data not downloaded "+e.toString());
                         throw e;
                     }
 
@@ -2319,8 +2290,7 @@ public class FragmentTools extends Fragment implements View.OnClickListener, Upl
                     try {
                         pmInvSale = networkFunctions.getPMInvoiceSale(repcode);
                     } catch (IOException e) {
-                        e.printStackTrace();
-                        errors.add(e.toString());
+                        errors.add("Error getting previous month invoice data "+e.toString());
                         throw e;
                     }
 
@@ -2332,7 +2302,7 @@ public class FragmentTools extends Fragment implements View.OnClickListener, Upl
                         SharedPref.getInstance(getActivity()).setPMInvSale(pminvoiceSale);
                         /////////////////MMS2019-11-14////////////////
                     } catch (JSONException | NumberFormatException e) {
-                        errors.add(e.toString());
+                        errors.add("Previous month invoice details not downloaded"+e.toString());
                         throw e;
 
                     }
@@ -2342,8 +2312,7 @@ public class FragmentTools extends Fragment implements View.OnClickListener, Upl
                     try {
                         tmOrdSale = networkFunctions.getTMOrderSale(repcode);
                     } catch (IOException e) {
-                        e.printStackTrace();
-                        errors.add(e.toString());
+                        errors.add("Error getting this month order sale "+e.toString());
                         throw e;
                     }
 
@@ -2354,7 +2323,7 @@ public class FragmentTools extends Fragment implements View.OnClickListener, Upl
                         String tmorderSale = orderSaleJSON.getString("orderSaleTillTodayResult");
                         SharedPref.getInstance(getActivity()).setTMOrdSale(tmorderSale);
                     } catch (JSONException | NumberFormatException e) {
-                        errors.add(e.toString());
+                        errors.add("This month order details not downloaded "+e.toString());
                         throw e;
                     }
 
@@ -2362,8 +2331,7 @@ public class FragmentTools extends Fragment implements View.OnClickListener, Upl
                     try {
                         pmOrdSale = networkFunctions.getPMOrderSale(repcode);
                     } catch (IOException e) {
-                        errors.add(e.toString());
-                        e.printStackTrace();
+                        errors.add("Error getting previous month order sale "+e.toString());
                         throw e;
                     }
 
@@ -2375,7 +2343,7 @@ public class FragmentTools extends Fragment implements View.OnClickListener, Upl
                         SharedPref.getInstance(getActivity()).setPMOrdSale(pmorderSale);
                         /////////////////MMS2019-11-14////////////////
                     } catch (JSONException | NumberFormatException e) {
-                        errors.add(e.toString());
+                        errors.add("Previous month order sale not downloaded "+e.toString());
                         throw e;
                     }
 
@@ -2385,7 +2353,6 @@ public class FragmentTools extends Fragment implements View.OnClickListener, Upl
                     try {
                         tmReturns = networkFunctions.getTMReturns(repcode);
                     } catch (IOException e) {
-                        e.printStackTrace();
                         throw e;
                     }
 
@@ -2396,7 +2363,7 @@ public class FragmentTools extends Fragment implements View.OnClickListener, Upl
                         String tmreturnSale = orderSaleJSON.getString("getReturnsResult");
                         SharedPref.getInstance(getActivity()).setTMReturn(tmreturnSale);
                     } catch (JSONException | NumberFormatException e) {
-                        errors.add(e.toString());
+                        errors.add("This month returns not downloaded"+e.toString());
                         throw e;
                     }
 
@@ -2404,8 +2371,7 @@ public class FragmentTools extends Fragment implements View.OnClickListener, Upl
                     try {
                         pmReturn = networkFunctions.getPMReturns(repcode);
                     } catch (IOException e) {
-                        errors.add(e.toString());
-                        e.printStackTrace();
+                        errors.add("Error getting previous month returns"+e.toString());
                         throw e;
                     }
 
@@ -2417,7 +2383,7 @@ public class FragmentTools extends Fragment implements View.OnClickListener, Upl
                         SharedPref.getInstance(getActivity()).setPMReturn(pmreturn);
                         /////////////////MMS2019-11-14////////////////
                     } catch (JSONException | NumberFormatException e) {
-                        errors.add(e.toString());
+                        errors.add("Previous month returns not downloaded "+e.toString());
                         throw e;
                     }
                     /*****************itenary det**********************************************************************/
@@ -2433,8 +2399,7 @@ public class FragmentTools extends Fragment implements View.OnClickListener, Upl
                     try {
                         itenarydet = networkFunctions.getItenaryDet(repcode);
                     } catch (IOException e) {
-                        e.printStackTrace();
-                        errors.add(e.toString());
+                        errors.add("Error getting iteanary details "+e.toString());
                         throw e;
                     }
 
@@ -2465,7 +2430,7 @@ public class FragmentTools extends Fragment implements View.OnClickListener, Upl
                         }
 
                     } catch (JSONException | NumberFormatException e) {
-                        errors.add(e.toString());
+                        errors.add("Iteanary details not downloaded"+e.toString());
 //                        ErrorUtil.logException("LoginActivity -> Authenticate -> doInBackground() # Process Routes and Outlets",
 //                                e, routes, BugReport.SEVERITY_HIGH);
 
@@ -2484,26 +2449,25 @@ public class FragmentTools extends Fragment implements View.OnClickListener, Upl
                     return false;
                 }
             } catch (IOException e) {
-                e.printStackTrace();
-                errors.add(e.toString());
-                // errors.add("Unable to reach the server.");
+                Log.d("ERROR SYNC>>>>>", ">>>" +e.toString());
+
+                 errors.add("Unable to reach the server.");
 
 //                ErrorUtil.logException(LoginActivity.this, "LoginActivity -> Authenticate -> doInBackground # Login",
 //                        e, null, BugReport.SEVERITY_LOW);
 
                 return false;
             } catch (JSONException e) {
-                e.printStackTrace();
-                errors.add(e.toString());
-                // errors.add("Received an invalid response from the server.");
+                Log.d("ERROR SYNC>>>>>", ">>>" +e.toString());
+                 errors.add("Received an invalid response from the server.");
 
 //                ErrorUtil.logException(LoginActivity.this, "LoginActivity -> Authenticate -> doInBackground # Login",
 //                        e, loginResponse, BugReport.SEVERITY_HIGH);
 
                 return false;
             } catch (NumberFormatException e) {
-                errors.add(e.toString());
-                e.printStackTrace();
+              //  errors.add(e.toString());
+                errors.add("Invalid format "+e.toString());
                 return false;
             }
         }
@@ -2525,7 +2489,8 @@ public class FragmentTools extends Fragment implements View.OnClickListener, Upl
                 }
                 StringBuilder sb = new StringBuilder();
                 if (errors.size() == 1) {
-                    sb.append(errors.get(0));
+                    sb.append("Following errors occurred");
+                    sb.append("\n  "+errors.get(0));
                 } else {
                     sb.append("Following errors occurred");
                     for (String error : errors) {
@@ -2549,7 +2514,8 @@ public class FragmentTools extends Fragment implements View.OnClickListener, Upl
     }
 
     private void showErrorText(String s) {
-        Toast.makeText(getActivity(), "" + s, Toast.LENGTH_LONG).show();
+       // Toast.makeText(getActivity(), "" + s, Toast.LENGTH_LONG).show();
+        syncErrorResult(s);
     }
 
     /////////////***********************secondory sync finish***********************************/
@@ -2587,6 +2553,23 @@ public class FragmentTools extends Fragment implements View.OnClickListener, Upl
         AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(getActivity());
         alertDialogBuilder.setMessage(message);
         alertDialogBuilder.setTitle("Upload Summary");
+
+        alertDialogBuilder.setCancelable(false).setPositiveButton("OK", new DialogInterface.OnClickListener() {
+
+            public void onClick(DialogInterface dialog, int id) {
+                dialog.cancel();
+            }
+        });
+        AlertDialog alertD = alertDialogBuilder.create();
+        alertD.show();
+        alertD.getWindow().setLayout(WindowManager.LayoutParams.FILL_PARENT, WindowManager.LayoutParams.WRAP_CONTENT);
+
+    }
+    public void syncErrorResult(String message) {
+
+        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(getActivity());
+        alertDialogBuilder.setMessage(message);
+        alertDialogBuilder.setTitle("Synchronized Errors");
 
         alertDialogBuilder.setCancelable(false).setPositiveButton("OK", new DialogInterface.OnClickListener() {
 
