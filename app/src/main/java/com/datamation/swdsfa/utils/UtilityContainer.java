@@ -241,7 +241,7 @@ public class UtilityContainer {
                                 String user_text = (userInput.getText()).toString();
 
                                 /** CHECK FOR USER'S INPUT **/
-                                if (user_text.equals("adminrs@swadeshi"))
+                                if (user_text.equals("adminrs@swd"))
                                 {
                                     Log.d(user_text, "HELLO THIS IS THE MESSAGE CAUGHT :)");
                                     mLoadFragment(new SQLiteRestore(), context);
