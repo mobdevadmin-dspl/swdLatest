@@ -123,13 +123,17 @@ import com.datamation.swdsfa.model.Locations;
 import com.datamation.swdsfa.model.NearDebtor;
 import com.datamation.swdsfa.model.NewCustomer;
 import com.datamation.swdsfa.model.Order;
+import com.datamation.swdsfa.model.PictureList;
 import com.datamation.swdsfa.model.Reason;
 import com.datamation.swdsfa.model.Route;
 import com.datamation.swdsfa.model.RouteDet;
 import com.datamation.swdsfa.model.SalRep;
 import com.datamation.swdsfa.model.Town;
 import com.datamation.swdsfa.model.User;
+import com.datamation.swdsfa.model.apimodel.APIUrl;
+import com.datamation.swdsfa.model.apimodel.ApiService;
 import com.datamation.swdsfa.model.apimodel.TaskType;
+import com.datamation.swdsfa.model.objPicture;
 import com.datamation.swdsfa.nonproductive.UploadNonProd;
 import com.datamation.swdsfa.presale.UploadPreSales;
 import com.datamation.swdsfa.utils.NetworkUtil;
@@ -171,6 +175,7 @@ import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import cn.pedant.SweetAlert.SweetAlertDialog;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -197,15 +202,16 @@ public class FragmentTools extends Fragment implements View.OnClickListener, Upl
     private SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
     ArrayList<FirebaseData> imgList, vdoList;
     private Handler mHandler;
+    private ArrayList<objPicture> picturesList;
     ArrayList<FirebaseData> imgUrlList;
     ArrayList<FirebaseData> vdoUrlList;
     FirebaseData fd;
     DatabaseReference rootRef;
     FirebaseMediaController fmc;
-
+    boolean isDownloadImageClick = false;
     boolean isAnyActiveImages = false;
     boolean isAnyActiveVideos = false;
-
+    private ProgressDialog progressDoalog;
     boolean isImageFitToScreen;
 
     @Nullable
@@ -388,7 +394,8 @@ public class FragmentTools extends Fragment implements View.OnClickListener, Upl
             case R.id.imgImage:
                 imgImage.startAnimation(animScale);
                 imgUrlList = fmc.getAllMediafromDb("IMG");
-                ViewImageList();
+                isDownloadImageClick = true;
+                downloadImages();
                 break;
 
             case R.id.imgVideo:
@@ -400,7 +407,54 @@ public class FragmentTools extends Fragment implements View.OnClickListener, Upl
         }
 
     }
+    public void downloadImages() {
 
+        progressDoalog = new ProgressDialog(getActivity());
+        progressDoalog.setTitle("Downloading");
+        //progressDoalog.show();
+
+        ApiService apiService = APIUrl.getClient(getActivity()).create(ApiService.class);
+        Call<PictureList> call = apiService.downlodPicture();
+        call.enqueue(new Callback<PictureList>() {
+            @Override
+            public void onResponse(Call<PictureList> call, Response<PictureList> response) {
+
+                if (response.isSuccessful()) {
+
+                    picturesList = response.body().getImages();
+                }
+
+//                storePictures(picturesList);
+                //progressDoalog.dismiss();
+                if (isDownloadImageClick) {
+//                    File folder = new File(Environment.getExternalStorageDirectory() + "/" + "SWDIMAGES");
+//                    boolean success = true;
+//                    if (!folder.exists()) {
+//                        success = folder.mkdir();
+//                    }
+//                    if (success) {
+                    if(NetworkUtil.isNetworkAvailable(getActivity())) {
+                        new saveImages().execute();
+                    }else{
+                        Toast.makeText(getActivity(),"No internet connection to download imags",Toast.LENGTH_LONG).show();
+                    }
+                    //   }
+                }
+            }
+
+            @Override
+            public void onFailure(Call<PictureList> call, Throwable t) {
+
+            }
+
+            @Override
+            protected void finalize() throws Throwable {
+                super.finalize();
+                Log.e("close", "" + "finalize");
+
+            }
+        });
+    }
 
     public void ViewImageList() {
         final Dialog imageDialog = new Dialog(getActivity());
@@ -539,7 +593,95 @@ public class FragmentTools extends Fragment implements View.OnClickListener, Upl
         imageDialog.show();
     }
 
+    public class saveImages extends AsyncTask<String, Integer, String> {
 
+        // Progress Dialog
+        ProgressDialog PD = new ProgressDialog(getActivity());
+
+        @Override
+        protected String doInBackground(String... params) {
+            int count;
+            try {
+                for (int i = 0; i < picturesList.size(); i++) {
+
+                    objPicture objPictur = picturesList.get(i);
+
+                    if (i > 1) {
+
+                        URL url = new URL(objPictur.getImage());
+                        URLConnection conection = url.openConnection();
+                        conection.connect();
+                        int lenghtOfFile = conection.getContentLength();
+                        File mypath = new File(new File("/sdcard/Download/"), objPictur.getImage_name());
+
+                        // input stream to read file - with 8k buffer
+                        InputStream input = new BufferedInputStream(url.openStream(), 1000);
+
+                        // Output stream to write file
+                        OutputStream output = new FileOutputStream(mypath);
+                        byte data[] = new byte[1024];
+
+                        long total = 0;
+                        while ((count = input.read(data)) != -1) {
+                            total += count;
+                            // writing data to file
+                            output.write(data, 0, count);
+                            onProgressUpdate("" + (int) ((total * 100) / lenghtOfFile), "" + count, "" + i);
+                        }
+                        // flushing output
+                        output.flush();
+
+                        // closing streams
+                        output.close();
+                        input.close();
+
+                    }
+                }
+            } catch (Exception e) {
+                Log.e("Error: ", e.getMessage());
+                // L_O_G.Log_Save("0","IMAGE_D_FAIL","0","0","0","0");
+            }
+
+
+            return null;
+        }
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            PD.setMessage("Saving Images. Please wait...");
+            PD.setIndeterminate(false);
+            PD.setMax(picturesList.size());
+            PD.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+            PD.setCancelable(false);
+            PD.show();
+        }
+
+        protected void onProgressUpdate(String... progress) {
+            // setting progress percentage
+            PD.setProgress(Integer.parseInt(progress[2]));
+            PD.setSecondaryProgress(Integer.parseInt(progress[1]));
+        }
+
+        @Override
+        protected void onPostExecute(String s) {
+            super.onPostExecute(s);
+            PD.dismiss();
+            isDownloadImageClick = false;
+            System.out.println("IMAGE_D_SUCCESS"+"Done");
+            new SweetAlertDialog(getActivity(), SweetAlertDialog.SUCCESS_TYPE)
+                    .setTitleText("Image Download Complete!")
+                    .setContentText("Press Ok Button!")
+                    .show();
+        }
+
+        @Override
+        protected void onProgressUpdate(Integer... values) {
+            super.onProgressUpdate(values);
+            System.out.println("IMAGE_D_SUCCESS"+values);
+            PD.show();
+        }
+    }
     public void ViewVideoList() {
         final Dialog videoDialog = new Dialog(getActivity());
         videoDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
