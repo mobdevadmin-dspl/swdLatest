@@ -13,6 +13,8 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
+
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -217,7 +219,69 @@ public class UtilityContainer {
         AlertDialog alertD = alertDialogBuilder.create();
         alertD.show();
     }
+    public static void validateRestore(final Context context)
+    {
 
+        LayoutInflater li = LayoutInflater.from(context);
+        View promptsView = li.inflate(R.layout.settings_sqlite_password_layout, null);
+        final AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(context);
+        alertDialogBuilder.setView(promptsView);
+
+        final EditText userInput = (EditText) promptsView
+                .findViewById(R.id.et_password);
+
+
+        // set dialog message
+        alertDialogBuilder
+                .setCancelable(false)
+                .setNegativeButton("Go",
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog,int id) {
+                                /** DO THE METHOD HERE WHEN PROCEED IS CLICKED*/
+                                String user_text = (userInput.getText()).toString();
+
+                                /** CHECK FOR USER'S INPUT **/
+                                if (user_text.equals("adminrs@swd"))
+                                {
+                                    Log.d(user_text, "HELLO THIS IS THE MESSAGE CAUGHT :)");
+                                    mLoadFragment(new SQLiteRestore(), context);
+
+                                }
+                                else{
+                                    Log.d(user_text,"string is empty");
+                                    String message = "The password you have entered is incorrect." + " \n \n" + "Please try again!";
+                                    AlertDialog.Builder builder = new AlertDialog.Builder(context);
+                                    builder.setTitle("Error");
+                                    builder.setMessage(message);
+                                    builder.setPositiveButton("Cancel", null);
+                                    builder.setNegativeButton("Retry", new DialogInterface.OnClickListener() {
+                                        @Override
+                                        public void onClick(DialogInterface dialog, int id) {
+                                            validateRestore(context);
+                                        }
+                                    });
+                                    builder.create().show();
+
+                                }
+                            }
+                        })
+                .setPositiveButton("Cancel",
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog,int id) {
+                                dialog.dismiss();
+                            }
+
+                        }
+
+                );
+
+        // create alert dialog
+        AlertDialog alertDialog = alertDialogBuilder.create();
+
+        // show it
+        alertDialog.show();
+
+    }
     public static void mSQLiteDatabase(final Context context) {
 
         final Dialog dialog = new Dialog(context);
@@ -242,13 +306,8 @@ public class UtilityContainer {
             @Override
             public void onClick(View v) {
 
-                mLoadFragment(new SQLiteRestore(), context);
-//                FragmentManager fm = ((FragmentActivity) context).getSupportFragmentManager();
-//                FragmentTransaction ft = fm.beginTransaction();
-//                ft.replace(R.id.main_container, new FragmentTools());
-//                ft.addToBackStack(null);
-//                ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
-//                ft.commit();
+               // mLoadFragment(new SQLiteRestore(), context);
+                validateRestore(context);
                 dialog.dismiss();
             }
         });

@@ -70,6 +70,9 @@ import cn.pedant.SweetAlert.SweetAlertDialog;
 
 public class OrderDetailFragment extends Fragment{
 
+    private static final String TAG = "OrderDetailFragment";
+    public View view;
+    public SharedPref mSharedPref;
     int totPieces = 0;
     int seqno = 0;
     ListView lv_order_det, lvFree;
@@ -78,25 +81,21 @@ public class OrderDetailFragment extends Fragment{
     Button ibtDiscount;
     LinearLayout reasonLayout;
     SweetAlertDialog pDialog;
-    private static final String TAG = "OrderDetailFragment";
-    public View view;
-    public SharedPref mSharedPref;
-    private  String RefNo, locCoe;
-    private  MyReceiver r;
-    private Order tmpsoHed=null;  //from re oder creation
     PreSalesResponseListener preSalesResponseListener;
     int clickCount = 0;
-    private double totAmt = 0.0;
-    private Customer debtor;
     PreSalesActivity mainActivity;
     ArrayList<OrderDetail> orderList;
-    private Spinner spnTxn,spnReason,spnQOH;
     String address = "No Address";
     double latitude = 0.0;
     double longitude = 0.0;
     GPSTracker gpsTracker;
-
     String isQohZeroAllow = "0", qohStatus = "1";//qohStatus = 1 (show qoh > 0) else  all items check only isQohZeroAllow = 1 (2019-12-20 rashmi)
+    private  String RefNo, locCoe;
+    private  MyReceiver r;
+    private Order tmpsoHed=null;  //from re oder creation
+    private double totAmt = 0.0;
+    private Customer debtor;
+    private Spinner spnTxn,spnReason,spnQOH;
 
     //PreSalesResponseListener preSalesResponseListener;
     public OrderDetailFragment() {
@@ -439,6 +438,192 @@ spnQOH.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
         return true;
     }
 
+    public void mToggleTextbox()
+    {
+        gpsTracker = new GPSTracker(getActivity());
+        Log.v("Latitude>>>>>",mSharedPref.getGlobalVal("Latitude"));
+        Log.v("Longi>>>>>",mSharedPref.getGlobalVal("Longitude"));
+        showData();
+
+
+    }
+
+    public void onPause() {
+        super.onPause();
+        LocalBroadcastManager.getInstance(getActivity()).unregisterReceiver(r);
+
+        Log.d("order_detail", "clicked_count" + clickCount);
+
+    }
+
+    public void onResume() {
+        super.onResume();
+        r = new MyReceiver();
+        LocalBroadcastManager.getInstance(getActivity()).registerReceiver(r, new IntentFilter("TAG_DETAILS"));
+        Log.d("order_detail", "clicked_count" + clickCount);
+    }
+
+    public void showData() {
+        try
+        {
+            lv_order_det.setAdapter(null);
+            orderList = new OrderDetailController(getActivity()).getAllOrderDetails(RefNo);
+            lv_order_det.setAdapter(new OrderDetailsAdapterNew(getActivity(), orderList, mSharedPref.getSelectedDebCode()));//2019-07-07 till error free
+
+            lvFree.setAdapter(null);
+            ArrayList<OrderDetail> freeList=new OrderDetailController(getActivity()).getAllFreeIssue(RefNo);
+            lvFree.setAdapter(new OrderFreeItemAdapter(getActivity(), freeList));
+
+            Log.d("order_detail", "clicked_count" + clickCount);
+
+
+        } catch (NullPointerException e) {
+            Log.v("SA Error", e.toString());
+        }
+    }
+
+    public void ProductDialogBox(final String typeInProductDialog) {
+
+        final LayoutInflater layoutInflater = LayoutInflater.from(getActivity());
+        View promptView = layoutInflater.inflate(R.layout.product_dialog_layout, null);
+        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(getActivity());
+        alertDialogBuilder.setView(promptView);
+
+        final ListView lvProducts = (ListView) promptView.findViewById(R.id.lv_product_list);
+        final SearchView search = (SearchView) promptView.findViewById(R.id.et_search);
+
+
+        lvProducts.clearTextFilter();
+        productList.clear();
+        productList = new PreProductController(getActivity()).getAllItems("",typeInProductDialog,isQohZeroAllow,qohStatus);
+        lvProducts.setAdapter(new PreOrderAdapter(getActivity(), productList, typeInProductDialog, SharedPref.getInstance(getActivity()).getGlobalVal("reason")));
+
+        alertDialogBuilder.setCancelable(false).setNegativeButton("DONE", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+
+                selectedItemList = new PreProductController(getActivity()).getSelectedItems(typeInProductDialog);
+//2019-10-18 rashmi
+                    updateOrderDet(selectedItemList,typeInProductDialog);
+
+                getActivity().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
+                dialog.cancel();
+            }
+        });
+
+        AlertDialog alertDialog = alertDialogBuilder.create();
+        alertDialog.show();
+        alertDialog.getWindow().setLayout(WindowManager.LayoutParams.FILL_PARENT, WindowManager.LayoutParams.WRAP_CONTENT);
+
+        search.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                productList = new PreProductController(getActivity()).getAllItems(query,typeInProductDialog,isQohZeroAllow,qohStatus);//Rashmi 2018-10-26
+                lvProducts.setAdapter(new PreOrderAdapter(getActivity(), productList,typeInProductDialog,SharedPref.getInstance(getActivity()).getGlobalVal("reason")));
+                return true;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+
+                productList.clear();
+                productList = new PreProductController(getActivity()).getAllItems(newText,typeInProductDialog,isQohZeroAllow,qohStatus);//rashmi-2018-10-26
+                lvProducts.setAdapter(new PreOrderAdapter(getActivity(), productList,typeInProductDialog,SharedPref.getInstance(getActivity()).getGlobalVal("reason")));
+                return true;
+            }
+        });
+    }
+
+    /*-*-*-*-*-*-*-*-*--*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*--*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*/
+
+    public void updateOrderDet(final ArrayList<PreProduct> list, final String updateOrderDetType) {
+
+        new AsyncTask<Void, Void, Void>() {
+            @Override
+            protected void onPreExecute() {
+//                pDialog = new SweetAlertDialog(getActivity(), SweetAlertDialog.PROGRESS_TYPE);
+//                pDialog.getProgressHelper().setBarColor(Color.parseColor("#A5DC86"));
+//                pDialog.setTitleText("Updating products...");
+//                pDialog.setCancelable(false);
+//                pDialog.show();
+                super.onPreExecute();
+            }
+
+            @Override
+            protected Void doInBackground(Void... params) {
+
+                int i = 0;
+                RefNo = new ReferenceNum(getActivity()).getCurrentRefNo(getResources().getString(R.string.NumVal));
+                new OrderDetailController(getActivity()).deleteRecords(RefNo,updateOrderDetType);//commented by rashmi because check duplicate issue
+                ArrayList<OrderDetail> toSaveOrderDetails = new OrderDetailController(getActivity()).mUpdatePrsSales(list,RefNo);
+
+                if (new OrderDetailController(getActivity()).createOrUpdateOrdDet(toSaveOrderDetails)>0)
+                {
+                    Log.d("ORDER_DETAILS", "Order det saved successfully...");
+                }
+                else
+                {
+                    Log.d("ORDER_DETAILS", "Order det saved unsuccess...");
+                }
+
+                return null;
+            }
+
+            @Override
+            protected void onPostExecute(Void aVoid) {
+                super.onPostExecute(aVoid);
+//                if(pDialog.isShowing()){
+//                    pDialog.dismiss();
+//                }
+
+                showData();
+            }
+
+        }.execute();
+    }
+
+    public void newDeleteOrderDialog(final int dltPosition) {
+
+        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(getActivity());
+        alertDialogBuilder.setTitle("Confirm Deletion !");
+        alertDialogBuilder.setMessage("Do you want to delete this item ?");
+        alertDialogBuilder.setCancelable(false).setPositiveButton("YES", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+
+                new PreProductController(getActivity()).updateProductQty(orderList.get(dltPosition).getFORDERDET_ITEMCODE(), "0",orderList.get(dltPosition).getFORDERDET_TYPE());
+                new PreProductController(getActivity()).updateProductCase(orderList.get(dltPosition).getFORDERDET_ITEMCODE(), "0",orderList.get(dltPosition).getFORDERDET_TYPE());
+               // new PreProductController(getActivity()).updateProductp(orderList.get(dltPosition).getFORDERDET_ITEMCODE(), "0",orderList.get(dltPosition).getFORDERDET_TYPE());
+             //   new PreProductController(getActivity()).updateBalQty(orderList.get(position).getFORDERDET_ITEMCODE(), "0");
+              //  new PreProductController(getActivity()).updateRefNo(RefNo, "0",orderList.get(dltPosition).getFORDERDET_TYPE());
+                if(orderList.get(dltPosition).getFORDERDET_TYPE().equals("MR")) {
+                    new PreProductController(getActivity()).updateReason(orderList.get(dltPosition).getFORDERDET_ITEMCODE(), "", orderList.get(dltPosition).getFORDERDET_TYPE());
+                    new ProductController(getActivity()).updateProductPrice(orderList.get(dltPosition).getFORDERDET_ITEMCODE(), "0", orderList.get(dltPosition).getFORDERDET_TYPE());
+                }
+                new OrderDetailController(getActivity()).mDeleteRecords(RefNo, orderList.get(dltPosition).getFORDERDET_ITEMCODE(),orderList.get(dltPosition).getFORDERDET_TYPE());
+                Toast.makeText(getActivity(), "Deleted successfully!", Toast.LENGTH_SHORT).show();
+                showData();
+
+            }
+        }).setNegativeButton("NO", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                dialog.cancel();
+            }
+        });
+
+        AlertDialog alertD = alertDialogBuilder.create();
+        alertD.show();
+    }
+
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+        try {
+            preSalesResponseListener = (PreSalesResponseListener) getActivity();
+        } catch (ClassCastException e) {
+            throw new ClassCastException(activity.toString() + " must implement onButtonPressed");
+        }
+    }
+
     public class LoardingProductFromDB extends AsyncTask<Object, Object, ArrayList<PreProduct>> {
 
         private String type;
@@ -697,201 +882,12 @@ spnQOH.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
         }
     }
 
-    public void mToggleTextbox()
-    {
-        gpsTracker = new GPSTracker(getActivity());
-        Log.v("Latitude>>>>>",mSharedPref.getGlobalVal("Latitude"));
-        Log.v("Longi>>>>>",mSharedPref.getGlobalVal("Longitude"));
-        showData();
-
-
-    }
-
-    public void onPause() {
-        super.onPause();
-        LocalBroadcastManager.getInstance(getActivity()).unregisterReceiver(r);
-
-        Log.d("order_detail", "clicked_count" + clickCount);
-
-    }
-
-    /*-*-*-*-*-*-*-*-*--*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*--*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*/
-
-    public void onResume() {
-        super.onResume();
-        r = new MyReceiver();
-        LocalBroadcastManager.getInstance(getActivity()).registerReceiver(r, new IntentFilter("TAG_DETAILS"));
-        Log.d("order_detail", "clicked_count" + clickCount);
-    }
-
     private class MyReceiver extends BroadcastReceiver {
         @Override
         public void onReceive(Context context, Intent intent) {
             OrderDetailFragment.this.mToggleTextbox();
 
             Log.d("order_detail", "clicked_count" + clickCount);
-        }
-    }
-
-    public void showData() {
-        try
-        {
-            lv_order_det.setAdapter(null);
-            orderList = new OrderDetailController(getActivity()).getAllOrderDetails(RefNo);
-            lv_order_det.setAdapter(new OrderDetailsAdapterNew(getActivity(), orderList, mSharedPref.getSelectedDebCode()));//2019-07-07 till error free
-
-            lvFree.setAdapter(null);
-            ArrayList<OrderDetail> freeList=new OrderDetailController(getActivity()).getAllFreeIssue(RefNo);
-            lvFree.setAdapter(new OrderFreeItemAdapter(getActivity(), freeList));
-
-            Log.d("order_detail", "clicked_count" + clickCount);
-
-
-        } catch (NullPointerException e) {
-            Log.v("SA Error", e.toString());
-        }
-    }
-
-    public void ProductDialogBox(final String typeInProductDialog) {
-
-        final LayoutInflater layoutInflater = LayoutInflater.from(getActivity());
-        View promptView = layoutInflater.inflate(R.layout.product_dialog_layout, null);
-        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(getActivity());
-        alertDialogBuilder.setView(promptView);
-
-        final ListView lvProducts = (ListView) promptView.findViewById(R.id.lv_product_list);
-        final SearchView search = (SearchView) promptView.findViewById(R.id.et_search);
-
-
-        lvProducts.clearTextFilter();
-        productList.clear();
-        productList = new PreProductController(getActivity()).getAllItems("",typeInProductDialog,isQohZeroAllow,qohStatus);
-        lvProducts.setAdapter(new PreOrderAdapter(getActivity(), productList, typeInProductDialog, SharedPref.getInstance(getActivity()).getGlobalVal("reason")));
-
-        alertDialogBuilder.setCancelable(false).setNegativeButton("DONE", new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int id) {
-
-                selectedItemList = new PreProductController(getActivity()).getSelectedItems(typeInProductDialog);
-//2019-10-18 rashmi
-                    updateOrderDet(selectedItemList,typeInProductDialog);
-
-                getActivity().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
-                dialog.cancel();
-            }
-        });
-
-        AlertDialog alertDialog = alertDialogBuilder.create();
-        alertDialog.show();
-        alertDialog.getWindow().setLayout(WindowManager.LayoutParams.FILL_PARENT, WindowManager.LayoutParams.WRAP_CONTENT);
-
-        search.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-
-            @Override
-            public boolean onQueryTextSubmit(String query) {
-                productList = new PreProductController(getActivity()).getAllItems(query,typeInProductDialog,isQohZeroAllow,qohStatus);//Rashmi 2018-10-26
-                lvProducts.setAdapter(new PreOrderAdapter(getActivity(), productList,typeInProductDialog,SharedPref.getInstance(getActivity()).getGlobalVal("reason")));
-                return true;
-            }
-
-            @Override
-            public boolean onQueryTextChange(String newText) {
-
-                productList.clear();
-                productList = new PreProductController(getActivity()).getAllItems(newText,typeInProductDialog,isQohZeroAllow,qohStatus);//rashmi-2018-10-26
-                lvProducts.setAdapter(new PreOrderAdapter(getActivity(), productList,typeInProductDialog,SharedPref.getInstance(getActivity()).getGlobalVal("reason")));
-                return true;
-            }
-        });
-    }
-
-    public void updateOrderDet(final ArrayList<PreProduct> list, final String updateOrderDetType) {
-
-        new AsyncTask<Void, Void, Void>() {
-            @Override
-            protected void onPreExecute() {
-//                pDialog = new SweetAlertDialog(getActivity(), SweetAlertDialog.PROGRESS_TYPE);
-//                pDialog.getProgressHelper().setBarColor(Color.parseColor("#A5DC86"));
-//                pDialog.setTitleText("Updating products...");
-//                pDialog.setCancelable(false);
-//                pDialog.show();
-                super.onPreExecute();
-            }
-
-            @Override
-            protected Void doInBackground(Void... params) {
-
-                int i = 0;
-                RefNo = new ReferenceNum(getActivity()).getCurrentRefNo(getResources().getString(R.string.NumVal));
-                new OrderDetailController(getActivity()).deleteRecords(RefNo,updateOrderDetType);//commented by rashmi because check duplicate issue
-                ArrayList<OrderDetail> toSaveOrderDetails = new OrderDetailController(getActivity()).mUpdatePrsSales(list,RefNo);
-
-                if (new OrderDetailController(getActivity()).createOrUpdateOrdDet(toSaveOrderDetails)>0)
-                {
-                    Log.d("ORDER_DETAILS", "Order det saved successfully...");
-                }
-                else
-                {
-                    Log.d("ORDER_DETAILS", "Order det saved unsuccess...");
-                }
-
-                return null;
-            }
-
-            @Override
-            protected void onPostExecute(Void aVoid) {
-                super.onPostExecute(aVoid);
-//                if(pDialog.isShowing()){
-//                    pDialog.dismiss();
-//                }
-
-                showData();
-            }
-
-        }.execute();
-    }
-
-
-    public void newDeleteOrderDialog(final int dltPosition) {
-
-        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(getActivity());
-        alertDialogBuilder.setTitle("Confirm Deletion !");
-        alertDialogBuilder.setMessage("Do you want to delete this item ?");
-        alertDialogBuilder.setCancelable(false).setPositiveButton("YES", new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int id) {
-
-                new PreProductController(getActivity()).updateProductQty(orderList.get(dltPosition).getFORDERDET_ITEMCODE(), "0",orderList.get(dltPosition).getFORDERDET_TYPE());
-                new PreProductController(getActivity()).updateProductCase(orderList.get(dltPosition).getFORDERDET_ITEMCODE(), "0",orderList.get(dltPosition).getFORDERDET_TYPE());
-               // new PreProductController(getActivity()).updateProductp(orderList.get(dltPosition).getFORDERDET_ITEMCODE(), "0",orderList.get(dltPosition).getFORDERDET_TYPE());
-             //   new PreProductController(getActivity()).updateBalQty(orderList.get(position).getFORDERDET_ITEMCODE(), "0");
-              //  new PreProductController(getActivity()).updateRefNo(RefNo, "0",orderList.get(dltPosition).getFORDERDET_TYPE());
-                if(orderList.get(dltPosition).getFORDERDET_TYPE().equals("MR")) {
-                    new PreProductController(getActivity()).updateReason(orderList.get(dltPosition).getFORDERDET_ITEMCODE(), "", orderList.get(dltPosition).getFORDERDET_TYPE());
-                    new ProductController(getActivity()).updateProductPrice(orderList.get(dltPosition).getFORDERDET_ITEMCODE(), "0", orderList.get(dltPosition).getFORDERDET_TYPE());
-                }
-                new OrderDetailController(getActivity()).mDeleteRecords(RefNo, orderList.get(dltPosition).getFORDERDET_ITEMCODE(),orderList.get(dltPosition).getFORDERDET_TYPE());
-                Toast.makeText(getActivity(), "Deleted successfully!", Toast.LENGTH_SHORT).show();
-                showData();
-
-            }
-        }).setNegativeButton("NO", new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int id) {
-                dialog.cancel();
-            }
-        });
-
-        AlertDialog alertD = alertDialogBuilder.create();
-        alertD.show();
-    }
-
-
-
-    @Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
-        try {
-            preSalesResponseListener = (PreSalesResponseListener) getActivity();
-        } catch (ClassCastException e) {
-            throw new ClassCastException(activity.toString() + " must implement onButtonPressed");
         }
     }
 }

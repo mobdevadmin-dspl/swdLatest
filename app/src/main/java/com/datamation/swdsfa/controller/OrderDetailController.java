@@ -555,8 +555,8 @@ public class OrderDetailController {
         }
 
         ArrayList<OrderDetail> list = new ArrayList<OrderDetail>();
-
-        String selectQuery = "select * from " + TABLE_FORDDET + " WHERE " + FORDDET_TYPE + "='SA' AND " + dbHelper.REFNO + "='" + refno + "'";
+// Added Order by clause by Menaka 
+        String selectQuery = "select * from " + TABLE_FORDDET + " WHERE " + FORDDET_TYPE + "='SA' AND " + dbHelper.REFNO + "='" + refno + "' Order by "+FORDDET_ITEM_CODE;
 
         Cursor cursor = dB.rawQuery(selectQuery, null);
 

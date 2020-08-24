@@ -57,6 +57,7 @@ public class SalRepController {
     public static final String FSALREP_ISSYNC = "Issync";
     public static final String FSALREP_IS_ZERO_QOH_ALLOW = "IsZeroQOHAllow";
     public static final String FSALREP_IS_FIRE_QOH_EXCED_VALIDATION= "IsFireQohExcdValidation";
+    public static final String FSALREP_CHK_UPLOAD= "chkOrdUpload";
 
 
 
@@ -69,6 +70,7 @@ public class SalRepController {
             + FSALREP_MACID + " TEXT,"
             + FSALREP_IS_ZERO_QOH_ALLOW + " TEXT,"
             + FSALREP_IS_FIRE_QOH_EXCED_VALIDATION + " TEXT,"
+            + FSALREP_CHK_UPLOAD + " TEXT,"
             + FSALREP_ISSYNC + " TEXT); ";
 
     public SalRepController(Context context) {
@@ -117,6 +119,7 @@ public class SalRepController {
                 values.put(FSALREP_ISSYNC, rep.getISSYNC());
                 values.put(FSALREP_IS_ZERO_QOH_ALLOW,rep.getIS_ZERO_QOH_ALLOW());
                 values.put(FSALREP_IS_FIRE_QOH_EXCED_VALIDATION,rep.getIsApplyQOHexdVldtn());
+                values.put(FSALREP_CHK_UPLOAD,rep.getChkOrdUpload());
 
 
                 if (cursor.getCount() > 0) {
@@ -158,6 +161,34 @@ public class SalRepController {
             while (cursor.moveToNext()) {
 
                 return cursor.getString(cursor.getColumnIndex(DatabaseHelper.REPCODE));
+
+
+            }
+        } catch (Exception e) {
+
+            Log.v(TAG + " Exception", e.toString());
+
+        } finally {
+            dB.close();
+        }
+
+        return "";
+    }
+    public String checkOrderUpload() {
+
+        if (dB == null) {
+            open();
+        } else if (!dB.isOpen()) {
+            open();
+        }
+
+        String selectQuery = "SELECT " + FSALREP_CHK_UPLOAD + " FROM " + TABLE_FSALREP;
+
+        Cursor cursor = dB.rawQuery(selectQuery, null);
+        try {
+            while (cursor.moveToNext()) {
+
+                return cursor.getString(cursor.getColumnIndex(FSALREP_CHK_UPLOAD));
 
 
             }

@@ -34,6 +34,7 @@ import com.datamation.swdsfa.controller.OrderController;
 import com.datamation.swdsfa.controller.OrderDetailController;
 import com.datamation.swdsfa.controller.OutstandingController;
 import com.datamation.swdsfa.controller.ReceiptDetController;
+import com.datamation.swdsfa.controller.SalRepController;
 import com.datamation.swdsfa.controller.SalesReturnController;
 import com.datamation.swdsfa.controller.SalesReturnDetController;
 import com.datamation.swdsfa.fragment.debtordetails.HistoryDetailsFragment;
@@ -488,11 +489,13 @@ public class DebtorDetailsActivity extends AppCompatActivity {
                     Log.d("<<<Distance<<<<", " " + distance);
                     //Log.d("<<<Distance1<<<<", " " + distance1);
 
-                   // if(distance<=50 && customerLocation.getLatitude()>0 && currentLocation.getLatitude()>0) {
-                    if(customerLocation.getLatitude()>0 && currentLocation.getLatitude()>0) {
+                    if(distance<=150 && customerLocation.getLatitude()>=0 && currentLocation.getLatitude()>0) {//uncomment 2020-06-12
+                   // if(customerLocation.getLatitude()>0 && currentLocation.getLatitude()>0) {
                         // Toast.makeText(DebtorDetailsActivity.this, "Please wait. This may take a while", Toast.LENGTH_SHORT).show();
                         //2020-05-15 validate order upload by rashmi
-                        if((NetworkUtil.isNetworkAvailable(DebtorDetailsActivity.this)) && (new OrderController(DebtorDetailsActivity.this).getUnsyncedOrderCount()>3)){
+                        //if((NetworkUtil.isNetworkAvailable(DebtorDetailsActivity.this)) && (new OrderController(DebtorDetailsActivity.this).getUnsyncedOrderCount()>3)){
+                       //2020-05-27 change condition by salesrep table status
+                        if((NetworkUtil.isNetworkAvailable(DebtorDetailsActivity.this)) && (new OrderController(DebtorDetailsActivity.this).getUnsyncedOrderCount()>3) && (new SalRepController(DebtorDetailsActivity.this).checkOrderUpload().equals("Y"))){
                             Toast.makeText(DebtorDetailsActivity.this, "Please upload previous orders", Toast.LENGTH_SHORT).show();
 
                         }else {
@@ -504,8 +507,8 @@ public class DebtorDetailsActivity extends AppCompatActivity {
                             finish();
                         }
                     }else{
-                        Toast.makeText(DebtorDetailsActivity.this, "You are current location cannot find or customer location cannot get.Please move to clear area and try again..", Toast.LENGTH_SHORT).show();
-                       // Toast.makeText(DebtorDetailsActivity.this, "You are out of customer location.Please go to customer's location to continue..", Toast.LENGTH_SHORT).show();
+                       // Toast.makeText(DebtorDetailsActivity.this, "You are current location cannot find or customer location cannot get.Please move to clear area and try again..", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(DebtorDetailsActivity.this, "You are out of customer location.Please go to customer's location to continue..", Toast.LENGTH_SHORT).show();
 
                     }
                 }
@@ -634,8 +637,14 @@ public class DebtorDetailsActivity extends AppCompatActivity {
                 gpsTracker = new GPSTracker(context);
 //                if (gpsTracker.canGetLocation())
 //                {
-                    if(!sharedPref.getGlobalVal("Latitude").equals("") && !sharedPref.getGlobalVal("Longitude").equals(""))
-                    {
+                if(!outlet.getCusCode().equals("") && !outlet.getCusCode().equals(null)) {
+                    customer = new CustomerController(DebtorDetailsActivity.this).getCustomerGPS(outlet.getCusCode());
+                }else{
+                    customer = new CustomerController(DebtorDetailsActivity.this).getCustomerGPS(SharedPref.getInstance(DebtorDetailsActivity.this).getSelectedDebCode());
+                }
+                //customer.getLatitude().equals("0.0")
+                if(customer.getLatitude().equals(null) || customer.getLatitude().equals("") || Double.compare(Double.parseDouble(customer.getLatitude()), Double.valueOf(0.0)) == 0 ) {
+                    if (!sharedPref.getGlobalVal("Latitude").equals("") && !sharedPref.getGlobalVal("Longitude").equals("")) {
                         lati = Double.parseDouble(sharedPref.getGlobalVal("Latitude"));
                         longi = Double.parseDouble(sharedPref.getGlobalVal("Longitude"));
 
@@ -643,31 +652,29 @@ public class DebtorDetailsActivity extends AppCompatActivity {
                         {//allNoGPS, RouteNoGPS
                             if (!sharedPref.getGPSUpdated().equals("Y"))// not updated from near debtor co-ordinates
                             {
-                                if (new CustomerController(context).updateCustomerLocationByCurrentCordinates(debCode, lati, longi)>0)
-                                {
-                                    Toast.makeText(context, "Current co-ordinates updated for " + debCode , Toast.LENGTH_LONG).show();
+                                if (new CustomerController(context).updateCustomerLocationByCurrentCordinates(debCode, lati, longi) > 0) {
+                                    Toast.makeText(context, "OPEN Current co-ordinates updated for " + debCode, Toast.LENGTH_LONG).show();
+                                } else {
+                                    Toast.makeText(context, "Current co-ordinates not updated for " + debCode, Toast.LENGTH_LONG).show();
                                 }
-                                else
-                                {
-                                    Toast.makeText(context, "Current co-ordinates not updated for " + debCode , Toast.LENGTH_LONG).show();
-                                }
-                                Log.d("DEBTOR_DETIALS_ACTIVITY","IS_GPS: NOT_UPDATED from near debtor co-ordinates: " + sharedPref.getGPSUpdated() + " coodis: " + lati + ", " + longi);
+                                Log.d("DEBTOR_DETIALS_ACTIVITY", "IS_GPS: NOT_UPDATED from near debtor co-ordinates: " + sharedPref.getGPSUpdated() + " coodis: " + lati + ", " + longi);
 
-                            }else{
-                                Log.d("DEBTOR_DETIALS_ACTIVITY","IS_GPS: UPDATED: " + sharedPref.getGPSUpdated() + " coodis: " + lati + ", " + longi);
+                            } else {
+                                Log.d("DEBTOR_DETIALS_ACTIVITY", "IS_GPS: UPDATED: " + sharedPref.getGPSUpdated() + " coodis: " + lati + ", " + longi);
 
                             }
                         }
-                        Log.d("DEBTOR_DETIALS_ACTIVITY","IS_GPS: " + sharedPref.getGPSDebtor() + ", IS_GPS_UPDATED:  coodis: " + lati + ", " + longi);
+                        Log.d("DEBTOR_DETIALS_ACTIVITY", "IS_GPS: " + sharedPref.getGPSDebtor() + ", IS_GPS_UPDATED:  coodis: " + lati + ", " + longi);
 
-                    }
-                    else
-                    {
-                        Log.d("DEBTOR_DETIALS_ACTIVITY","IS_GPS: " + sharedPref.getGPSDebtor() + ", ALREADY GPS HAS: coodis: " + lati + ", " + longi);
+                    } else {
+                        Log.d("DEBTOR_DETIALS_ACTIVITY", "IS_GPS: " + sharedPref.getGPSDebtor() + ", ALREADY GPS HAS: coodis: " + lati + ", " + longi);
 
                         //startActivityForResult(new Intent(Settings.ACTION_LOCALE_SETTINGS), 0);
                     }
+                }else{
+                    Log.d(">>>CUSTOMER_GPS", ": " + sharedPref.getGPSDebtor() + ", ALREADY GPS HAS");
 
+                }
 //                 }
 //                else
 //                {
@@ -737,41 +744,41 @@ public class DebtorDetailsActivity extends AppCompatActivity {
                 if (gpsTracker.canGetLocation())
                 {
                     gpsTracker = new GPSTracker(context);
-                    if(!sharedPref.getGlobalVal("Latitude").equals("") && !sharedPref.getGlobalVal("Longitude").equals(""))
-                    {//first time current gps not null
-                        lati = Double.parseDouble(sharedPref.getGlobalVal("Latitude"));
-                        longi = Double.parseDouble(sharedPref.getGlobalVal("Longitude"));
-
-                        if (sharedPref.getGPSDebtor().equals("AN") || sharedPref.getGPSDebtor().equals("RN")) // not GPS mode debtor selection
-                        {//allNoGPS, RouteNoGPS
-                            if (!sharedPref.getGPSUpdated().equals("Y"))// not updated from near debtor co-ordinates
-                            {
-                                if (new CustomerController(context).updateCustomerLocationByCurrentCordinates(debCode, lati, longi)>0)
-                                {
-                                    Toast.makeText(context, "Current co-ordinates updated for " + debCode , Toast.LENGTH_LONG).show();
-                                }
-                                else
-                                {
-                                    Toast.makeText(context, "Current co-ordinates not updated for " + debCode , Toast.LENGTH_LONG).show();
-                                }
-                                Log.d("DEBTOR_DETIALS_ACTIVITY","IS_GPS: NOT_UPDATED from near debtor co-ordinates: " + sharedPref.getGPSUpdated() + " coodis: " + lati + ", " + longi);
-
-                            }else{
-                                Log.d("DEBTOR_DETIALS_ACTIVITY","IS_GPS: UPDATED: " + sharedPref.getGPSUpdated() + " coodis: " + lati + ", " + longi);
-
-                            }
-                        }
-                        Log.d("DEBTOR_DETIALS_ACTIVITY","IS_GPS: " + sharedPref.getGPSDebtor() + ", IS_GPS_UPDATED:  coodis: " + lati + ", " + longi);
-
-                        gpsTracker = new GPSTracker(context);
-                    }
-                    else
+                  //  if(customer.getLatitude().equals(null) || customer.getLatitude().equals("") || customer.getLatitude().equals("0.0"))
+                        if(customer.getLatitude().equals(null) || customer.getLatitude().equals("") || Double.compare(Double.parseDouble(customer.getLatitude()), Double.valueOf(0.0)) == 0)
                     {
-                        gpsTracker = new GPSTracker(context);
-                        Log.d("DEBTOR_DETIALS_ACTIVITY","IS_GPS: " + sharedPref.getGPSDebtor() + ", ALREADY GPS HAS: coodis: " + lati + ", " + longi);
-//if first time GPS null, call second time
-                        //startActivityForResult(new Intent(Settings.ACTION_LOCALE_SETTINGS), 0);
+                        if (!sharedPref.getGlobalVal("Latitude").equals("") && !sharedPref.getGlobalVal("Longitude").equals("")) {//first time current gps not null
+                            lati = Double.parseDouble(sharedPref.getGlobalVal("Latitude"));
+                            longi = Double.parseDouble(sharedPref.getGlobalVal("Longitude"));
 
+                            if (sharedPref.getGPSDebtor().equals("AN") || sharedPref.getGPSDebtor().equals("RN")) // not GPS mode debtor selection
+                            {//allNoGPS, RouteNoGPS
+                                if (!sharedPref.getGPSUpdated().equals("Y"))// not updated from near debtor co-ordinates
+                                {
+                                    if (new CustomerController(context).updateCustomerLocationByCurrentCordinates(debCode, lati, longi) > 0) {
+                                        Toast.makeText(context, "CLOSE Current co-ordinates updated for " + debCode, Toast.LENGTH_LONG).show();
+                                    } else {
+                                        Toast.makeText(context, "Current co-ordinates not updated for " + debCode, Toast.LENGTH_LONG).show();
+                                    }
+                                    Log.d("DEBTOR_DETIALS_ACTIVITY", "IS_GPS: NOT_UPDATED from near debtor co-ordinates: " + sharedPref.getGPSUpdated() + " coodis: " + lati + ", " + longi);
+
+                                } else {
+                                    Log.d("DEBTOR_DETIALS_ACTIVITY", "IS_GPS: UPDATED: " + sharedPref.getGPSUpdated() + " coodis: " + lati + ", " + longi);
+
+                                }
+                            }
+                            Log.d("DEBTOR_DETIALS_ACTIVITY", "IS_GPS: " + sharedPref.getGPSDebtor() + ", IS_GPS_UPDATED:  coodis: " + lati + ", " + longi);
+
+                            gpsTracker = new GPSTracker(context);
+                        } else {
+                            gpsTracker = new GPSTracker(context);
+                            Log.d("DEBTOR_DETIALS_ACTIVITY", "IS_GPS: " + sharedPref.getGPSDebtor() + ", ALREADY GPS HAS: coodis: " + lati + ", " + longi);
+//if first time GPS null, call second time
+                            //startActivityForResult(new Intent(Settings.ACTION_LOCALE_SETTINGS), 0);
+
+                        }
+                    }else{
+                        Log.d(">>>CUSTOMER_GPS", ": " + sharedPref.getGPSDebtor() + ", ALREADY GPS HAS");
                     }
 
                 }

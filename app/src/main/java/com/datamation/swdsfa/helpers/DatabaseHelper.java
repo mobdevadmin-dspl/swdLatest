@@ -183,6 +183,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         this.onCreate(arg0);
         try {
+            arg0.execSQL("ALTER TABLE fSalRep ADD COLUMN chkOrdUpload TEXT DEFAULT N");
+        } catch (SQLiteException e) {
+            Log.v("SQLiteException", e.toString());
+        }
+        try {
             arg0.execSQL("ALTER TABLE fDebtor ADD COLUMN IsSyncImage TEXT DEFAULT 0");
         } catch (SQLiteException e) {
             Log.v("SQLiteException", e.toString());
