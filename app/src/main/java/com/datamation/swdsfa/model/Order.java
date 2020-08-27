@@ -39,6 +39,7 @@ public class Order {
     private String ORDER_CURRATE;
     //@SerializedName("ORDER_DEBCODE")
     private String ORDER_DEBCODE;
+    private String ORDER_DEBNAME;
     private String ORDER_QUOTERM;
     //@SerializedName("ORDER_REPCODE")
     private String ORDER_REPCODE;
@@ -98,7 +99,13 @@ public class Order {
     private String DistDB ;
 
 
+    public String getORDER_DEBNAME() {
+        return ORDER_DEBNAME;
+    }
 
+    public void setORDER_DEBNAME(String ORDER_DEBNAME) {
+        this.ORDER_DEBNAME = ORDER_DEBNAME;
+    }
 
     public String getORDER_FEEDBACK() {
         return ORDER_FEEDBACK;

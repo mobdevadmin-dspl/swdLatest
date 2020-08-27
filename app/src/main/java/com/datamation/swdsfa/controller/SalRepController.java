@@ -190,7 +190,6 @@ public class SalRepController {
 
                 return cursor.getString(cursor.getColumnIndex(FSALREP_CHK_UPLOAD));
 
-
             }
         } catch (Exception e) {
 

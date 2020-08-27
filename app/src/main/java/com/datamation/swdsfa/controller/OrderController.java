@@ -51,6 +51,7 @@ public class OrderController {
     public static final String DEALCODE = "DealCode";
     public static final String DEBCODE = "DebCode";
 
+
     public static final String TABLE_FORDHED = "FOrdHed";
     // table attributes
     public static final String FORDHED_ID = "FOrdHed_id";
@@ -96,6 +97,7 @@ public class OrderController {
     public static final String FORDHED_PAYMENT_TYPE = "PaymentType";
     public static final String FORDHED_UPLOAD_TIME = "UploadTime";
     public static final String FORDHED_FEEDBACK = "Feedback";
+    public static final String FORDHED_DEBNAME = "DebName";
     // create String
     public static final String CREATE_FORDHED_TABLE = "CREATE TABLE IF NOT EXISTS " + TABLE_FORDHED + " (" + FORDHED_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
             + FORDHED_ADD_MACH + " TEXT, " +
@@ -104,7 +106,7 @@ public class OrderController {
             FORDHED_APP_DATE + " TEXT, " + FORDHED_ADDRESS + " TEXT, " + FORDHED_APPSTS + " TEXT, " + FORDHED_APP_USER +
             " TEXT, " + FORDHED_BP_TOTAL_DIS + " TEXT, " + FORDHED_B_TOTAL_AMT + " TEXT, " +
             FORDHED_B_TOTAL_DIS + " TEXT, " + FORDHED_B_TOTAL_TAX + " TEXT, " + FORDHED_COST_CODE + " TEXT, " +
-            FORDHED_CUR_CODE + " TEXT, " + FORDHED_CUR_RATE + " TEXT, " + DEBCODE + " TEXT, " +
+            FORDHED_CUR_CODE + " TEXT, " + FORDHED_CUR_RATE + " TEXT, " + DEBCODE + " TEXT, " + FORDHED_DEBNAME + " TEXT, " +
             FORDHED_LOC_CODE + " TEXT, " + FORDHED_MANU_REF + " TEXT, " + FORDHED_DIS_PER + " TEXT, " + FORDHED_RECORD_ID +
             " TEXT, " + REFNO + " TEXT, " + FORDHED_REMARKS + " TEXT, " + REPCODE + " TEXT, " +
             FORDHED_TAX_REG + " TEXT, " + FORDHED_TIMESTAMP_COLUMN + " TEXT, " + FORDHED_TOTAL_TAX + " TEXT, " +
@@ -173,6 +175,7 @@ public class OrderController {
                 values.put(FORDHED_ADD_MACH, ordHed.getORDER_ADDMACH());
                 values.put(FORDHED_ADD_USER, ordHed.getORDER_ADDUSER());
                 values.put(DEBCODE, ordHed.getORDER_DEBCODE());
+                values.put(FORDHED_DEBNAME, ordHed.getORDER_DEBNAME());
                 values.put(FORDHED_START_TIME_SO, ordHed.getORDER_START_TIMESO());
                 values.put(FORDHED_LONGITUDE, ordHed.getORDER_LONGITUDE());
                 values.put(FORDHED_LATITUDE, ordHed.getORDER_LATITUDE());
@@ -231,7 +234,7 @@ public class OrderController {
 
         try {
             //String selectQuery = "select DebCode, RefNo from fordHed " +
-            String selectQuery = "select DebCode, RefNo, isSynced, TxnDate, TotalAmt from fordHed " +
+            String selectQuery = "select DebName, RefNo, isSynced, TxnDate, TotalAmt from fordHed " +
                     //			" fddbnote fddb where hed.refno = det.refno and det.FPRECDET_REFNO1 = fddb.refno and hed.txndate = '2019-04-12'";
                     "  where txndate = '" + curYear + "-" + String.format("%02d", curMonth) + "-" + String.format("%02d", curDate) +"' and isActive = '" +"0"+"'";
 
@@ -243,7 +246,8 @@ public class OrderController {
 
 //
                 recDet.setORDER_REFNO(cursor.getString(cursor.getColumnIndex(REFNO)));
-                recDet.setORDER_DEBCODE(cursor.getString(cursor.getColumnIndex(DEBCODE)));
+                recDet.setORDER_DEBNAME(cursor.getString(cursor.getColumnIndex(FORDHED_DEBNAME)));
+                //recDet.setORDER_DEBCODE(cursor.getString(cursor.getColumnIndex(DEBCODE)));
                 recDet.setORDER_IS_SYNCED(cursor.getString(cursor.getColumnIndex(FORDHED_IS_SYNCED)));
                 recDet.setORDER_TXNTYPE("Order");
                 recDet.setORDER_TXNDATE(cursor.getString(cursor.getColumnIndex(TXNDATE)));
@@ -519,7 +523,7 @@ public class OrderController {
             open();
         }
 
-        String selectQuery = "select * from " + TABLE_FORDHED + " WHERE " + FORDHED_IS_SYNCED+ "= '0'";
+        String selectQuery = "select * from " + TABLE_FORDHED + " WHERE " + FORDHED_IS_SYNCED + "= '0'";
 
         Cursor cursor = dB.rawQuery(selectQuery, null);
         int count = 0;
@@ -730,6 +734,7 @@ public class OrderController {
             presale.setORDER_ADDMACH(cursor.getString(cursor.getColumnIndex(FORDHED_ADD_MACH)));
             presale.setORDER_ADDUSER(cursor.getString(cursor.getColumnIndex(FORDHED_ADD_USER)));
             presale.setORDER_DEBCODE(cursor.getString(cursor.getColumnIndex(DEBCODE)));
+            presale.setORDER_DEBNAME(cursor.getString(cursor.getColumnIndex(FORDHED_DEBNAME)));
            // presale.setORDER_ADDTIME(cursor.getString(cursor.getColumnIndex(FORDHED_START_TIME_SO)));
             presale.setORDER_START_TIMESO(cursor.getString(cursor.getColumnIndex(FORDHED_START_TIME_SO)));
             presale.setORDER_END_TIMESO(cursor.getString(cursor.getColumnIndex(FORDHED_END_TIME_SO)));

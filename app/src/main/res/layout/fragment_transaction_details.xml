@@ -65,13 +65,13 @@
                     android:layout_weight="2"/>
 
                 <TextView
-                    android:id="@+id/debcode"
+                    android:id="@+id/debname"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:textSize="14sp"
                     android:gravity="center"
                     android:singleLine="true"
-                    android:text="DebCode"
+                    android:text="DebName"
                     android:layout_weight="2"/>
 
                 <TextView

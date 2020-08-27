@@ -188,6 +188,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             Log.v("SQLiteException", e.toString());
         }
         try {
+            arg0.execSQL("ALTER TABLE FOrdHed ADD COLUMN DebName TEXT");
+        } catch (SQLiteException e) {
+            Log.v("SQLiteException", e.toString());
+        }
+        try {
             arg0.execSQL("ALTER TABLE fDebtor ADD COLUMN IsSyncImage TEXT DEFAULT 0");
         } catch (SQLiteException e) {
             Log.v("SQLiteException", e.toString());

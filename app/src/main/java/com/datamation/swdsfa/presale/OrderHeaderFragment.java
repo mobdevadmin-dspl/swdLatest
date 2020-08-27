@@ -250,7 +250,14 @@ public class OrderHeaderFragment extends Fragment implements DatePickerDialog.On
                 else
                 {
                     //preSalesResponseListener.moveNextToCustomer_pre(1);
-                    SaveSalesHeader();
+                   if(lblPreRefno.length() == 12){//check reference number
+                       SaveSalesHeader();
+                   }
+                   else
+                   {
+                       Toast.makeText(getActivity(), "Synchronize is not successful.Please sync before save order header...", Toast.LENGTH_LONG).show();
+                   }
+
                 }
 
             }
@@ -363,6 +370,7 @@ public class OrderHeaderFragment extends Fragment implements DatePickerDialog.On
             Order hed =new Order();
             hed.setORDER_REFNO(lblPreRefno.getText().toString());
             hed.setORDER_DEBCODE(pref.getSelectedDebCode());
+            hed.setORDER_DEBNAME(new CustomerController(getActivity()).getCusNameByCode(pref.getSelectedDebCode()));
             hed.setORDER_TXNDATE(currnentDate.getText().toString());
             hed.setORDER_DELIVERY_DATE(deliveryDate.getText().toString());
             hed.setORDER_PAYTYPE(new SharedPref(getActivity()).getGlobalVal("KeyPayType"));

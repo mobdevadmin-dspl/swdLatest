@@ -375,6 +375,7 @@ public class OrderSummaryFragment extends Fragment {
                     Order presale = new OrderController(getActivity()).getAllActiveOrdHed();
                     ordHed.setORDER_REFNO(RefNo);
                     ordHed.setORDER_DEBCODE(presale.getORDER_DEBCODE());
+                    ordHed.setORDER_DEBNAME(presale.getORDER_DEBNAME());
                     ordHed.setORDER_ADDDATE(presale.getORDER_ADDDATE());
                     ordHed.setORDER_MANUREF(presale.getORDER_MANUREF());
                     ordHed.setORDER_REMARKS(presale.getORDER_REMARKS());

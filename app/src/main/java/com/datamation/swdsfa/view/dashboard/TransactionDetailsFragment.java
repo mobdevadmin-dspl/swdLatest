@@ -280,14 +280,16 @@ public class TransactionDetailsFragment extends Fragment {
 
             TextView lblListHeader = (TextView) convertView
                     .findViewById(R.id.refno);
-            TextView deb = (TextView) convertView.findViewById(R.id.debcode);
+            TextView deb = (TextView) convertView.findViewById(R.id.debname);
+            //TextView deb = (TextView) convertView.findViewById(R.id.debcode);
             TextView date = (TextView) convertView.findViewById(R.id.date);
             TextView tot = (TextView) convertView.findViewById(R.id.total);
             TextView stats = (TextView) convertView.findViewById(R.id.status);
             TextView delete = (TextView) convertView.findViewById(R.id.type);
             lblListHeader.setTypeface(null, Typeface.BOLD);
             lblListHeader.setText(headerTitle.getORDER_REFNO());
-            deb.setText(headerTitle.getORDER_DEBCODE());
+            deb.setText(headerTitle.getORDER_DEBNAME());
+            //deb.setText(headerTitle.getORDER_DEBCODE());
             if(headerTitle.getORDER_IS_SYNCED().equals("1")){
                 delete.setBackground(null);
                 stats.setText("Synced");

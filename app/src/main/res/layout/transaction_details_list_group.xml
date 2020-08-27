@@ -48,6 +48,22 @@
                 app:layout_constraintEnd_toStartOf="@+id/date"
                 app:layout_constraintHorizontal_bias="0.5"
                 app:layout_constraintStart_toEndOf="@+id/refno"
+                tools:layout_editor_absoluteY="32dp"
+                android:visibility="gone"/>
+
+            <TextView
+                android:id="@+id/debname"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_toLeftOf="@+id/date"
+                android:gravity="center"
+                android:singleLine="true"
+                android:text="DebName"
+                android:textSize="11sp"
+                app:layout_constraintEnd_toStartOf="@+id/date"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toEndOf="@+id/refno"
                 tools:layout_editor_absoluteY="32dp" />
 
             <TextView
