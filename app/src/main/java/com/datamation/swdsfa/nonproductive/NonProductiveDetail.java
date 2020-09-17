@@ -54,6 +54,7 @@ import com.github.clans.fab.FloatingActionMenu;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 
 /*created by rashmi*/
@@ -69,7 +70,7 @@ public class NonProductiveDetail extends Fragment {
     ListView lv_invent_load;
     ReferenceNum referenceNum;
     ArrayList<DayNPrdDet> loadlist;
-    String sRefno;
+    String sRefno,Start_Time;
     FloatingActionMenu fam;
     FloatingActionButton fabPause, fabDiscard, fabSave;
     SharedPref mSharedPref;
@@ -105,6 +106,8 @@ public class NonProductiveDetail extends Fragment {
         mSharedPref = SharedPref.getInstance(getActivity());
         RefNo.setText(referenceNum.getCurrentRefNo(getResources().getString(R.string.nonprdVal)));
         Retailer.setText(mSharedPref.getSelectedDebName());
+
+        Start_Time = currentTime();
 
         btnAdd.setOnClickListener(new OnClickListener() {
             @Override
@@ -334,6 +337,8 @@ public class NonProductiveDetail extends Fragment {
                             nonhed.setNONPRDHED_IS_SYNCED("0");
                             nonhed.setNONPRDHED_DEBCODE(mSharedPref.getSelectedDebCode());
                             nonhed.setNONPRDHED_ADDMACH(mSharedPref.getMacAddress());
+                            nonhed.setNONPRDHED_START_TIME(Start_Time);
+                            nonhed.setNONPRDHED_END_TIME(currentTime());
 //                            nonhed.setNONPRDHED_ADDRESS(localSP.getString("GPS_Address", "").toString());
                             NONHedList.add(nonhed);
 
@@ -370,6 +375,12 @@ public class NonProductiveDetail extends Fragment {
         materialDialog.show();
     }
 
+    private String currentTime() {
+        Calendar cal = Calendar.getInstance();
+        cal.getTime();
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        return sdf.format(cal.getTime());
+    }
 	/*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*/
 
 //    private void deleteOrderDialog(final Context context, final String _id) {

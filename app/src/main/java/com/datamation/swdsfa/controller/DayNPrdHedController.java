@@ -45,6 +45,8 @@ public class DayNPrdHedController {
     public static final String NONPRDHED_LONGITUDE = "Longitude";
     public static final String NONPRDHED_LATITUDE = "Latitude";
     public static final String NONPRDHED_IS_ACTIVE = "ISActive";
+    public static final String NONPRDHED_START_TIME = "Start_Time";
+    public static final String NONPRDHED_END_TIME = "End_Time";
 
     public static final String CREATE_TABLE_NONPRDHED = "CREATE  TABLE IF NOT EXISTS " + TABLE_NONPRDHED + " (" + NONPRDHED_ID +
             " INTEGER PRIMARY KEY AUTOINCREMENT, " + NONPRDHED_REFNO +
@@ -56,6 +58,8 @@ public class DayNPrdHedController {
             NONPRDHED_LONGITUDE + " TEXT, " +
             NONPRDHED_LATITUDE + " TEXT, " +
             NONPRDHED_IS_ACTIVE + " TEXT, " +
+            NONPRDHED_START_TIME + " TEXT, " +
+            NONPRDHED_END_TIME + " TEXT, " +
             NONPRDHED_REASON + " TEXT, " +
             DatabaseHelper.DEBCODE + " TEXT, " +
             NONPRDHED_ADDUSER + " TEXT, " + NONPRDHED_ADDDATE + " TEXT," + NONPRDHED_ADDMACH + " TEXT," + NONPRDHED_TRANSBATCH + " TEXT, " + NONPRDHED_IS_SYNCED + " TEXT," + NONPRDHED_ADDRESS + " TEXT); ";
@@ -100,6 +104,8 @@ public class DayNPrdHedController {
                 values.put(NONPRDHED_IS_ACTIVE,nonhed.getNONPRDHED_IS_ACTIVE());
                 values.put(NONPRDHED_ADDMACH,nonhed.getNONPRDHED_ADDMACH());
                 values.put(NONPRDHED_ADDRESS,nonhed.getNONPRDHED_ADDRESS());
+                values.put(NONPRDHED_START_TIME,nonhed.getNONPRDHED_START_TIME());
+                values.put(NONPRDHED_END_TIME,nonhed.getNONPRDHED_END_TIME());
 
                 count = (int) dB.insert(TABLE_NONPRDHED, null, values);
 
@@ -479,6 +485,8 @@ public class DayNPrdHedController {
                 mapper.setNONPRDHED_ADDRESS(cursor.getString(cursor.getColumnIndex(NONPRDHED_ADDRESS)));
                 mapper.setNONPRDHED_ADDMACH(cursor.getString(cursor.getColumnIndex(NONPRDHED_ADDMACH)));
                 mapper.setNONPRDHED_IS_SYNCED(cursor.getString(cursor.getColumnIndex(NONPRDHED_IS_SYNCED)));
+                mapper.setNONPRDHED_START_TIME(cursor.getString(cursor.getColumnIndex(NONPRDHED_START_TIME)));
+                mapper.setNONPRDHED_END_TIME(cursor.getString(cursor.getColumnIndex(NONPRDHED_END_TIME)));
 
                 mapper.setNonPrdDet(new DayNPrdDetController(context).getAllnonprdDetails(mapper.getNONPRDHED_REFNO(),mapper.getNONPRDHED_DEBCODE()));
 

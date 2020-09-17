@@ -23,6 +23,8 @@ public class DayNPrdHed implements Serializable
                 ", NONPRDHED_ADDMACH='" + NONPRDHED_ADDMACH + '\'' +
                 ", NONPRDHED_TRANSBATCH='" + NONPRDHED_TRANSBATCH + '\'' +
                 ", NONPRDHED_IS_SYNCED='" + NONPRDHED_IS_SYNCED + '\'' +
+                ", NONPRDHED_START_TIME='" + NONPRDHED_START_TIME + '\'' +
+                ", NONPRDHED_END_TIME='" + NONPRDHED_END_TIME + '\'' +
                 ", NONPRDHED_ADDRESS='" + NONPRDHED_ADDRESS + '\'' +
                 ", NONPRDHED_LONGITUDE='" + NONPRDHED_LONGITUDE + '\'' +
                 ", NONPRDHED_LATITUDE='" + NONPRDHED_LATITUDE + '\'' +
@@ -48,6 +50,8 @@ public class DayNPrdHed implements Serializable
     private String NONPRDHED_ADDMACH;
     private String NONPRDHED_TRANSBATCH;
     private String NONPRDHED_IS_SYNCED;
+    private String NONPRDHED_START_TIME;
+    private String NONPRDHED_END_TIME;
     private String NONPRDHED_ADDRESS;
     private String NONPRDHED_LONGITUDE;
     private String NONPRDHED_LATITUDE;
@@ -71,6 +75,8 @@ public class DayNPrdHed implements Serializable
     public static final String FDAYEXPHED_LONGITUDE = "Longitude";
     public static final String FDAYEXPHED_LATITUDE = "Latitude";
     public static final String FDAYEXPHED_ISSYNC = "issync";
+    public static final String FDAYEXPHED_START_TIME = "Start_Time";
+    public static final String FDAYEXPHED_END_TIME = "End_Time";
     public static final String FDAYEXPHED_ACTIVESTATE = "ActiveState";
     public static final String FDAYEXPHED_TOTAMT = "TotAmt";
     public static final String FDAYEXPHED_ADDRESS = "Address";
@@ -250,4 +256,19 @@ public class DayNPrdHed implements Serializable
         NONPRDHED_IS_SYNCED = nONPRDHED_IS_SYNCED;
     }
 
+    public String getNONPRDHED_START_TIME() {
+        return NONPRDHED_START_TIME;
+    }
+
+    public void setNONPRDHED_START_TIME(String nONPRDHED_START_TIME) {
+        NONPRDHED_START_TIME = nONPRDHED_START_TIME;
+    }
+
+    public String getNONPRDHED_END_TIME() {
+        return NONPRDHED_END_TIME;
+    }
+
+    public void setNONPRDHED_END_TIME(String nONPRDHED_END_TIME) {
+        NONPRDHED_END_TIME = nONPRDHED_END_TIME;
+    }
 }

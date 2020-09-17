@@ -183,7 +183,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         this.onCreate(arg0);
         try {
-            arg0.execSQL("ALTER TABLE fSalRep ADD COLUMN chkOrdUpload TEXT DEFAULT N");
+            arg0.execSQL("ALTER TABLE fSalRep ADD COLUMN chkOrdUpload TEXT DEFAULT ''");
         } catch (SQLiteException e) {
             Log.v("SQLiteException", e.toString());
         }
@@ -207,6 +207,19 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         } catch (SQLiteException e) {
             Log.v("SQLiteException", e.toString());
         }
+
+        try {
+            arg0.execSQL("ALTER TABLE FDaynPrdHed ADD COLUMN Start_Time TEXT DEFAULT ''");
+        } catch (SQLiteException e) {
+            Log.v("SQLiteException", e.toString());
+        }
+
+        try {
+            arg0.execSQL("ALTER TABLE FDaynPrdHed ADD COLUMN End_Time TEXT DEFAULT ''");
+        } catch (SQLiteException e) {
+            Log.v("SQLiteException", e.toString());
+        }
+
         try {
 
             arg0.execSQL(InvTaxDTController.CREATE_FINVTAXDT_TABLE);

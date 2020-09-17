@@ -22,6 +22,9 @@ import com.datamation.swdsfa.model.Customer;
 import com.datamation.swdsfa.nonproductive.NonProductiveDetail;
 import com.datamation.swdsfa.utils.GPSTracker;
 
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+
 public class NonProductiveActivity extends AppCompatActivity {
 
     ViewPager viewPager;
@@ -80,6 +83,8 @@ public class NonProductiveActivity extends AppCompatActivity {
             }
         });
     }
+
+
 
     private class NPPagerAdapter extends FragmentPagerAdapter {
 

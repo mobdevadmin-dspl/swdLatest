@@ -361,8 +361,6 @@ public class SharedPref {
         return sharedPref.getString("MAC_Address", "");
     }
 
-
-
     public long getLoginTimeout() {
         return sharedPref.getLong("login_timeout", 0);
     }

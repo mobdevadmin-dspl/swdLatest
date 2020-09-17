@@ -4,6 +4,7 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.location.Location;
 import android.location.LocationManager;
 
@@ -52,6 +53,9 @@ import com.datamation.swdsfa.utils.LocationProvider;
 import com.datamation.swdsfa.utils.NetworkUtil;
 import com.datamation.swdsfa.utils.UtilityContainer;
 
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+
 public class DebtorDetailsActivity extends AppCompatActivity {
 
     private CircleButton floatingActionsMenu;
@@ -88,7 +92,9 @@ public class DebtorDetailsActivity extends AppCompatActivity {
     boolean isAnyActiveReceipt = false;
 
     private String retRefNo = "";
-
+    SharedPref mSharedPref;
+    public static final String SETTINGS = "SETTINGS";
+    public static SharedPreferences localSP;
     GPSTracker gpsTracker;
     double lati = 0.0;
     double longi = 0.0;
@@ -109,7 +115,7 @@ public class DebtorDetailsActivity extends AppCompatActivity {
 
         dbHandler = new DatabaseHelper(this);
         sharedPref = SharedPref.getInstance(DebtorDetailsActivity.this);
-
+//        localSP = context.getSharedPreferences(SETTINGS, 0);
         user = sharedPref.getLoginUser();
         context = this;
         gpsTracker = new GPSTracker(context);
@@ -359,7 +365,7 @@ public class DebtorDetailsActivity extends AppCompatActivity {
             public void onClick(View v) {
 
                 closeFAM();
-
+//                mSharedPref.setGlobalVal("Non_Start", currentTime());
                 // Only proceed if location service is available
                 if (locationServiceEnabled()) {
                     Intent intent = new Intent(DebtorDetailsActivity.this, NonProductiveActivity.class);
@@ -603,6 +609,12 @@ public class DebtorDetailsActivity extends AppCompatActivity {
         }
     }
 
+    private String currentTime() {
+        Calendar cal = Calendar.getInstance();
+        cal.getTime();
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        return sdf.format(cal.getTime());
+    }
 
     private boolean locationServiceEnabled() {
         boolean gpsActive;
