@@ -41,6 +41,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true"
+        android:requestLegacyExternalStorage="true"
             tools:replace="name,icon">
 
         <activity
