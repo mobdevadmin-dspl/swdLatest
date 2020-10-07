@@ -129,7 +129,8 @@ public class FreeMslabController {
         //String selectQuery = "select * from ffreeMslab where refno='" + refno + "' and " + tQty + " between CAST(Qtyf as double) and CAST(Qtyt as double)";
 
        //get range which quantity include ; ex : if we enter 150 as qty, there is a scheme mix type 1-143 : 8-1
-        String selectQuery = "select * from ffreeMslab where refno='" + refno + "' and " + tQty + " >= CAST(Qtyf as double) order by Qtyf desc limit 1";
+//        String selectQuery = "select * from ffreeMslab where refno='" + refno + "' and " + tQty + " >= CAST(Qtyf as double) order by Qtyf desc limit 1";
+        String selectQuery = "select * from ffreeMslab where refno='" + refno + "' and " + tQty + " between CAST(Qtyf as double) and CAST(Qtyt as double) order by Qtyf desc limit 1";
 
 
         Cursor cursor = dB.rawQuery(selectQuery, null);

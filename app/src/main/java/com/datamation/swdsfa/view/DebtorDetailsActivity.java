@@ -495,7 +495,7 @@ public class DebtorDetailsActivity extends AppCompatActivity {
                     Log.d("<<<Distance<<<<", " " + distance);
                     //Log.d("<<<Distance1<<<<", " " + distance1);
 
-                    if(distance<=150 && customerLocation.getLatitude()>=0 && currentLocation.getLatitude()>0) {//uncomment 2020-06-12
+                if(distance<=150 && customerLocation.getLatitude()>=0 && currentLocation.getLatitude()>0) {//uncomment 2020-06-12
                    // if(customerLocation.getLatitude()>0 && currentLocation.getLatitude()>0) {
                         // Toast.makeText(DebtorDetailsActivity.this, "Please wait. This may take a while", Toast.LENGTH_SHORT).show();
                         //2020-05-15 validate order upload by rashmi
@@ -512,11 +512,12 @@ public class DebtorDetailsActivity extends AppCompatActivity {
                             startActivity(intent);
                             finish();
                         }
-                    }else{
-                       // Toast.makeText(DebtorDetailsActivity.this, "You are current location cannot find or customer location cannot get.Please move to clear area and try again..", Toast.LENGTH_SHORT).show();
-                        Toast.makeText(DebtorDetailsActivity.this, "You are out of customer location.Please go to customer's location to continue..", Toast.LENGTH_SHORT).show();
 
-                    }
+                }else{
+                    // Toast.makeText(DebtorDetailsActivity.this, "You are current location cannot find or customer location cannot get.Please move to clear area and try again..", Toast.LENGTH_SHORT).show();
+                     Toast.makeText(DebtorDetailsActivity.this, "You are out of customer location.Please go to customer's location to continue..", Toast.LENGTH_SHORT).show();
+
+                }
                 }
                 else
                 {

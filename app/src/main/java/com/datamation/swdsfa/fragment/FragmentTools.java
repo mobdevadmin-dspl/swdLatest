@@ -847,7 +847,7 @@ public class FragmentTools extends Fragment implements View.OnClickListener, Upl
                             ArrayList<NewCustomer> newCustomersList = customerNwDS.getAllNewCustomersForSync();//9
                             // firebasetokenid - 10
 //                    /* If records available for upload then */
-                                if (ordHedList.size() <= 0 && npHedList.size() <= 0 && saleRepList.size() <= 0 && attendList.size()<= 0 && debtorlist.size()<=0 && updExistingDebtors.size() <= 0 && imgDebtorList.size()<= 0 && exHedList.size()<=0)
+                                if (ordHedList.size() <= 0 && npHedList.size() <= 0 && saleRepList.size() <= 0 && attendList.size()<= 0 && debtorlist.size()<=0 && updExistingDebtors.size() <= 0 && imgDebtorList.size()<= 0 && exHedList.size()<=0 && newCustomersList.size()<=0)
                                 {
                                     Toast.makeText(getActivity(), "No Records to upload !", Toast.LENGTH_LONG).show();
                                 }else {
