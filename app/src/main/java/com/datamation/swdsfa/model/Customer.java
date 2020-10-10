@@ -120,6 +120,7 @@ public class Customer implements Serializable{
 	public static final String FDEBTOR_ISSYNC_IMAGE = "IsSyncImage";
 	public static final String FDEBTOR_ISSYNC_GPS = "IsSyncGPS";
 	public static final String FDEBTOR_ISUPDATE = "IsUpdate";
+	public static final String FDEBTOR_IS_GPS_UPD_ALLOW = "IsGpsUpdAllow";
 
 	// create String
 	public static final String CREATE_FDEBTOR_TABLE = "CREATE TABLE IF NOT EXISTS " + TABLE_FDEBTOR + " (" + FDEBTOR_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
@@ -140,7 +141,7 @@ public class Customer implements Serializable{
 			" " + FDEBTOR_BRANCODE + " TEXT, " + FDEBTOR_BANK + " TEXT, " + FDEBTOR_BRANCH + " TEXT, " + FDEBTOR_ACCTNO + " TEXT," +
 			" " + FDEBTOR_LATITUDE + " TEXT, " + FDEBTOR_LONGITUDE + " TEXT, " + FDEBTOR_CUS_VATNO + " TEXT, " + FDEBTOR_NIC + " TEXT, " +
 			" " + FDEBTOR_ISSYNC_GPS + " TEXT, " + FDEBTOR_ISUPDATE + " TEXT, " + FDEBTOR_ISSYNC_IMAGE + " TEXT, " +
-			"" + FDEBTOR_BIS_REG + " TEXT, "  + FDEBTOR_SUMMARY + " TEXT, " + FDEBTOR_IS_SYNC + " TEXT ," + FDEBTOR_IS_CORDINATE_UPDATE + " TEXT, " + FDEBTOR_IMAGE + " TEXT  ); ";
+			"" + FDEBTOR_BIS_REG + " TEXT, "  + FDEBTOR_SUMMARY + " TEXT, " + FDEBTOR_IS_SYNC + " TEXT ," + FDEBTOR_IS_CORDINATE_UPDATE + " TEXT, " + FDEBTOR_IMAGE + " TEXT, " + FDEBTOR_IS_GPS_UPD_ALLOW +" TEXT  ); ";
 
 
 	public static final String INDEX_DEBTOR = "CREATE UNIQUE INDEX IF NOT EXISTS ui_debtor ON " + TABLE_FDEBTOR + " (DebCode);";

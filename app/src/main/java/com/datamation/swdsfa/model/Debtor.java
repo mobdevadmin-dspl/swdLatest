@@ -76,7 +76,7 @@ public class Debtor {
     private String FDEBTOR_REPCODE;
     private String FDEBTOR_NIC;
     private String FDEBTOR_BIS_REG;
-
+    private String FDEBTOR_IS_GPS_ALLOW;
     private String FDEBTOR_IS_SYNC;
     private String FDEBTOR_IS_CORDINATE_UPDATE;
 
@@ -111,6 +111,14 @@ public class Debtor {
 
     public void setFDEBTOR_BIS_REG(String FDEBTOR_BIS_REG) {
         this.FDEBTOR_BIS_REG = FDEBTOR_BIS_REG;
+    }
+
+    public String getFDEBTOR_IS_GPS_ALLOW() {
+        return FDEBTOR_IS_GPS_ALLOW;
+    }
+
+    public void setFDEBTOR_IS_GPS_ALLOW(String FDEBTOR_IS_GPS_ALLOW) {
+        this.FDEBTOR_IS_GPS_ALLOW = FDEBTOR_IS_GPS_ALLOW;
     }
 
     public String getFDEBTOR_ID() {
@@ -684,7 +692,7 @@ public class Debtor {
             aDebtor.setFDEBTOR_LATITUDE(instance.getString("Latitude"));
             aDebtor.setFDEBTOR_LONGITUDE(instance.getString("Longitude"));
             aDebtor.setFDEBTOR_IMG_URL(instance.getString("ImgURL"));
-
+            aDebtor.setFDEBTOR_IS_GPS_ALLOW(instance.getString("IsGPSUpdAllow"));
 //            aDebtor.setFDEBTOR_IMG_URL(instance.getString("FDEBTOR_IMG_URL"));
 
             return aDebtor;

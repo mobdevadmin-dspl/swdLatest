@@ -50,7 +50,7 @@ public class CustomerController {
 
         try {
             dB.beginTransactionNonExclusive();
-            String sql = "INSERT OR REPLACE INTO " + Customer.TABLE_FDEBTOR + " (DebCode,DebName,DebAdd1,DebAdd2,DebAdd3,DebTele,DebMob,DebEMail,TownCode,AreaCode,DbGrCode,Status,CrdPeriod,ChkCrdPrd,CrdLimit,ChkCrdLmt,RepCode,PrillCode,TaxReg,RankCode,Latitude,Longitude,CusImage) " + " VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+            String sql = "INSERT OR REPLACE INTO " + Customer.TABLE_FDEBTOR + " (DebCode,DebName,DebAdd1,DebAdd2,DebAdd3,DebTele,DebMob,DebEMail,TownCode,AreaCode,DbGrCode,Status,CrdPeriod,ChkCrdPrd,CrdLimit,ChkCrdLmt,RepCode,PrillCode,TaxReg,RankCode,Latitude,Longitude,CusImage,IsGpsUpdAllow) " + " VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
 //            String sql = "INSERT OR REPLACE INTO " + DatabaseHelper.TABLE_FDEBTOR + " (DebCode,DebName,DebAdd1,DebAdd2,DebAdd3,DebTele,DebMob,DebEMail,TownCode,AreaCode,DbGrCode,Status,CrdPeriod,ChkCrdPrd,CrdLimit,ChkCrdLmt,RepCode,PrillCode,TaxReg,RankCode,Latitude,Longitude) " + " VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
 
             SQLiteStatement stmt = dB.compileStatement(sql);
@@ -80,6 +80,7 @@ public class CustomerController {
                 stmt.bindString(21, debtor.getFDEBTOR_LATITUDE());
                 stmt.bindString(22, debtor.getFDEBTOR_LONGITUDE());
                 stmt.bindString(23, debtor.getFDEBTOR_IMG_URL());
+                stmt.bindString(24, debtor.getFDEBTOR_IS_GPS_ALLOW());
 
                 stmt.execute();
                 stmt.clearBindings();
@@ -715,6 +716,35 @@ public class CustomerController {
 
         return "";
     }
+
+    public String getCheckGPSUpdate(String debcode) {
+
+        if (dB == null) {
+            open();
+        } else if (!dB.isOpen()) {
+            open();
+        }
+
+        String selectQuery = "SELECT " + Customer.FDEBTOR_IS_GPS_UPD_ALLOW + " FROM " + Customer.TABLE_FDEBTOR + " where " + Customer.DEBCODE + " = '" + debcode + "'";
+
+        Cursor cursor = dB.rawQuery(selectQuery, null);
+        try {
+            while (cursor.moveToNext()) {
+
+                return cursor.getString(cursor.getColumnIndex(Customer.FDEBTOR_IS_GPS_UPD_ALLOW));
+
+            }
+        } catch (Exception e) {
+
+            Log.v(TAG + " Exception get Name", e.toString());
+
+        } finally {
+            dB.close();
+        }
+
+        return "";
+    }
+
     public int updateCustomerLocationByNeDebtor(String debCode, NearDebtor nDeb) {
         int count = 0;
 

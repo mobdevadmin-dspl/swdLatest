@@ -221,6 +221,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         }
 
         try {
+            arg0.execSQL("ALTER TABLE FDebtor ADD COLUMN IsGpsUpdAllow TEXT DEFAULT ''");
+        } catch (SQLiteException e) {
+            Log.v("SQLiteException", e.toString());
+        }
+        try {
 
             arg0.execSQL(InvTaxDTController.CREATE_FINVTAXDT_TABLE);
             arg0.execSQL(InvTaxRGController.CREATE_FINVTAXRG_TABLE);
