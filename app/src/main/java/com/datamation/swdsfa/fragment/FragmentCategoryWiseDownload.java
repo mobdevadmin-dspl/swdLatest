@@ -232,7 +232,7 @@ public void onClick(View v) {
         DayExpHedController exHed = new DayExpHedController(context);
         ArrayList<DayExpHed> exHedList = exHed.getUnSyncedData();
 
-        if (ordHedList.isEmpty() && npHedList.isEmpty() && exHedList.isEmpty()) {
+        if (ordHedList.isEmpty() && npHedList.isEmpty()) {
             allUpload = true;
         } else {
             allUpload = false;

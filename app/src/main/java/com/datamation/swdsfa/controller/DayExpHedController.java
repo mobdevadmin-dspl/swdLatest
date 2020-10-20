@@ -353,7 +353,7 @@ public class DayExpHedController {
 
             String selectQuery = "SELECT * FROM " + DayNPrdHed.TABLE_DAYEXPHED + " WHERE " + DayNPrdHed.FDAYEXPHED_ISSYNC + "='0'";
             Cursor cursor = dB.rawQuery(selectQuery, null);
-//            localSP = context.getSharedPreferences(SETTINGS, Context.MODE_WORLD_READABLE + Context.MODE_WORLD_WRITEABLE);
+//            localSP = context.getSharedPreferences(SETTINGS, Context.MODE_WORLD_READABLE + Context.MODE_WORLD_WRITEABLE);dffdfdfdfbbbbbbbbbbbbbbbbbbbbbbb
             localSP = context.getSharedPreferences(SETTINGS, Context.MODE_PRIVATE + Context.MODE_PRIVATE);
 
             while (cursor.moveToNext()) {
