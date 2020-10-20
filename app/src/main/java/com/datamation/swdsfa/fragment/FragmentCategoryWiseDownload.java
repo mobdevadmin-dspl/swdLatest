@@ -16,6 +16,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.datamation.swdsfa.R;
+import com.datamation.swdsfa.controller.CustomerController;
 import com.datamation.swdsfa.controller.DayExpHedController;
 import com.datamation.swdsfa.controller.DayNPrdHedController;
 import com.datamation.swdsfa.controller.FreeDebController;
@@ -35,6 +36,7 @@ import com.datamation.swdsfa.helpers.NetworkFunctions;
 import com.datamation.swdsfa.helpers.SharedPref;
 import com.datamation.swdsfa.model.DayExpHed;
 import com.datamation.swdsfa.model.DayNPrdHed;
+import com.datamation.swdsfa.model.Debtor;
 import com.datamation.swdsfa.model.FddbNote;
 import com.datamation.swdsfa.model.FreeDeb;
 import com.datamation.swdsfa.model.FreeDet;
@@ -61,7 +63,7 @@ import java.util.ArrayList;
 public class FragmentCategoryWiseDownload extends Fragment {
 
     private View view;
-    private TextView downItems,downFree,downRoute,downOutstanding;
+    private TextView downItems,downFree,downRoute,downOutstanding,downcustomer;
     NetworkFunctions networkFunctions;
 
 
@@ -76,7 +78,7 @@ public class FragmentCategoryWiseDownload extends Fragment {
          downItems       = (TextView) view.findViewById(R.id.items_download);
          downFree        = (TextView) view.findViewById(R.id.free_download);
          downRoute       = (TextView) view.findViewById(R.id.route_download);
-         downOutstanding = (TextView) view.findViewById(R.id.outstanding_download);
+         downcustomer    = (TextView) view.findViewById(R.id.outstanding_download);
 
         downItems.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -145,27 +147,50 @@ public void onClick(View v) {
             }
         });
 
-        downOutstanding.setOnClickListener(new View.OnClickListener() {
-        @Override
+//        downOutstanding.setOnClickListener(new View.OnClickListener() {
+//        @Override
+//            public void onClick(View v) {
+//            boolean connectionStatus = NetworkUtil.isNetworkAvailable(getActivity());
+//            if (connectionStatus == true) {
+//
+//                if (isAllUploaded(getActivity())) {
+//
+//                    try {
+//                        new outstandingDownload(SharedPref.getInstance(getActivity()).getLoginUser().getCode()).execute();
+//                    } catch (Exception e) {
+//                        Log.e("## ErrorInItemDown ##", e.toString());
+//                    }
+//                } else {
+//                    Toast.makeText(getActivity(), "Please Upload All Transactions", Toast.LENGTH_LONG).show();
+//                }
+//            } else {
+//                Toast.makeText(getActivity(), "No Internet Connection", Toast.LENGTH_LONG).show();
+//            }
+//             }
+//        });
+
+        downcustomer.setOnClickListener(new View.OnClickListener() {
+            @Override
             public void onClick(View v) {
-            boolean connectionStatus = NetworkUtil.isNetworkAvailable(getActivity());
-            if (connectionStatus == true) {
+                boolean connectionStatus = NetworkUtil.isNetworkAvailable(getActivity());
+                if (connectionStatus == true) {
 
-                if (isAllUploaded(getActivity())) {
+                    if (isAllUploaded(getActivity())) {
 
-                    try {
-                        new outstandingDownload(SharedPref.getInstance(getActivity()).getLoginUser().getCode()).execute();
-                    } catch (Exception e) {
-                        Log.e("## ErrorInItemDown ##", e.toString());
+                        try {
+                            new customerDownload(SharedPref.getInstance(getActivity()).getLoginUser().getCode()).execute();
+                        } catch (Exception e) {
+                            Log.e("## ErrorInItemDown ##", e.toString());
+                        }
+                    } else {
+                        Toast.makeText(getActivity(), "Please Upload All Transactions", Toast.LENGTH_LONG).show();
                     }
                 } else {
-                    Toast.makeText(getActivity(), "Please Upload All Transactions", Toast.LENGTH_LONG).show();
+                    Toast.makeText(getActivity(), "No Internet Connection", Toast.LENGTH_LONG).show();
                 }
-            } else {
-                Toast.makeText(getActivity(), "No Internet Connection", Toast.LENGTH_LONG).show();
             }
-             }
         });
+
         //DISABLED BACK NAVIGATION
         view.setFocusableInTouchMode(true);
         view.requestFocus();
@@ -735,12 +760,124 @@ public void onClick(View v) {
         }
     }
 
+//    //outstanding download asynctask
+//    private class outstandingDownload extends AsyncTask<String, Integer, Boolean> {
+//        CustomProgressDialog pdialog;
+//        private String repcode;
+//
+//        public outstandingDownload(String repCode) {
+//            this.repcode = repCode;
+//            this.pdialog = new CustomProgressDialog(getActivity());
+//        }
+//
+//        @Override
+//        protected void onPreExecute() {
+//            super.onPreExecute();
+//            pdialog = new CustomProgressDialog(getActivity());
+//            pdialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+//            pdialog.setMessage("Downloading outstanding...");
+//            pdialog.show();
+//        }
+//
+//        @Override
+//        protected Boolean doInBackground(String... arg0) {
+//            try {
+//                if (SharedPref.getInstance(getActivity()).getLoginUser() != null && SharedPref.getInstance(getActivity()).isLoggedIn()) {
+//
+//                    /*****************Item Loc*****************************************************************************/
+//                    getActivity().runOnUiThread(new Runnable() {
+//                        @Override
+//                        public void run() {
+//                            pdialog.setMessage("Downloading outstanding data...");
+//                        }
+//                    });
+//
+//                    /*****************fddbnote*****************************************************************************/
+//
+//                    String fddbnote = "";
+//                    try {
+//                        fddbnote = networkFunctions.getFddbNotes(repcode);
+//                        // Log.d(LOG_TAG, "OUTLETS :: " + outlets);
+//                    } catch (IOException e) {
+//                        e.printStackTrace();
+//                        throw e;
+//                    }
+//
+//                    getActivity().runOnUiThread(new Runnable() {
+//                        @Override
+//                        public void run() {
+//                            pdialog.setMessage("Processing downloaded data (outstanding details)...");
+//                        }
+//                    });
+//
+//                    // Processing fddbnote
+//                    try {
+//                        JSONObject fddbnoteJSON = new JSONObject(fddbnote);
+//                        JSONArray fddbnoteJSONArray = fddbnoteJSON.getJSONArray("fDdbNoteWithConditionResult");
+//                        ArrayList<FddbNote> fddbnoteList = new ArrayList<FddbNote>();
+//                        OutstandingController outstandingController = new OutstandingController(getActivity());
+//                        for (int i = 0; i < fddbnoteJSONArray.length(); i++) {
+//                            fddbnoteList.add(FddbNote.parseFddbnote(fddbnoteJSONArray.getJSONObject(i)));
+//                        }
+//                        outstandingController.createOrUpdateFDDbNote(fddbnoteList);
+//                    } catch (JSONException | NumberFormatException e) {
+//
+////                        ErrorUtil.logException("LoginActivity -> Authenticate -> doInBackground() # Process Routes and Outlets",
+////                                e, routes, BugReport.SEVERITY_HIGH);
+//
+//                        throw e;
+//                    }
+//                    getActivity().runOnUiThread(new Runnable() {
+//                        @Override
+//                        public void run() {
+//                            pdialog.setMessage("Download complete...");
+//                        }
+//                    });
+//                    return true;
+//                } else {
+//                    //errors.add("Please enter correct username and password");
+//                    return false;
+//                }
+//            } catch (IOException e) {
+//                e.printStackTrace();
+//
+//                return false;
+//            } catch (JSONException e) {
+//                e.printStackTrace();
+//
+//                return false;
+//            } catch (NumberFormatException e) {
+//                e.printStackTrace();
+//                return false;
+//            }
+//        }
+//
+//        @Override
+//        protected void onPostExecute(final Boolean result) {
+//            super.onPostExecute(result);
+//
+//            pdialog.setMessage("Finalizing item data");
+//            pdialog.setMessage("Download Completed..");
+//            if (result) {
+//                if (pdialog.isShowing()) {
+//                    pdialog.dismiss();
+//                }
+//
+//            } else {
+//                if (pdialog.isShowing()) {
+//                    pdialog.dismiss();
+//                }
+//
+//            }
+//        }
+//    }
+
     //outstanding download asynctask
-    private class outstandingDownload extends AsyncTask<String, Integer, Boolean> {
+    private class customerDownload extends AsyncTask<String, Integer, Boolean> {
         CustomProgressDialog pdialog;
         private String repcode;
 
-        public outstandingDownload(String repCode) {
+        public customerDownload(String repCode) {
             this.repcode = repCode;
             this.pdialog = new CustomProgressDialog(getActivity());
         }
@@ -750,7 +887,7 @@ public void onClick(View v) {
             super.onPreExecute();
             pdialog = new CustomProgressDialog(getActivity());
             pdialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-            pdialog.setMessage("Downloading outstanding...");
+            pdialog.setMessage("Downloading customer...");
             pdialog.show();
         }
 
@@ -763,15 +900,15 @@ public void onClick(View v) {
                     getActivity().runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            pdialog.setMessage("Downloading outstanding data...");
+                            pdialog.setMessage("Downloading customer data...");
                         }
                     });
 
                     /*****************fddbnote*****************************************************************************/
 
-                    String fddbnote = "";
+                    String customer = "";
                     try {
-                        fddbnote = networkFunctions.getFddbNotes(repcode);
+                        customer = networkFunctions.getCustomer(repcode);
                         // Log.d(LOG_TAG, "OUTLETS :: " + outlets);
                     } catch (IOException e) {
                         e.printStackTrace();
@@ -781,20 +918,20 @@ public void onClick(View v) {
                     getActivity().runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            pdialog.setMessage("Processing downloaded data (outstanding details)...");
+                            pdialog.setMessage("Processing downloaded data (customer details)...");
                         }
                     });
 
                     // Processing fddbnote
                     try {
-                        JSONObject fddbnoteJSON = new JSONObject(fddbnote);
-                        JSONArray fddbnoteJSONArray = fddbnoteJSON.getJSONArray("fDdbNoteWithConditionResult");
-                        ArrayList<FddbNote> fddbnoteList = new ArrayList<FddbNote>();
-                        OutstandingController outstandingController = new OutstandingController(getActivity());
-                        for (int i = 0; i < fddbnoteJSONArray.length(); i++) {
-                            fddbnoteList.add(FddbNote.parseFddbnote(fddbnoteJSONArray.getJSONObject(i)));
+                        JSONObject customerJSON = new JSONObject(customer);
+                        JSONArray customerJSONArray = customerJSON.getJSONArray("FdebtorResult");
+                        ArrayList<Debtor> customerList = new ArrayList<Debtor>();
+                        CustomerController customerController = new CustomerController(getActivity());
+                        for (int i = 0; i < customerJSONArray.length(); i++) {
+                            customerList.add(Debtor.parseOutlet(customerJSONArray.getJSONObject(i)));
                         }
-                        outstandingController.createOrUpdateFDDbNote(fddbnoteList);
+                        customerController.InsertOrReplaceDebtor(customerList);
                     } catch (JSONException | NumberFormatException e) {
 
 //                        ErrorUtil.logException("LoginActivity -> Authenticate -> doInBackground() # Process Routes and Outlets",

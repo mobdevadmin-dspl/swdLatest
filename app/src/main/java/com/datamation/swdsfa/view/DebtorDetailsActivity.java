@@ -495,7 +495,7 @@ public class DebtorDetailsActivity extends AppCompatActivity {
                     Log.d("<<<Distance<<<<", " " + distance);
                     //Log.d("<<<Distance1<<<<", " " + distance1);
                 if (new CustomerController(DebtorDetailsActivity.this).getCheckGPSUpdate(outlet.getCusCode()).equals("Y")) {
-                    if (distance <= 150 && customerLocation.getLatitude() >= 0 && currentLocation.getLatitude() > 0) {//uncomment 2020-06-12
+                    if (distance <= 500 && customerLocation.getLatitude() >= 0 && currentLocation.getLatitude() > 0) {//uncomment 2020-06-12
                         // if(customerLocation.getLatitude()>0 && currentLocation.getLatitude()>0) {
                         // Toast.makeText(DebtorDetailsActivity.this, "Please wait. This may take a while", Toast.LENGTH_SHORT).show();
                         //2020-05-15 validate order upload by rashmi

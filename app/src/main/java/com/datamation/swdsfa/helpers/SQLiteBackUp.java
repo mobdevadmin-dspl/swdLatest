@@ -93,12 +93,12 @@ public class SQLiteBackUp {
                     dst.transferFrom(src, 0, src.size());
                     src.close();
                     dst.close();
-                    Toast.makeText(context, "Backup Successful!",Toast.LENGTH_SHORT).show();
+                    Toast.makeText(context, "Backup Successful !",Toast.LENGTH_SHORT).show();
 
                 }
             }else {
                 // Do something else on failure
-                Toast.makeText(context, "Backup Failed!", Toast.LENGTH_SHORT).show();
+                Toast.makeText(context, "Backup Failed !", Toast.LENGTH_SHORT).show();
             }
         } catch (Exception e) {
 

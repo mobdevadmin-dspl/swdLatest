@@ -8,9 +8,9 @@ android {
         minSdkVersion 19
         targetSdkVersion 29
         //versionCode 32
-        versionCode 57 // for 8 inch tab
+        versionCode 58 // for 8 inch tab
         //versionName "2.3.0"
-        versionName "4.3.6"// for 8 inch tab
+        versionName "4.3.7"// for 8 inch tab
         multiDexEnabled true
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true

@@ -121,14 +121,14 @@
             <TextView
                 android:id="@+id/outstanding_download"
                 android:layout_width="match_parent"
-                android:background="@color/visit_not_visited"
-                android:layout_gravity="center"
-                android:textStyle="bold"
-                android:textSize="16dp"
-                android:textColor="@color/white"
-                android:gravity="center"
                 android:layout_height="match_parent"
-                android:text="OUTSTANDING"/>
+                android:layout_gravity="center"
+                android:background="@color/visit_not_visited"
+                android:gravity="center"
+                android:text="CUSTOMER"
+                android:textColor="@color/white"
+                android:textSize="16dp"
+                android:textStyle="bold" />
 
         </androidx.cardview.widget.CardView>
 
