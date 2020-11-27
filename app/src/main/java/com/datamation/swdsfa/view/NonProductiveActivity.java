@@ -20,7 +20,6 @@ import com.datamation.swdsfa.controller.DayNPrdDetController;
 import com.datamation.swdsfa.helpers.SharedPref;
 import com.datamation.swdsfa.model.Customer;
 import com.datamation.swdsfa.nonproductive.NonProductiveDetail;
-import com.datamation.swdsfa.utils.GPSTracker;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -32,8 +31,6 @@ public class NonProductiveActivity extends AppCompatActivity {
     Context context;
     public Customer selectedNonDebtor = null;
     boolean status = true;
-    GPSTracker gpsTracker;
-    public SharedPref mSharedPref;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,11 +41,6 @@ public class NonProductiveActivity extends AppCompatActivity {
         TextView title = (TextView) toolbar.findViewById(R.id.toolbar_title);
         title.setText("NON PRODUCTIVE");
         context = this;
-        gpsTracker = new GPSTracker(this);
-        mSharedPref = SharedPref.getInstance(this);
-
-        Log.v("Lati in Nonprdctv>>>>>",mSharedPref.getGlobalVal("Latitude"));
-        Log.v("Longi in Nonprdctv>>>>",mSharedPref.getGlobalVal("Longitude"));
 
         PagerSlidingTabStrip slidingTabStrip = (PagerSlidingTabStrip) findViewById(R.id.np_tab_strip);
         viewPager = (ViewPager) findViewById(R.id.np_viewpager);

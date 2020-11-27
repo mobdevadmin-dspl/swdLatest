@@ -1,15 +1,24 @@
 package com.datamation.swdsfa.expense;
 
+import android.annotation.TargetApi;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
+import android.location.Location;
+import android.os.Build;
 import android.os.Bundle;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 import androidx.core.content.ContextCompat;
 import androidx.appcompat.widget.Toolbar;
+
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -31,7 +40,6 @@ import com.afollestad.materialdialogs.MaterialDialog;
 import com.datamation.swdsfa.adapter.SalesExpenseDetailAdapter;
 import com.datamation.swdsfa.adapter.SalesExpenseGridDetails;
 import com.datamation.swdsfa.R;
-import com.datamation.swdsfa.controller.CustomerController;
 import com.datamation.swdsfa.controller.ExpenseController;
 import com.datamation.swdsfa.controller.SalRepController;
 import com.datamation.swdsfa.model.Expense;
@@ -43,18 +51,23 @@ import com.datamation.swdsfa.controller.ReasonController;
 import com.datamation.swdsfa.helpers.SharedPref;
 import com.datamation.swdsfa.model.DayExpDet;
 import com.datamation.swdsfa.model.DayExpHed;
-import com.datamation.swdsfa.utils.GPSTracker;
 import com.datamation.swdsfa.view.ActivityHome;
 import com.github.clans.fab.FloatingActionButton;
 import com.github.clans.fab.FloatingActionMenu;
-
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationServices;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+;import static android.Manifest.permission.ACCESS_COARSE_LOCATION;
+import static android.Manifest.permission.ACCESS_FINE_LOCATION;
 
-public class ExpenseDetail extends Fragment implements OnClickListener {
+public class ExpenseDetail extends Fragment implements OnClickListener, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener
+        , com.google.android.gms.location.LocationListener {
     public static final String SETTINGS = "SETTINGS";
     public static SharedPreferences localSP;
     public static String DebCODE, RESULT;
@@ -70,7 +83,23 @@ public class ExpenseDetail extends Fragment implements OnClickListener {
     FloatingActionButton fabPause, fabDiscard, fabSave;
     FloatingActionMenu fam;
     SharedPref sharedPref;
-    GPSTracker gpsTracker;
+    Location mLocation;
+    GoogleApiClient mGoogleApiClient;
+    private static final int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
+
+    private LocationRequest mLocationRequest;
+    private long UPDATE_INTERVAL = 15000;  /* 15 secs */
+    private long FASTEST_INTERVAL = 5000; /* 5 secs */
+
+    private ArrayList permissionsToRequest;
+    private ArrayList permissionsRejected = new ArrayList();
+    private ArrayList permissions = new ArrayList();
+
+    private final static int ALL_PERMISSIONS_RESULT = 101;
+
+    private double latitude;
+    private double longitude;
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -79,11 +108,31 @@ public class ExpenseDetail extends Fragment implements OnClickListener {
 
         Toolbar toolbar = (Toolbar) view.findViewById(R.id.toolbar);
         getActivity().setTitle("Expence Details");
-        gpsTracker = new GPSTracker(getActivity());
+
+        mGoogleApiClient = new GoogleApiClient.Builder(getActivity())
+                .addApi(LocationServices.API)
+                .addConnectionCallbacks(this)
+                .addOnConnectionFailedListener(this)
+                .build();
+
+        permissions.add(ACCESS_FINE_LOCATION);
+        permissions.add(ACCESS_COARSE_LOCATION);
+
+        permissionsToRequest = findUnAskedPermissions(permissions);
+        //get the permissions we have asked for before but are not granted..
+        //we will store this in a global list to access later.
+
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+
+
+            if (permissionsToRequest.size() > 0)
+                requestPermissions((String[]) permissionsToRequest.toArray(new String[permissionsToRequest.size()]), ALL_PERMISSIONS_RESULT);
+        }
 
         seqno = 0;
         fam = (FloatingActionMenu) view.findViewById(R.id.fab_menu);
-       // fabPause = (FloatingActionButton) view.findViewById(R.id.fab2);
+        // fabPause = (FloatingActionButton) view.findViewById(R.id.fab2);
         fabDiscard = (FloatingActionButton) view.findViewById(R.id.fab3);
         fabSave = (FloatingActionButton) view.findViewById(R.id.fab1);
 
@@ -102,8 +151,8 @@ public class ExpenseDetail extends Fragment implements OnClickListener {
         //fatchData();
 
         sharedPref = SharedPref.getInstance(getActivity());
-        Log.v("Lati in Expense>>>>>",sharedPref.getGlobalVal("Latitude"));
-        Log.v("Longi in Expense>>>>",sharedPref.getGlobalVal("Longitude"));
+        Log.v("Lati in Expense>>>>>", sharedPref.getGlobalVal("Latitude"));
+        Log.v("Longi in Expense>>>>", sharedPref.getGlobalVal("Longitude"));
         ReSearch.setOnClickListener(new OnClickListener() {
 
             @Override
@@ -119,7 +168,7 @@ public class ExpenseDetail extends Fragment implements OnClickListener {
             }
         });
 
-		/*-*-*-**-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-**-*-*-*-*-*-*-*-*-*-*-*/
+        /*-*-*-**-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-**-*-*-*-*-*-*-*-*-*-*-*/
 
         lv_invent_load.setOnItemLongClickListener(new OnItemLongClickListener() {
 
@@ -131,7 +180,7 @@ public class ExpenseDetail extends Fragment implements OnClickListener {
             }
         });
 
-		/*-*-*-**-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-**-*-*-*-*-*-*-*-*-*-*-*/
+        /*-*-*-**-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-**-*-*-*-*-*-*-*-*-*-*-*/
 
         lv_invent_load.setOnItemClickListener(new OnItemClickListener() {
             @Override
@@ -183,7 +232,7 @@ public class ExpenseDetail extends Fragment implements OnClickListener {
         return view;
     }
 
-	/*-*-*-**-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-**-*-*-*-*-*-*-*-*-*-*-*/
+    /*-*-*-**-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-**-*-*-*-*-*-*-*-*-*-*-*/
 
     private void currentDate() {
         DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
@@ -191,7 +240,7 @@ public class ExpenseDetail extends Fragment implements OnClickListener {
         Txndate.setText(dateFormat.format(date));
     }
 
-	/*-*-*-**-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-**-*-*-*-*-*-*-*-*-*-*-*/
+    /*-*-*-**-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-**-*-*-*-*-*-*-*-*-*-*-*/
 
     public void ExpenseDetailsDialogbox(String searchword) {
 
@@ -283,7 +332,7 @@ public class ExpenseDetail extends Fragment implements OnClickListener {
         }
     }
 
-	/*-*-*-**-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-**-*-*-*-*-*-*-*-*-*-*-*/
+    /*-*-*-**-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-**-*-*-*-*-*-*-*-*-*-*-*/
 
     public void fatchData() {
         try {
@@ -296,7 +345,7 @@ public class ExpenseDetail extends Fragment implements OnClickListener {
         }
     }
 
-	/*-*-*-**-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-**-*-*-*-*-*-*-*-*-*-*-*/
+    /*-*-*-**-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-**-*-*-*-*-*-*-*-*-*-*-*/
 
     public void clearTextFields() {
         Remark.setText("");
@@ -306,7 +355,7 @@ public class ExpenseDetail extends Fragment implements OnClickListener {
 
     }
 
-	/*-*-*-**-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-**-*-*-*-*-*-*-*-*-*-*-*/
+    /*-*-*-**-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-**-*-*-*-*-*-*-*-*-*-*-*/
 
     private void saveSummaryDialog(final Context context) {
 
@@ -333,8 +382,10 @@ public class ExpenseDetail extends Fragment implements OnClickListener {
                             exphed.setEXP_ADDDATE(new SimpleDateFormat("yyyy-MM-dd").format(new Date()));
                             exphed.setEXP_ACTIVESTATE("0");
                             exphed.setEXP_IS_SYNCED("0");
-                            exphed.setEXP_LATITUDE(SharedPref.getInstance(getActivity()).getGlobalVal("Latitude").equals("***") ? "0.00" : SharedPref.getInstance(getActivity()).getGlobalVal("Latitude"));
-                            exphed.setEXP_LONGITUDE(SharedPref.getInstance(getActivity()).getGlobalVal("Longitude").equals("***") ? "0.00" : SharedPref.getInstance(getActivity()).getGlobalVal("Longitude"));
+                            exphed.setEXP_LATITUDE(String.valueOf(latitude));
+                            //exphed.setEXP_LATITUDE(SharedPref.getInstance(getActivity()).getGlobalVal("Latitude").equals("***") ? "0.00" : SharedPref.getInstance(getActivity()).getGlobalVal("Latitude"));
+                            exphed.setEXP_LONGITUDE(String.valueOf(longitude));
+                           // exphed.setEXP_LONGITUDE(SharedPref.getInstance(getActivity()).getGlobalVal("Longitude").equals("***") ? "0.00" : SharedPref.getInstance(getActivity()).getGlobalVal("Longitude"));
 //                            exphed.setEXP_LATITUDE( sharedPref.getGlobalVal("Latitude").equals("") ? "0.00" : sharedPref.getGlobalVal("Latitude"));
 //                            exphed.setEXP_LONGITUDE(sharedPref.getGlobalVal("Longitude").equals("") ? "0.00" : sharedPref.getGlobalVal("Longitude"));
 
@@ -379,7 +430,7 @@ public class ExpenseDetail extends Fragment implements OnClickListener {
         materialDialog.show();
     }
 
-	/*-*-*-**-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-**-*-*-*-*-*-*-*-*-*-*-*/
+    /*-*-*-**-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-**-*-*-*-*-*-*-*-*-*-*-*/
 
     private void deleteOrderDialog(final Context context, final String refno, final String expcode) {
 
@@ -410,7 +461,7 @@ public class ExpenseDetail extends Fragment implements OnClickListener {
         alertD.show();
     }
 
-	/*-*-*-**-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-**-*-*-*-*-*-*-*-*-*-*-*/
+    /*-*-*-**-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-**-*-*-*-*-*-*-*-*-*-*-*/
 
     private void undoEditingData(final Context context, final String RefNo) {
 
@@ -464,22 +515,189 @@ public class ExpenseDetail extends Fragment implements OnClickListener {
         materialDialog.show();
     }
 
-	
-	/*-*-*-**-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-**-*-*-*-*-*-*-*-*-*-*-*/
+
+    /*-*-*-**-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-**-*-*-*-*-*-*-*-*-*-*-*/
 
     public void onTaskCompleted(String result) {
         try {
             if (!result.equals("") || !result.equals("No Address")) {
 
 
-               // activity.selectedexpHed.setEXP_ADDRESS(result);
+                // activity.selectedexpHed.setEXP_ADDRESS(result);
 
             }
         } catch (Exception e) {
             Log.v("Selected OrdHed", e.toString());
         }
     }
-/*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*/
+
+    // ---------------kaveesha --------- 27/11/2020 ---------- To get GPS location using google play service --------------
+    private ArrayList findUnAskedPermissions(ArrayList wanted) {
+        ArrayList result = new ArrayList();
+
+        for (Object perm : wanted) {
+            if (!hasPermission((String) perm)) {
+                result.add(perm);
+            }
+        }
+
+        return result;
+    }
+
+    private boolean hasPermission(String permission) {
+        if (canMakeSmores()) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                return (checkSelfPermission(permission) == PackageManager.PERMISSION_GRANTED);
+            }
+        }
+        return true;
+    }
+
+    private int checkSelfPermission(String permission) {
+        return Integer.parseInt(permission);
+    }
+
+
+
+    private boolean canMakeSmores() {
+        return (Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP_MR1);
+    }
+
+
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        if (mGoogleApiClient != null) {
+            mGoogleApiClient.connect();
+        }
+    }
+
+    @Override
+    public void onConnected(@Nullable Bundle bundle) {
+
+
+        if (ActivityCompat.checkSelfPermission(getActivity(), ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getActivity(), ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            return;
+        }
+        mLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
+
+        if(mLocation!=null) {
+            latitude = mLocation.getLatitude();
+            longitude = mLocation.getLongitude();
+//            mSharedPref.setGlobalVal("Longitude", String.valueOf(mLocation.getLongitude()));
+//            mSharedPref.setGlobalVal("Latitude", String.valueOf(mLocation.getLatitude()));
+        }
+
+        startLocationUpdates();
+
+    }
+
+    @Override
+    public void onConnectionSuspended(int i) {
+
+    }
+
+    @Override
+    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
+
+    }
+
+    @Override
+    public void onLocationChanged(Location location) {
+
+        if(location!=null) {
+            latitude = location.getLatitude();
+            longitude = location.getLongitude();
+        }
+
+    }
+
+    protected void startLocationUpdates() {
+        mLocationRequest = new LocationRequest();
+        mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+        mLocationRequest.setInterval(UPDATE_INTERVAL);
+        mLocationRequest.setFastestInterval(FASTEST_INTERVAL);
+        if (ActivityCompat.checkSelfPermission(getActivity(), ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getActivity(), ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            Toast.makeText(getActivity(), "Enable Permissions", Toast.LENGTH_LONG).show();
+        }
+
+        LocationServices.FusedLocationApi.requestLocationUpdates(
+                mGoogleApiClient, mLocationRequest, this);
+    }
+
+    @TargetApi(Build.VERSION_CODES.M)
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+
+        switch (requestCode) {
+
+            case ALL_PERMISSIONS_RESULT:
+                for (Object perms : permissionsToRequest) {
+                    if (!hasPermission((String) perms)) {
+                        permissionsRejected.add(perms);
+                    }
+                }
+
+                if (permissionsRejected.size() > 0) {
+
+
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                        if (shouldShowRequestPermissionRationale((String) permissionsRejected.get(0))) {
+                            showMessageOKCancel("These permissions are mandatory for the application. Please allow access.",
+                                    new DialogInterface.OnClickListener() {
+                                        @Override
+                                        public void onClick(DialogInterface dialog, int which) {
+                                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                                                requestPermissions((String[]) permissionsRejected.toArray(new String[permissionsRejected.size()]), ALL_PERMISSIONS_RESULT);
+                                            }
+                                        }
+                                    });
+                            return;
+                        }
+                    }
+
+                }
+
+                break;
+        }
+
+    }
+
+    private void showMessageOKCancel(String message, DialogInterface.OnClickListener okListener) {
+        new androidx.appcompat.app.AlertDialog.Builder(getActivity())
+                .setMessage(message)
+                .setPositiveButton("OK", okListener)
+                .setNegativeButton("Cancel", null)
+                .create()
+                .show();
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        stopLocationUpdates();
+    }
+
+
+    public void stopLocationUpdates()
+    {
+        if (mGoogleApiClient.isConnected()) {
+            LocationServices.FusedLocationApi
+                    .removeLocationUpdates(mGoogleApiClient, this);
+            mGoogleApiClient.disconnect();
+        }
+    }
+
+
+    /*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*/
 
 //    public void mPauseExpense() {
 //

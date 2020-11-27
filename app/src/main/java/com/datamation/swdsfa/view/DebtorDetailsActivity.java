@@ -1,13 +1,18 @@
 package com.datamation.swdsfa.view;
 
+import android.annotation.TargetApi;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationManager;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentPagerAdapter;
@@ -16,6 +21,8 @@ import androidx.core.view.ViewCompat;
 import androidx.viewpager.widget.ViewPager;
 import androidx.core.view.ViewPropertyAnimatorListener;
 import androidx.appcompat.app.AppCompatActivity;
+
+import android.os.Build;
 import android.os.Bundle;
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.appcompat.widget.Toolbar;
@@ -48,15 +55,25 @@ import com.datamation.swdsfa.fragment.debtordetails.PersonalDetailsFragment;
 import com.datamation.swdsfa.helpers.DatabaseHelper;
 import com.datamation.swdsfa.model.User;
 import com.datamation.swdsfa.settings.ReferenceNum;
-import com.datamation.swdsfa.utils.GPSTracker;
 import com.datamation.swdsfa.utils.LocationProvider;
 import com.datamation.swdsfa.utils.NetworkUtil;
 import com.datamation.swdsfa.utils.UtilityContainer;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GoogleApiAvailability;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationServices;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Objects;
 
-public class DebtorDetailsActivity extends AppCompatActivity {
+import static android.Manifest.permission.ACCESS_COARSE_LOCATION;
+import static android.Manifest.permission.ACCESS_FINE_LOCATION;
+
+public class DebtorDetailsActivity extends AppCompatActivity implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener
+        , com.google.android.gms.location.LocationListener{
 
     private CircleButton floatingActionsMenu;
     private CircleButton fabInvoice, fabUnproductive, fabReturnNote, fabSalesOrder, fabVansale, fabendcall;
@@ -95,7 +112,6 @@ public class DebtorDetailsActivity extends AppCompatActivity {
     SharedPref mSharedPref;
     public static final String SETTINGS = "SETTINGS";
     public static SharedPreferences localSP;
-    GPSTracker gpsTracker;
     double lati = 0.0;
     double longi = 0.0;
     private String debCode;
@@ -106,6 +122,22 @@ public class DebtorDetailsActivity extends AppCompatActivity {
     private Location finalLocation;
     private int locType;
     private double locationAccuracy;
+    Location mLocation;
+    GoogleApiClient mGoogleApiClient;
+    private static final int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
+
+    private LocationRequest mLocationRequest;
+    private long UPDATE_INTERVAL = 15000;  /* 15 secs */
+    private long FASTEST_INTERVAL = 5000; /* 5 secs */
+
+    private ArrayList permissionsToRequest;
+    private ArrayList permissionsRejected = new ArrayList();
+    private ArrayList permissions = new ArrayList();
+
+    private final static int ALL_PERMISSIONS_RESULT = 101;
+
+    private double latitude;
+    private double longitude;
 
     private long capturedTime;
     @Override
@@ -118,7 +150,6 @@ public class DebtorDetailsActivity extends AppCompatActivity {
 //        localSP = context.getSharedPreferences(SETTINGS, 0);
         user = sharedPref.getLoginUser();
         context = this;
-        gpsTracker = new GPSTracker(context);
         debCode = sharedPref.getSelectedDebCode();
         Intent dataIntent = getIntent();
         if(dataIntent.hasExtra("outlet")){
@@ -132,6 +163,29 @@ public class DebtorDetailsActivity extends AppCompatActivity {
             Toast.makeText(DebtorDetailsActivity.this, "Error receiving the outlet. Please try again.", Toast.LENGTH_SHORT).show();
             onBackPressed();
         }
+
+        permissions.add(ACCESS_FINE_LOCATION);
+        permissions.add(ACCESS_COARSE_LOCATION);
+
+        permissionsToRequest = findUnAskedPermissions(permissions);
+        //get the permissions we have asked for before but are not granted..
+        //we will store this in a global list to access later.
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+
+
+            if (permissionsToRequest.size() > 0)
+                requestPermissions((String[]) permissionsToRequest.toArray(new String[permissionsToRequest.size()]), ALL_PERMISSIONS_RESULT);
+        }
+
+
+        mGoogleApiClient = new GoogleApiClient.Builder(this)
+                .addApi(LocationServices.API)
+                .addConnectionCallbacks(this)
+                .addOnConnectionFailedListener(this)
+                .build();
+
+
         locManager = (LocationManager)this.getSystemService(Context.LOCATION_SERVICE);
         // outlet = new Customer();
         // outlet.setCusName(SharedPref.getInstance(getApplicationContext()).getSelectedDebName());
@@ -660,7 +714,6 @@ public class DebtorDetailsActivity extends AppCompatActivity {
         ViewCompat.animate(overlay).alpha(1).setDuration(400).setListener(new ViewPropertyAnimatorListener() {
             @Override
             public void onAnimationStart(View view) {
-                gpsTracker = new GPSTracker(context);
 //                if (gpsTracker.canGetLocation())
 //                {
                 if(!outlet.getCusCode().equals("") && !outlet.getCusCode().equals(null)) {
@@ -670,9 +723,12 @@ public class DebtorDetailsActivity extends AppCompatActivity {
                 }
                 //customer.getLatitude().equals("0.0")
                 if(customer.getLatitude().equals(null) || customer.getLatitude().equals("") || Double.compare(Double.parseDouble(customer.getLatitude()), Double.valueOf(0.0)) == 0 ) {
-                    if (!sharedPref.getGlobalVal("Latitude").equals("") && !sharedPref.getGlobalVal("Longitude").equals("")) {
-                        lati = Double.parseDouble(sharedPref.getGlobalVal("Latitude"));
-                        longi = Double.parseDouble(sharedPref.getGlobalVal("Longitude"));
+                    //if (!sharedPref.getGlobalVal("Latitude").equals("") && !sharedPref.getGlobalVal("Longitude").equals("")) {
+
+                        lati = Double.parseDouble(String.valueOf(latitude));
+                       // lati = Double.parseDouble(sharedPref.getGlobalVal("Latitude"));
+                        //longi = Double.parseDouble(sharedPref.getGlobalVal("Longitude"));
+                        longi = Double.parseDouble(String.valueOf(longitude));
 
                         if (sharedPref.getGPSDebtor().equals("AN") || sharedPref.getGPSDebtor().equals("RN")) // not GPS mode debtor selection
                         {//allNoGPS, RouteNoGPS
@@ -695,11 +751,11 @@ public class DebtorDetailsActivity extends AppCompatActivity {
                         }
                         Log.d("DEBTOR_DETIALS_ACTIVITY", "IS_GPS: " + sharedPref.getGPSDebtor() + ", IS_GPS_UPDATED:  coodis: " + lati + ", " + longi);
 
-                    } else {
-                        Log.d("DEBTOR_DETIALS_ACTIVITY", "IS_GPS: " + sharedPref.getGPSDebtor() + ", ALREADY GPS HAS: coodis: " + lati + ", " + longi);
-
-                        //startActivityForResult(new Intent(Settings.ACTION_LOCALE_SETTINGS), 0);
-                    }
+//                    } else {
+//                        Log.d("DEBTOR_DETIALS_ACTIVITY", "IS_GPS: " + sharedPref.getGPSDebtor() + ", ALREADY GPS HAS: coodis: " + lati + ", " + longi);
+//
+//                        //startActivityForResult(new Intent(Settings.ACTION_LOCALE_SETTINGS), 0);
+//                    }
                 }else{
                     Log.d(">>>CUSTOMER_GPS", ": " + sharedPref.getGPSDebtor() + ", ALREADY GPS HAS");
 
@@ -770,15 +826,15 @@ public class DebtorDetailsActivity extends AppCompatActivity {
 
             @Override
             public void onAnimationEnd(View view) {
-                if (gpsTracker.canGetLocation())
-                {
-                    gpsTracker = new GPSTracker(context);
+
                   //  if(customer.getLatitude().equals(null) || customer.getLatitude().equals("") || customer.getLatitude().equals("0.0"))
                         if(customer.getLatitude().equals(null) || customer.getLatitude().equals("") || Double.compare(Double.parseDouble(customer.getLatitude()), Double.valueOf(0.0)) == 0)
                     {
-                        if (!sharedPref.getGlobalVal("Latitude").equals("") && !sharedPref.getGlobalVal("Longitude").equals("")) {//first time current gps not null
-                            lati = Double.parseDouble(sharedPref.getGlobalVal("Latitude"));
-                            longi = Double.parseDouble(sharedPref.getGlobalVal("Longitude"));
+//                        if (!sharedPref.getGlobalVal("Latitude").equals("") && !sharedPref.getGlobalVal("Longitude").equals("")) {//first time current gps not null
+//                            lati = Double.parseDouble(sharedPref.getGlobalVal("Latitude"));
+//                            longi = Double.parseDouble(sharedPref.getGlobalVal("Longitude"));
+                        lati = Double.parseDouble(String.valueOf(latitude));
+                        longi = Double.parseDouble(String.valueOf(longitude));
 
                             if (sharedPref.getGPSDebtor().equals("AN") || sharedPref.getGPSDebtor().equals("RN")) // not GPS mode debtor selection
                             {//allNoGPS, RouteNoGPS
@@ -801,23 +857,16 @@ public class DebtorDetailsActivity extends AppCompatActivity {
                             }
                             Log.d("DEBTOR_DETIALS_ACTIVITY", "IS_GPS: " + sharedPref.getGPSDebtor() + ", IS_GPS_UPDATED:  coodis: " + lati + ", " + longi);
 
-                            gpsTracker = new GPSTracker(context);
-                        } else {
-                            gpsTracker = new GPSTracker(context);
-                            Log.d("DEBTOR_DETIALS_ACTIVITY", "IS_GPS: " + sharedPref.getGPSDebtor() + ", ALREADY GPS HAS: coodis: " + lati + ", " + longi);
-//if first time GPS null, call second time
-                            //startActivityForResult(new Intent(Settings.ACTION_LOCALE_SETTINGS), 0);
 
-                        }
+//                        } else {
+//                            Log.d("DEBTOR_DETIALS_ACTIVITY", "IS_GPS: " + sharedPref.getGPSDebtor() + ", ALREADY GPS HAS: coodis: " + lati + ", " + longi);
+////if first time GPS null, call second time
+//                            //startActivityForResult(new Intent(Settings.ACTION_LOCALE_SETTINGS), 0);
+//
+//                        }
                     }else{
                         Log.d(">>>CUSTOMER_GPS", ": " + sharedPref.getGPSDebtor() + ", ALREADY GPS HAS");
                     }
-
-                }
-                else
-                {
-                    gpsTracker.showSettingsAlert();
-                }
 
                 overlay.setVisibility(View.GONE);
                 //  overlay.setVisibility(View.GONE);
@@ -937,9 +986,191 @@ public class DebtorDetailsActivity extends AppCompatActivity {
 
     }
 
+    // ----------------kaveesha ------- 27/11/2020 -------------- To get GPS location using google play service ----------------------
+    private ArrayList findUnAskedPermissions(ArrayList wanted) {
+        ArrayList result = new ArrayList();
+
+        for (Object perm : wanted) {
+            if (!hasPermission((String) perm)) {
+                result.add(perm);
+            }
+        }
+
+        return result;
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        if (mGoogleApiClient != null) {
+            mGoogleApiClient.connect();
+        }
+    }
+
     @Override
     protected void onResume() {
         super.onResume();
+
+        if (!checkPlayServices()) {
+            Toast.makeText(getApplicationContext(), "Please install Google Play services.", Toast.LENGTH_LONG).show();
+        }
+    }
+
+    @Override
+    public void onConnected(@Nullable Bundle bundle) {
+
+
+        if (ActivityCompat.checkSelfPermission(this, ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            return;
+        }
+        mLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
+
+        if(mLocation!=null) {
+
+            latitude = mLocation.getLatitude();
+            longitude = mLocation.getLongitude();
+//            mSharedPref.setGlobalVal("Longitude", String.valueOf(mLocation.getLongitude()));
+//            mSharedPref.setGlobalVal("Latitude", String.valueOf(mLocation.getLatitude()));
+        }
+
+        startLocationUpdates();
+
+    }
+
+    @Override
+    public void onConnectionSuspended(int i) {
+
+    }
+
+    @Override
+    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
+
+    }
+
+    @Override
+    public void onLocationChanged(Location location) {
+
+        if(location!=null) {
+            latitude = location.getLatitude();
+            longitude = location.getLongitude();
+//            mSharedPref.setGlobalVal("Longitude", String.valueOf(location.getLongitude()));
+//            mSharedPref.setGlobalVal("Latitude", String.valueOf(location.getLatitude()));
+        }
+
+    }
+
+    private boolean checkPlayServices() {
+        GoogleApiAvailability apiAvailability = GoogleApiAvailability.getInstance();
+        int resultCode = apiAvailability.isGooglePlayServicesAvailable(this);
+        if (resultCode != ConnectionResult.SUCCESS) {
+            if (apiAvailability.isUserResolvableError(resultCode)) {
+                apiAvailability.getErrorDialog(this, resultCode, PLAY_SERVICES_RESOLUTION_REQUEST)
+                        .show();
+            } else
+                finish();
+
+            return false;
+        }
+        return true;
+    }
+
+    protected void startLocationUpdates() {
+        mLocationRequest = new LocationRequest();
+        mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+        mLocationRequest.setInterval(UPDATE_INTERVAL);
+        mLocationRequest.setFastestInterval(FASTEST_INTERVAL);
+        if (ActivityCompat.checkSelfPermission(this, ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            Toast.makeText(getApplicationContext(), "Enable Permissions", Toast.LENGTH_LONG).show();
+        }
+
+        LocationServices.FusedLocationApi.requestLocationUpdates(
+                mGoogleApiClient, mLocationRequest, this);
+
+
+    }
+
+    private boolean hasPermission(String permission) {
+        if (canMakeSmores()) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                return (checkSelfPermission(permission) == PackageManager.PERMISSION_GRANTED);
+            }
+        }
+        return true;
+    }
+
+    private boolean canMakeSmores() {
+        return (Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP_MR1);
+    }
+
+
+    @TargetApi(Build.VERSION_CODES.M)
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+
+        switch (requestCode) {
+
+            case ALL_PERMISSIONS_RESULT:
+                for (Object perms : permissionsToRequest) {
+                    if (!hasPermission((String) perms)) {
+                        permissionsRejected.add(perms);
+                    }
+                }
+
+                if (permissionsRejected.size() > 0) {
+
+
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                        if (shouldShowRequestPermissionRationale((String) permissionsRejected.get(0))) {
+                            showMessageOKCancel("These permissions are mandatory for the application. Please allow access.",
+                                    new DialogInterface.OnClickListener() {
+                                        @Override
+                                        public void onClick(DialogInterface dialog, int which) {
+                                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                                                requestPermissions((String[]) permissionsRejected.toArray(new String[permissionsRejected.size()]), ALL_PERMISSIONS_RESULT);
+                                            }
+                                        }
+                                    });
+                            return;
+                        }
+                    }
+
+                }
+
+                break;
+        }
+
+    }
+
+    private void showMessageOKCancel(String message, DialogInterface.OnClickListener okListener) {
+        new androidx.appcompat.app.AlertDialog.Builder(this)
+                .setMessage(message)
+                .setPositiveButton("OK", okListener)
+                .setNegativeButton("Cancel", null)
+                .create()
+                .show();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        stopLocationUpdates();
+    }
+
+
+    public void stopLocationUpdates()
+    {
+        if (mGoogleApiClient.isConnected()) {
+            LocationServices.FusedLocationApi
+                    .removeLocationUpdates(mGoogleApiClient, this);
+            mGoogleApiClient.disconnect();
+        }
     }
 }
 
