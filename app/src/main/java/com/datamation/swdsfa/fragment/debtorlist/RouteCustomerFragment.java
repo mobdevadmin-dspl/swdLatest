@@ -634,14 +634,10 @@ public class RouteCustomerFragment extends Fragment implements GoogleApiClient.C
     private boolean hasPermission(String permission) {
         if (canMakeSmores()) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                return (checkSelfPermission(permission) == PackageManager.PERMISSION_GRANTED);
+                return (getContext().checkSelfPermission(permission)  == PackageManager.PERMISSION_GRANTED);
             }
         }
         return true;
-    }
-
-    private int checkSelfPermission(String permission) {
-        return Integer.parseInt(permission);
     }
 
     private boolean canMakeSmores() {
