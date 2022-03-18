@@ -225,6 +225,7 @@ public class ActivitySplash extends AppCompatActivity{
                             {
                                 Toast.makeText(ActivitySplash.this, "Mac ID for Test. "+pref.getMacAddress().trim() , Toast.LENGTH_LONG).show();
 
+                              //  new Validate("942DDCC28922",URL,DBList.getSelectedItem().toString().trim()).execute();
                                 new Validate(pref.getMacAddress().trim(),URL,DBList.getSelectedItem().toString().trim()).execute();
                                 isValidate = false;
                                 //TODO: validate uname pwd with server details

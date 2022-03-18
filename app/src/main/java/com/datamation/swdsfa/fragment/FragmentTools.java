@@ -49,6 +49,7 @@ import com.datamation.swdsfa.controller.CompanyDetailsController;
 import com.datamation.swdsfa.controller.CustomerController;
 import com.datamation.swdsfa.controller.DayExpHedController;
 import com.datamation.swdsfa.controller.DayNPrdHedController;
+import com.datamation.swdsfa.controller.DayTargetDController;
 import com.datamation.swdsfa.controller.DiscdebController;
 import com.datamation.swdsfa.controller.DiscdetController;
 import com.datamation.swdsfa.controller.DischedController;
@@ -69,6 +70,8 @@ import com.datamation.swdsfa.controller.InvDetController;
 import com.datamation.swdsfa.controller.ItemController;
 import com.datamation.swdsfa.controller.ItemLocController;
 import com.datamation.swdsfa.controller.ItemPriceController;
+import com.datamation.swdsfa.controller.ItemTarDetController;
+import com.datamation.swdsfa.controller.ItemTarHedController;
 import com.datamation.swdsfa.controller.LocationsController;
 import com.datamation.swdsfa.controller.NearCustomerController;
 import com.datamation.swdsfa.controller.NewCustomerController;
@@ -98,6 +101,7 @@ import com.datamation.swdsfa.model.Control;
 import com.datamation.swdsfa.model.DayExpHed;
 import com.datamation.swdsfa.model.DayNPrdDet;
 import com.datamation.swdsfa.model.DayNPrdHed;
+import com.datamation.swdsfa.model.DayTargetD;
 import com.datamation.swdsfa.model.Debtor;
 import com.datamation.swdsfa.model.Discdeb;
 import com.datamation.swdsfa.model.Discdet;
@@ -119,6 +123,8 @@ import com.datamation.swdsfa.model.FreeSlab;
 import com.datamation.swdsfa.model.Item;
 import com.datamation.swdsfa.model.ItemLoc;
 import com.datamation.swdsfa.model.ItemPri;
+import com.datamation.swdsfa.model.ItemTarDet;
+import com.datamation.swdsfa.model.ItemTarHed;
 import com.datamation.swdsfa.model.Locations;
 import com.datamation.swdsfa.model.NearDebtor;
 import com.datamation.swdsfa.model.NewCustomer;
@@ -353,6 +359,7 @@ public class FragmentTools extends Fragment implements View.OnClickListener, Upl
 
                 //new DashboardController(getActivity()).subtractDay(new Date());
                 Log.d("Validate Secondary Sync", ">>Mac>> " + pref.getMacAddress().trim() + " >>URL>> " + pref.getBaseURL() + " >>DB>> " + pref.getDistDB());
+              //  new Validate("942DDCC28922", pref.getBaseURL(), pref.getDistDB()).execute();
                 new Validate(pref.getMacAddress().trim(), pref.getBaseURL(), pref.getDistDB()).execute();
                 break;
 
@@ -2525,9 +2532,10 @@ public class FragmentTools extends Fragment implements View.OnClickListener, Upl
                         SharedPref.getInstance(getActivity()).setPMReturn(pmreturn);
                         /////////////////MMS2019-11-14////////////////
                     } catch (JSONException | NumberFormatException e) {
-                        errors.add("Previous month returns not downloaded "+e.toString());
+                        errors.add("Previous month returns not downloaded " + e.toString());
                         throw e;
                     }
+
                     /*****************itenary det**********************************************************************/
 
                     getActivity().runOnUiThread(new Runnable() {
@@ -2572,15 +2580,144 @@ public class FragmentTools extends Fragment implements View.OnClickListener, Upl
                         }
 
                     } catch (JSONException | NumberFormatException e) {
-                        errors.add("Iteanary details not downloaded"+e.toString());
+                        errors.add("Iteanary details not downloaded" + e.toString());
 //                        ErrorUtil.logException("LoginActivity -> Authenticate -> doInBackground() # Process Routes and Outlets",
 //                                e, routes, BugReport.SEVERITY_HIGH);
+                    }
+                        /*****************ItemTarHed - 16/03/2022 **********************************************************************/
 
+                        getActivity().runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                pdialog.setMessage("Downloading ItemTarHed...");
+                            }
+                        });
+
+
+                        String itemTarHed = "";
+                        try {
+                            itemTarHed = networkFunctions.getItemTarHed(repcode);
+                        } catch (IOException e) {
+                            errors.add("Error getting ItemTarHed "+e.toString());
+                            throw e;
+                        }
+
+                        getActivity().runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                pdialog.setMessage("Processing downloaded data (ItemTarHed)...");
+                            }
+                        });
+
+                        // Processing ItemTarHed
+                        try {
+                            JSONObject itemTarHedJSON = new JSONObject(itemTarHed);
+                            JSONArray itemTarHedJSONArray = itemTarHedJSON.getJSONArray("fItemTarHedResult");
+                            ArrayList<ItemTarHed> itemTarHedList = new ArrayList<ItemTarHed>();
+                            ItemTarHedController itemTarHedController = new ItemTarHedController(getActivity());
+                            itemTarHedController.deleteAll();
+                            for (int i = 0; i < itemTarHedJSONArray.length(); i++) {
+                                itemTarHedList.add(ItemTarHed.parseItemTarHed(itemTarHedJSONArray.getJSONObject(i)));
+                            }
+
+                            itemTarHedController.createOrUpdateItemTarHed(itemTarHedList);
+                            Log.d("ItemTarHed", "succes");
+
+                        } catch (JSONException | NumberFormatException e) {
+
+                            errors.add("ItemTarHed not downloaded "+e.toString());
+                            throw e;
+                        }
+
+                    /*****************ItemTarDet - 16/03/2022 **********************************************************************/
+
+                    getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            pdialog.setMessage("Downloading ItemTarDet...");
+                        }
+                    });
+
+
+                    String itemTarDet = "";
+                    try {
+                        itemTarDet = networkFunctions.getItemTarDet(repcode);
+                    } catch (IOException e) {
+                        errors.add("Error getting itemTarDet "+e.toString());
                         throw e;
                     }
 
-                    /*****************end iteanerydet**********************************************************************/
-                    /*****************itenary hed**********************************************************************/
+                    getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            pdialog.setMessage("Processing downloaded data (ItemTarDet)...");
+                        }
+                    });
+
+                    // Processing ItemTarDet
+                    try {
+                        JSONObject itemTarDetJSON = new JSONObject(itemTarDet);
+                        JSONArray itemTarDetJSONArray = itemTarDetJSON.getJSONArray("fItemTarDetResult");
+                        ArrayList<ItemTarDet> itemTarDetList = new ArrayList<ItemTarDet>();
+                        ItemTarDetController itemTarDetController = new ItemTarDetController(getActivity());
+                        itemTarDetController.deleteAll();
+                        for (int i = 0; i < itemTarDetJSONArray.length(); i++) {
+                            itemTarDetList.add(ItemTarDet.parseItemTarDet(itemTarDetJSONArray.getJSONObject(i)));
+                        }
+
+                        itemTarDetController.CreateOrUpdateItemTarDet(itemTarDetList);
+                        Log.d("ItemTarDet", "succes");
+
+                    } catch (JSONException | NumberFormatException e) {
+
+                        errors.add("ItemTarDet not downloaded "+e.toString());
+                        throw e;
+                    }
+
+                    /*****************DayTargetD - 16/03/2022 **********************************************************************/
+
+                    getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            pdialog.setMessage("Downloading DayTargetD...");
+                        }
+                    });
+
+
+                    String dayTargetD = "";
+                    try {
+                        dayTargetD = networkFunctions.getDayTargetD(repcode);
+                    } catch (IOException e) {
+                        errors.add("Error getting dayTargetD "+e.toString());
+                        throw e;
+                    }
+
+                    getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            pdialog.setMessage("Processing downloaded data (DayTargetD)...");
+                        }
+                    });
+
+                    // Processing DayTargetD
+                    try {
+                        JSONObject dayTargetDJSON = new JSONObject(dayTargetD);
+                        JSONArray dayTargetDJSONArray = dayTargetDJSON.getJSONArray("fDayTargetDResult");
+                        ArrayList<DayTargetD> dayTargetDList = new ArrayList<DayTargetD>();
+                        DayTargetDController dayTargetDController = new DayTargetDController(getActivity());
+                        dayTargetDController.deleteAll();
+                        for (int i = 0; i < dayTargetDJSONArray.length(); i++) {
+                            dayTargetDList.add(DayTargetD.parseDayTarDetD(dayTargetDJSONArray.getJSONObject(i)));
+                        }
+
+                        dayTargetDController.CreateOrUpdateDayTargetD(dayTargetDList);
+                        Log.d("DayTargetD", "succes");
+
+                    } catch (JSONException | NumberFormatException e) {
+
+                        errors.add("DayTargetD not downloaded "+e.toString());
+                        throw e;
+                    }
 
 
                     /*****************end itenaryhed**********************************************************************/

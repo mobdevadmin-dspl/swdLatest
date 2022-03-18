@@ -11,6 +11,7 @@ import com.datamation.swdsfa.controller.CompanyDetailsController;
 import com.datamation.swdsfa.controller.DayExpDetController;
 import com.datamation.swdsfa.controller.DayNPrdDetController;
 import com.datamation.swdsfa.controller.DayNPrdHedController;
+import com.datamation.swdsfa.controller.DayTargetDController;
 import com.datamation.swdsfa.controller.DebItemPriController;
 import com.datamation.swdsfa.controller.DiscdebController;
 import com.datamation.swdsfa.controller.DiscdetController;
@@ -38,6 +39,8 @@ import com.datamation.swdsfa.controller.InvTaxRGController;
 import com.datamation.swdsfa.controller.ItemController;
 import com.datamation.swdsfa.controller.ItemLocController;
 import com.datamation.swdsfa.controller.ItemPriceController;
+import com.datamation.swdsfa.controller.ItemTarDetController;
+import com.datamation.swdsfa.controller.ItemTarHedController;
 import com.datamation.swdsfa.controller.LocationsController;
 import com.datamation.swdsfa.controller.NearCustomerController;
 import com.datamation.swdsfa.controller.NewCustomerController;
@@ -175,6 +178,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         arg0.execSQL(SalesReturnTaxDTController.CREATE_FINVRTAXDT_TABLE);
         arg0.execSQL(NearCustomerController.CREATE_FNEARDEBTOR_TABLE);
         arg0.execSQL(FirebaseMediaController.CREATETABLE_FIREBASE_MEDIA);
+        arg0.execSQL(ItemTarHedController.CREATE_FITEM_TAR_HED_TABLE);
+        arg0.execSQL(ItemTarDetController.CREATE_FITEM_TAR_DET_TABLE);
+        arg0.execSQL(DayTargetDController.CREATE_FDAY_TARGETD_TABLE);
 
     }
     // --------------------------------------------------------------------------------------------------------------
@@ -255,6 +261,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             arg0.execSQL(PreProductController.CREATE_FPRODUCT_PRE_TABLE);
             arg0.execSQL(NearCustomerController.CREATE_FNEARDEBTOR_TABLE);
             arg0.execSQL(FirebaseMediaController.CREATETABLE_FIREBASE_MEDIA);
+            arg0.execSQL(ItemTarHedController.CREATE_FITEM_TAR_HED_TABLE);
+            arg0.execSQL(ItemTarDetController.CREATE_FITEM_TAR_DET_TABLE);
+            arg0.execSQL(DayTargetDController.CREATE_FDAY_TARGETD_TABLE);
 
         } catch (SQLiteException e) {
         }

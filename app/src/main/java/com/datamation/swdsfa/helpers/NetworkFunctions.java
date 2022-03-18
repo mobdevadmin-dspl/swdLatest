@@ -126,6 +126,52 @@ public class NetworkFunctions {
         return getFromServer(baseURL + "Fdebtor" + restOfURL + "/" + repCode, params);
 
     }
+
+    // ----------------------------------- kaveesha - 16/03/2022 --------------------------------------------
+    public String getItemTarHed(String repCode) throws IOException {
+
+        List<CustomNameValuePair> params = new ArrayList<>();
+        Calendar c = Calendar.getInstance();
+        int year = c.get(Calendar.YEAR);
+        int month = c.get(Calendar.MONTH) + 1;
+        DecimalFormat df_month = new DecimalFormat("00");
+
+        Log.d(LOG_TAG, "Getting ItemTarHed : " + baseURL + "fItemTarHed" + restOfURL + "/" + repCode + "/" + year + "/" + df_month.format((double) month) + params);
+
+        return getFromServer(baseURL + "fItemTarHed" + restOfURL + "/" + repCode + "/" + year + "/" + df_month.format((double) month), params);
+
+    }
+
+    public String getItemTarDet(String repCode) throws IOException {
+
+        List<CustomNameValuePair> params = new ArrayList<>();
+        Calendar c = Calendar.getInstance();
+        int year = c.get(Calendar.YEAR);
+        int month = c.get(Calendar.MONTH) + 1;
+        DecimalFormat df_month = new DecimalFormat("00");
+
+        Log.d(LOG_TAG, "Getting ItemTarDet : " + baseURL + "fItemTarDet" + restOfURL + "/" + repCode + "/" + year + "/" + df_month.format((double) month) + params);
+
+        return getFromServer(baseURL + "fItemTarDet" + restOfURL + "/" + repCode + "/" + year + "/" + df_month.format((double) month), params);
+
+    }
+
+    public String getDayTargetD(String repCode) throws IOException {
+
+        List<CustomNameValuePair> params = new ArrayList<>();
+        Calendar c = Calendar.getInstance();
+        int year = c.get(Calendar.YEAR);
+        int month = c.get(Calendar.MONTH) + 1;
+        DecimalFormat df_month = new DecimalFormat("00");
+
+        Log.d(LOG_TAG, "Getting DayTargetD : " + baseURL + "fDayTargetD" + restOfURL + "/" + repCode + "/" + year + "/" + df_month.format((double) month) + params);
+
+        return getFromServer(baseURL + "fDayTargetD" + restOfURL + "/" + repCode + "/" + year + "/" + df_month.format((double) month), params);
+
+    }
+
+    //----------------------------------------------------------------------------------------------------
+
     // --------------------------------- Nuwan ----------------------- 17/10/2019 ------------------------
 
     public String getNearCustomer() throws IOException {
