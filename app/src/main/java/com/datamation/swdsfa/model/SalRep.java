@@ -23,10 +23,19 @@ public class SalRep {
     private String MACID;
     private String ISSYNC;
     private String REPTCODE;
+    private String PASSWORD;
     private String IS_ZERO_QOH_ALLOW;
     private String firebaseTokenID;
     private String IsApplyQOHexdVldtn;
     private String chkOrdUpload;
+
+    public String getPASSWORD() {
+        return PASSWORD;
+    }
+
+    public void setPASSWORD(String PASSWORD) {
+        this.PASSWORD = PASSWORD;
+    }
 
     public String getChkOrdUpload() {
         return chkOrdUpload;
@@ -228,6 +237,7 @@ public class SalRep {
             user.setFirebaseTokenID(instance.getString("firebaseTokenID"));
             user.setIsApplyQOHexdVldtn(instance.getString("IsApplyQOHexdVldtn"));
             user.setChkOrdUpload(instance.getString("chkOrdUpload"));
+            user.setPASSWORD(instance.getString("Password").trim());
 
             return user;
         }
@@ -256,6 +266,7 @@ public class SalRep {
                 ", ISSYNC='" + ISSYNC + '\'' +
                 ", REPTCODE='" + REPTCODE + '\'' +
                 ", REPCODE='" + RepCode + '\'' +
+                ", PASSEORD='" + PASSWORD + '\'' +
                 ", FirebaseTokenID='" + firebaseTokenID + '\'' +
 
                 '}';

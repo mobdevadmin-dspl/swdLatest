@@ -136,7 +136,7 @@ public class ActivityLogin extends AppCompatActivity implements View.OnClickList
                 tap += 1;
                 // StartTimer(3000);
                 if (tap >= 7) {
-                    validateDialog();
+               //     validateDialog();
                 }
             }
         });
@@ -260,67 +260,88 @@ public class ActivityLogin extends AppCompatActivity implements View.OnClickList
             case R.id.btnlogin: {
                 salRep = new SalRepController(getApplicationContext()).getSalRepCredentials();
 
-                if (pref.isLoggedIn() || SharedPref.getInstance(ActivityLogin.this).getLoginUser() != null) {
-                    if ((username.getText().toString().equalsIgnoreCase(salRep.getRepCode())) && (password.getText().toString().equalsIgnoreCase(salRep.getREPTCODE()))) {
-                        pref.setLoginStatus(true);
-                        Log.d(">>>", "Validation :: " + username.getText().toString());
-                        Log.d(">>>", "Validation :: " + salRep.getRepCode());
-                        Log.d(">>>", "Validation :: " + password.getText().toString());
-                        Log.d(">>>", "Validation :: " + salRep.getREPTCODE());
-                        Intent intent = new Intent(ActivityLogin
-                                .this, ActivityHome
-                                .class);
-                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                        startActivity(intent);
-                        finish();
-                    }
-
-                } else if ((username.getText().toString().equalsIgnoreCase(salRep.getRepCode())) && (password.getText().toString().equalsIgnoreCase(salRep.getREPTCODE()))) {
+                //-------------------- kaveesha - 18-03-2022 -----------------------------------------------------------
+                if (!(username.getText().toString().equalsIgnoreCase("")) && !(password.getText().toString().equalsIgnoreCase(""))) {
                     //temparary for datamation
                     Log.d(">>>", "Validation :: " + username.getText().toString());
-                    Log.d(">>>", "Validation :: " + salRep.getRepCode());
                     Log.d(">>>", "Validation :: " + password.getText().toString());
-                    Log.d(">>>", "Validation :: " + salRep.getREPTCODE());
 
-                    SharedPref sharedPref = SharedPref.getInstance(context);
-                    if (sharedPref.getGlobalVal("SyncDate").equalsIgnoreCase(dateFormat.format(new Date(timeInMillis))) || sharedPref.getGlobalVal("FirstTimeSyncDate").equalsIgnoreCase(dateFormat.format(new Date(timeInMillis)))) {
-                        pref.setLoginStatus(true);
-                        Intent intent = new Intent(ActivityLogin
-                                .this, ActivityHome
-                                .class);
-                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                        startActivity(intent);
-                        finish();
-                    } else {
-                        new Authenticate(SharedPref.getInstance(this).getLoginUser().getCode()).execute();
+                    if(NetworkUtil.isNetworkAvailable(ActivityLogin.this)){
+                        new Validate(username.getText().toString().trim(),password.getText().toString()).execute();
+                    }else{
+                        Toast.makeText(this, "No internet connection", Toast.LENGTH_LONG).show();
                     }
-//                    Intent intent = new Intent(ActivityLogin
-//                            .this, ActivityHome
-//                            .class);
-//                    startActivity(intent);
-//                    finish();
-
-
-//                    String decrepted = getMD5HashVal(password.getText().toString());
-//                    String logged = loggedUser.getPassword();
-//                   if(!(username.getText().toString().equals(loggedUser.getUserName())) || !(decrepted.equals(loggedUser.getPassword()))){
-//                       Toast.makeText(this,"Invalid Username or Password",Toast.LENGTH_LONG).show();
-//
-//                    }else{
-//                       Toast.makeText(this,"Username and Password are correct",Toast.LENGTH_LONG).show();
-//
-//                       new Authenticate(username.getText().toString(), password.getText().toString(), loggedUser.getCode()).execute();
-//                    }
 
                 } else {
                     Log.d(">>>", "Validation :: " + username.getText().toString());
-                    Log.d(">>>", "Validation :: " + salRep.getRepCode());
                     Log.d(">>>", "Validation :: " + password.getText().toString());
-                    Log.d(">>>", "Validation :: " + salRep.getREPTCODE());
                     Toast.makeText(this, "Please fill the valid credentials", Toast.LENGTH_LONG).show();
                     username.setText("");
                     password.setText("");
                 }
+
+//                if (pref.isLoggedIn() || SharedPref.getInstance(ActivityLogin.this).getLoginUser() != null) {
+//                    if ((username.getText().toString().equalsIgnoreCase(salRep.getRepCode())) && (password.getText().toString().equalsIgnoreCase(salRep.getREPTCODE()))) {
+//                        pref.setLoginStatus(true);
+//                        Log.d(">>>", "Validation :: " + username.getText().toString());
+//                        Log.d(">>>", "Validation :: " + salRep.getRepCode());
+//                        Log.d(">>>", "Validation :: " + password.getText().toString());
+//                        Log.d(">>>", "Validation :: " + salRep.getREPTCODE());
+//                        Intent intent = new Intent(ActivityLogin
+//                                .this, ActivityHome
+//                                .class);
+//                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+//                        startActivity(intent);
+//                        finish();
+//                    }
+//
+//                } else if ((username.getText().toString().equalsIgnoreCase(salRep.getRepCode())) && (password.getText().toString().equalsIgnoreCase(salRep.getREPTCODE()))) {
+//                    //temparary for datamation
+//                    Log.d(">>>", "Validation :: " + username.getText().toString());
+//                    Log.d(">>>", "Validation :: " + salRep.getRepCode());
+//                    Log.d(">>>", "Validation :: " + password.getText().toString());
+//                    Log.d(">>>", "Validation :: " + salRep.getREPTCODE());
+//
+//                    SharedPref sharedPref = SharedPref.getInstance(context);
+//                    if (sharedPref.getGlobalVal("SyncDate").equalsIgnoreCase(dateFormat.format(new Date(timeInMillis))) || sharedPref.getGlobalVal("FirstTimeSyncDate").equalsIgnoreCase(dateFormat.format(new Date(timeInMillis)))) {
+//                        pref.setLoginStatus(true);
+//                        Intent intent = new Intent(ActivityLogin
+//                                .this, ActivityHome
+//                                .class);
+//                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+//                        startActivity(intent);
+//                        finish();
+//                    } else {
+//                        new Authenticate(SharedPref.getInstance(this).getLoginUser().getCode()).execute();
+//                    }
+////                    Intent intent = new Intent(ActivityLogin
+////                            .this, ActivityHome
+////                            .class);
+////                    startActivity(intent);
+////                    finish();
+//
+//
+////                    String decrepted = getMD5HashVal(password.getText().toString());
+////                    String logged = loggedUser.getPassword();
+////                   if(!(username.getText().toString().equals(loggedUser.getUserName())) || !(decrepted.equals(loggedUser.getPassword()))){
+////                       Toast.makeText(this,"Invalid Username or Password",Toast.LENGTH_LONG).show();
+////
+////                    }else{
+////                       Toast.makeText(this,"Username and Password are correct",Toast.LENGTH_LONG).show();
+////
+////                       new Authenticate(username.getText().toString(), password.getText().toString(), loggedUser.getCode()).execute();
+////                    }
+//
+//                } else {
+//                    Log.d(">>>", "Validation :: " + username.getText().toString());
+//                    Log.d(">>>", "Validation :: " + salRep.getRepCode());
+//                    Log.d(">>>", "Validation :: " + password.getText().toString());
+//                    Log.d(">>>", "Validation :: " + salRep.getREPTCODE());
+//                    Toast.makeText(this, "Please fill the valid credentials", Toast.LENGTH_LONG).show();
+//                    username.setText("");
+//                    password.setText("");
+//                }
+
 
 
             }
@@ -1409,15 +1430,16 @@ public class ActivityLogin extends AppCompatActivity implements View.OnClickList
         Toast.makeText(ActivityLogin.this, "Your Network is Unavailable.Check Your data or Wi-Fi Connection", Toast.LENGTH_SHORT).show();
 
     }
+//------------------------------------ kaveesha - 18-03-2022 -----------------------------------------
 
     private class Validate extends AsyncTask<String, Integer, Boolean> {
         int totalRecords = 0;
         CustomProgressDialog pdialog;
-        private String macId, url;
+        private String username, password;
 
-        public Validate(String macId, String url) {
-            this.macId = macId;
-            this.url = url;
+        public Validate(String uid, String pwd) {
+            this.username = uid;
+            this.password = pwd;
             this.pdialog = new CustomProgressDialog(ActivityLogin.this);
         }
 
@@ -1438,26 +1460,35 @@ public class ActivityLogin extends AppCompatActivity implements View.OnClickList
                 String validateResponse = null;
                 JSONObject validateJSON;
                 try {
-                    validateResponse = networkFunctions.validate(ActivityLogin.this, macId, pref.getBaseURL(), pref.getDistDB());
+
+                    SalRepController salRepController = new SalRepController(ActivityLogin.this);
+                    salRepController.deleteAll();
+
+                    validateResponse = networkFunctions.getSalRep(username, password);
                     Log.d("validateResponse", validateResponse);
                     validateJSON = new JSONObject(validateResponse);
 
-
-                    if (validateJSON != null) {
+                    if (validateJSON != null && !validateJSON.equals("")) {
                         pref = SharedPref.getInstance(ActivityLogin.this);
                         //dbHandler.clearTables();
                         // Login successful. Proceed to download other items
 
-                        JSONArray repArray = validateJSON.getJSONArray("fSalRepResult");
-                        ArrayList<SalRep> salRepList = new ArrayList<>();
+                        JSONArray repArray = validateJSON.getJSONArray("fSalRepNewResult");
+                        ArrayList<SalRep> UserList = new ArrayList<>();
                         for (int i = 0; i < repArray.length(); i++) {
-                            JSONObject expenseJSON = repArray.getJSONObject(i);
-                            salRepList.add(SalRep.parseUser(expenseJSON));
+                            JSONObject userJSON = repArray.getJSONObject(i);
+
+                            User user = User.parseUser(repArray.getJSONObject(0));
+                            networkFunctions.setUser(user);
+                            pref.storeLoginUser(user);
+                            pref.setGlobalVal("Password",user.getPassword());
+                            UserList.add(SalRep.parseUser(userJSON));
+
                         }
-                        new SalRepController(getApplicationContext()).createOrUpdateSalRep(salRepList);
-                        User user = User.parseUser(repArray.getJSONObject(0));
-                        networkFunctions.setUser(user);
-                        pref.storeLoginUser(user);
+
+                        salRepController.createOrUpdateSalRep(UserList);
+
+
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
@@ -1500,30 +1531,148 @@ public class ActivityLogin extends AppCompatActivity implements View.OnClickList
                 pdialog.cancel();
             // pdialog.cancel();
             if (result) {
-                Toast.makeText(getApplicationContext(), "Success", Toast.LENGTH_SHORT).show();
-                pref.setValidateStatus(true);
-                //tryAgain.setVisibility(View.INVISIBLE);
-                //set user details to shared prefferences
-                //Intent mainActivity = new Intent(ActivitySplash.this, SettingsActivity.class);
-                // .................. Nuwan ....... commented due to run home activity .............. 19/06/2019
-                Intent loginActivity = new Intent(ActivityLogin.this, ActivityLogin.class);
-                //  Intent loginActivity = new Intent(ActivitySplash.this, ActivityHome.class);
-                // ..............................................................................................
-//
-                startActivity(loginActivity);
-                finish();
-            } else {
-                Toast.makeText(getApplicationContext(), "Invalid response from server", Toast.LENGTH_LONG).show();
-                //tryAgain.setVisibility(View.VISIBLE);
-//temerary set for new SFA
-                // .................. Nuwan ....... commented due to run home activity .............. 19/06/2019
-                //Intent loginActivity = new Intent(ActivitySplash.this, ActivityLogin.class);
-//                Intent loginActivity = new Intent(ActivitySplash.this, ActivityHome.class);
-//                // ..............................................................................................
-//                startActivity(loginActivity);
-//                finish();
+                    Log.d(">>>password", ">>>" + password);
+                    if (pref.getGlobalVal("Password").trim().length() > 0) {
+                   // if (!pref.getLoginUser().getPassword().trim().equals(null)) {
+                        //when password is incorrect fpass array is empty
+                        Log.d(">>>Response ok1", pref.getLoginUser().getCode() + ">>>" + pref.getLoginUser().getPassword());
+//                    if (pref.getUserId().trim().equals(username.trim()) && pref.getUserPwd().trim().equals(md5(password.trim()))) {
+//                        Log.d(">>>Response ok2",pref.getUserId()+">>>"+pref.getUserPwd());
 
-            }
+                        Toast.makeText(getApplicationContext(), "Success", Toast.LENGTH_SHORT).show();
+                        pref.setValidateStatus(true);
+                        pref.setLoginStatus(true);
+                        Intent loginActivity = new Intent(ActivityLogin.this, ActivityHome.class);
+                        startActivity(loginActivity);
+                        finish();
+
+                    } else {
+                        Toast.makeText(getApplicationContext(), "Invalid Username or Password", Toast.LENGTH_SHORT).show();
+                        reCallActivity();
+                    }
+
+                } else {
+                    Toast.makeText(getApplicationContext(), "Invalid response from server", Toast.LENGTH_LONG).show();
+                    reCallActivity();
+                }
         }
     }
+
+
+//    private class Validate extends AsyncTask<String, Integer, Boolean> {
+//        int totalRecords = 0;
+//        CustomProgressDialog pdialog;
+//        private String macId, url;
+//
+//        public Validate(String macId, String url) {
+//            this.macId = macId;
+//            this.url = url;
+//            this.pdialog = new CustomProgressDialog(ActivityLogin.this);
+//        }
+//
+//        @Override
+//        protected void onPreExecute() {
+//            super.onPreExecute();
+//            pdialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+//            pdialog.setMessage("Validating...");
+//            pdialog.show();
+//        }
+//
+//        @Override
+//        protected Boolean doInBackground(String... arg0) {
+//
+//            try {
+//                int recordCount = 0;
+//                int totalBytes = 0;
+//                String validateResponse = null;
+//                JSONObject validateJSON;
+//                try {
+//                    validateResponse = networkFunctions.validate(ActivityLogin.this, macId, pref.getBaseURL(), pref.getDistDB());
+//                    Log.d("validateResponse", validateResponse);
+//                    validateJSON = new JSONObject(validateResponse);
+//
+//
+//                    if (validateJSON != null) {
+//                        pref = SharedPref.getInstance(ActivityLogin.this);
+//                        //dbHandler.clearTables();
+//                        // Login successful. Proceed to download other items
+//
+//                        JSONArray repArray = validateJSON.getJSONArray("fSalRepResult");
+//                        ArrayList<SalRep> salRepList = new ArrayList<>();
+//                        for (int i = 0; i < repArray.length(); i++) {
+//                            JSONObject expenseJSON = repArray.getJSONObject(i);
+//                            salRepList.add(SalRep.parseUser(expenseJSON));
+//                        }
+//                        new SalRepController(getApplicationContext()).createOrUpdateSalRep(salRepList);
+//                        User user = User.parseUser(repArray.getJSONObject(0));
+//                        networkFunctions.setUser(user);
+//                        pref.storeLoginUser(user);
+//                        runOnUiThread(new Runnable() {
+//                            @Override
+//                            public void run() {
+//                                pdialog.setMessage("Authenticated...");
+//                            }
+//                        });
+//
+//                        return true;
+//                    } else {
+//                        Toast.makeText(ActivityLogin.this, "Invalid response from server when getting sales rep data", Toast.LENGTH_SHORT).show();
+//                        return false;
+//                    }
+//
+//                } catch (IOException e) {
+//                    Log.e("networkFunctions ->", "IOException -> " + e.toString());
+//                    throw e;
+//                } catch (JSONException e) {
+//                    Log.e("networkFunctions ->", "JSONException -> " + e.toString());
+//                    throw e;
+//                }
+//
+//
+//            } catch (Exception e) {
+//                e.printStackTrace();
+//            }
+//            return false;
+//        }
+//
+////        protected void onProgressUpdate(Integer... progress) {
+////            super.onProgressUpdate(progress);
+////            pDialog.setMessage("Prefetching data..." + progress[0] + "/" + totalRecords);
+////
+////        }
+//
+//
+//        @Override
+//        protected void onPostExecute(Boolean result) {
+//            super.onPostExecute(result);
+//            if (pdialog.isShowing())
+//                pdialog.cancel();
+//            // pdialog.cancel();
+//            if (result) {
+//                Toast.makeText(getApplicationContext(), "Success", Toast.LENGTH_SHORT).show();
+//                pref.setValidateStatus(true);
+//                //tryAgain.setVisibility(View.INVISIBLE);
+//                //set user details to shared prefferences
+//                //Intent mainActivity = new Intent(ActivitySplash.this, SettingsActivity.class);
+//                // .................. Nuwan ....... commented due to run home activity .............. 19/06/2019
+//                Intent loginActivity = new Intent(ActivityLogin.this, ActivityLogin.class);
+//                //  Intent loginActivity = new Intent(ActivitySplash.this, ActivityHome.class);
+//                // ..............................................................................................
+////
+//                startActivity(loginActivity);
+//                finish();
+//            } else {
+//                Toast.makeText(getApplicationContext(), "Invalid response from server", Toast.LENGTH_LONG).show();
+//                //tryAgain.setVisibility(View.VISIBLE);
+////temerary set for new SFA
+//                // .................. Nuwan ....... commented due to run home activity .............. 19/06/2019
+//                //Intent loginActivity = new Intent(ActivitySplash.this, ActivityLogin.class);
+////                Intent loginActivity = new Intent(ActivitySplash.this, ActivityHome.class);
+////                // ..............................................................................................
+////                startActivity(loginActivity);
+////                finish();
+//
+//            }
+//
+   // }
 }

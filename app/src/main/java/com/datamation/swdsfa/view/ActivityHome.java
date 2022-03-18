@@ -300,6 +300,8 @@ public class ActivityHome extends AppCompatActivity {
                 pref.setLoginStatus(false);
                 pref.setValidateStatus(false);
                 pref.clearPref();
+                pref.clearLoginUser();
+                pref.setGlobalVal("Password","");
             }
         });
         Ldialog.show();

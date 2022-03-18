@@ -360,7 +360,9 @@ public class FragmentTools extends Fragment implements View.OnClickListener, Upl
                 //new DashboardController(getActivity()).subtractDay(new Date());
                 Log.d("Validate Secondary Sync", ">>Mac>> " + pref.getMacAddress().trim() + " >>URL>> " + pref.getBaseURL() + " >>DB>> " + pref.getDistDB());
               //  new Validate("942DDCC28922", pref.getBaseURL(), pref.getDistDB()).execute();
-                new Validate(pref.getMacAddress().trim(), pref.getBaseURL(), pref.getDistDB()).execute();
+                syncMasterDataDialog(getActivity());
+               // new Validate(pref.getLoginUser().getCode(),pref.getLoginUser().getPassword()).execute();
+               // new Validate(pref.getMacAddress().trim(), pref.getBaseURL(), pref.getDistDB()).execute();
                 break;
 
             case R.id.imgUpload:
@@ -2865,12 +2867,11 @@ public class FragmentTools extends Fragment implements View.OnClickListener, Upl
     private class Validate extends AsyncTask<String, Integer, Boolean> {
         int totalRecords = 0;
         CustomProgressDialog pdialog;
-        private String macId, url, db;
+        private String username,password, url, db;
 
-        public Validate(String macId, String url, String db) {
-            this.macId = macId;
-            this.url = url;
-            this.db = db;
+        public Validate(String username, String password) {
+            this.username = username;
+            this.password = password;
             this.pdialog = new CustomProgressDialog(getActivity());
         }
 
@@ -2891,7 +2892,7 @@ public class FragmentTools extends Fragment implements View.OnClickListener, Upl
                 String validateResponse = null;
                 JSONObject validateJSON;
                 try {
-                    validateResponse = networkFunctions.validate(getActivity(), macId, url, db);
+                    validateResponse = networkFunctions.getSalRep(username,password);
                     Log.d("validateResponse", validateResponse);
                     validateJSON = new JSONObject(validateResponse);
 
@@ -2901,7 +2902,7 @@ public class FragmentTools extends Fragment implements View.OnClickListener, Upl
                         //dbHandler.clearTables();
                         // Login successful. Proceed to download other items
 
-                        JSONArray repArray = validateJSON.getJSONArray("fSalRepResult");
+                        JSONArray repArray = validateJSON.getJSONArray("fSalRepNewResult");
                         ArrayList<SalRep> salRepList = new ArrayList<>();
                         for (int i = 0; i < repArray.length(); i++) {
                             JSONObject expenseJSON = repArray.getJSONObject(i);

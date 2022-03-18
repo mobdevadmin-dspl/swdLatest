@@ -154,6 +154,21 @@ public class SharedPref {
         editor.apply();
     }
 
+    public void clearLoginUser() {
+        SharedPreferences.Editor editor = sharedPref.edit();
+        editor.putString("user_id","");
+        editor.putString("user_name", "");
+        editor.putString("user_username", "");
+        editor.putString("user_password", "");
+        editor.putString("user_target", "");
+        editor.putString("user_status", "");
+        editor.putString("user_mobile", "");
+        editor.putString("user_address", "");
+        editor.putString("user_prefix", "");
+
+        editor.apply();
+    }
+
     public User getLoginUser() {
 
         User user = new User();
@@ -222,6 +237,7 @@ public class SharedPref {
         editor.putString("selected_out_name", "");
         editor.putString("selected_out_route_code", "");
         editor.putString("selected_pril_code", "");
+
         editor.apply();
     }
 
@@ -518,7 +534,7 @@ public class SharedPref {
 
     public String getDistDB() {
         //return sharedPref.getString("baseURL", "https://19920502.000webhostapp.com");
-        return sharedPref.getString("Dist_DB", "E2936_SWD_B");
+        return sharedPref.getString("Dist_DB", "E2088_SWD");
 //        return sharedPref.getString("Dist_DB", "E2936_SWD");
         //return sharedPref.getString("Console_DB", "LHD_PDA_TEST");
         //return sharedPref.getString("baseURL", "http://192.168.43.62");

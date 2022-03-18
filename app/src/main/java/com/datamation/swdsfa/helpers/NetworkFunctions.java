@@ -127,6 +127,17 @@ public class NetworkFunctions {
 
     }
 
+    // ----------------------------------- kaveesha - 18/03/2022 --------------------------------------------
+    public String getSalRep(String userId, String pw) throws IOException {
+
+        List<CustomNameValuePair> params = new ArrayList<>();
+
+        Log.d(LOG_TAG, "Getting SalRepNew : " + baseURL + "FSalRepNew" +restOfURL+ "/" + userId+"/" + pw );
+
+        return getFromServer(baseURL + "FSalRepNew" +restOfURL+ "/" + userId + "/" + pw,params);
+
+    }
+
     // ----------------------------------- kaveesha - 16/03/2022 --------------------------------------------
     public String getItemTarHed(String repCode) throws IOException {
 

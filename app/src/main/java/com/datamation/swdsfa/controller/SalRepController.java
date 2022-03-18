@@ -58,11 +58,13 @@ public class SalRepController {
     public static final String FSALREP_IS_ZERO_QOH_ALLOW = "IsZeroQOHAllow";
     public static final String FSALREP_IS_FIRE_QOH_EXCED_VALIDATION= "IsFireQohExcdValidation";
     public static final String FSALREP_CHK_UPLOAD= "chkOrdUpload";
+    public static final String FSALREP_PASSWORD= "Password";
 
 
 
     // create String
     public static final String CREATE_FSALREP_TABLE = "CREATE  TABLE IF NOT EXISTS " + TABLE_FSALREP + " (" + FSALREP_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " + FSALREP_ADDMACH + " TEXT, " + FSALREP_ADDUSER + " TEXT, " + FSALREP_REP_TCODE+ " TEXT, " + FSALREP_RECORDID + " TEXT, " + DatabaseHelper.REPCODE + " TEXT, " + FSALREP_EMAIL + " TEXT, " + FSALREP_REPID + " TEXT, " + FSALREP_MOBILE + " TEXT, " + FSALREP_NAME + " TEXT, " + FSALREP_PREFIX + " TEXT, " + FSALREP_TELE + " TEXT, "
+            + FSALREP_PASSWORD + " TEXT, "
             + FSALREP_STATUS + " TEXT, "
             + FSALREP_LOCCODE + " TEXT, "
             + FSALREP_AREA_CODE + " TEXT, "
@@ -120,6 +122,7 @@ public class SalRepController {
                 values.put(FSALREP_IS_ZERO_QOH_ALLOW,rep.getIS_ZERO_QOH_ALLOW());
                 values.put(FSALREP_IS_FIRE_QOH_EXCED_VALIDATION,rep.getIsApplyQOHexdVldtn());
                 values.put(FSALREP_CHK_UPLOAD,rep.getChkOrdUpload());
+                values.put(FSALREP_PASSWORD,rep.getPASSWORD());
 
 
                 if (cursor.getCount() > 0) {
@@ -140,6 +143,38 @@ public class SalRepController {
         } finally {
             dB.close();
         }
+        return count;
+
+    }
+
+    //---------------------------- kaveesha - 18-03-2022 ------------------------------------------------------------------
+    public int deleteAll() {
+
+        int count = 0;
+
+        if (dB == null) {
+            open();
+        } else if (!dB.isOpen()) {
+            open();
+        }
+        Cursor cursor = null;
+        try {
+
+            cursor = dB.rawQuery("SELECT * FROM " + TABLE_FSALREP, null);
+            count = cursor.getCount();
+            if (count > 0) {
+                int success = dB.delete(TABLE_FSALREP, null, null);
+                Log.v("Success", success + "");
+            }
+        } catch (Exception e) {
+            Log.v(TAG + " Exception", e.toString());
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+            dB.close();
+        }
+
         return count;
 
     }

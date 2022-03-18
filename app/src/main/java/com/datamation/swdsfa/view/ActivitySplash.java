@@ -106,10 +106,10 @@ public class ActivitySplash extends AppCompatActivity{
         }
 
 
-        if(pref.getLoginUser()==null) {
-            validateDialog();
-
-        }else{
+//        if(pref.getLoginUser()==null) {
+//            validateDialog();
+//
+//        }else{
            // if(pref.isLoggedIn() || !pref.getLoginUser().equals(null)){
             if(pref.isLoggedIn()){
                 goToHome();
@@ -117,7 +117,7 @@ public class ActivitySplash extends AppCompatActivity{
             }else {
                 goToLogin();
             }
-        }
+      //  }
 
 //        tryAgain.setOnClickListener(new View.OnClickListener() {
 //            @Override
