@@ -17,7 +17,7 @@ import com.astuetz.PagerSlidingTabStrip;
 import com.datamation.swdsfa.R;
 import com.datamation.swdsfa.view.dashboard.DaySummaryFragment;
 import com.datamation.swdsfa.view.dashboard.InvoiceDetailsFragmentNew;
-import com.datamation.swdsfa.view.dashboard.MainDashboardFragment;
+import com.datamation.swdsfa.view.dashboard.MainDashboardFragmentNew;
 import com.datamation.swdsfa.view.dashboard.OrderDetailsFragment;
 import com.datamation.swdsfa.view.dashboard.ReportFragment;
 import com.datamation.swdsfa.view.dashboard.PaymentDetailsFragment;
@@ -28,7 +28,7 @@ import com.datamation.swdsfa.view.dashboard.TransactionDetailsFragment;
 public class FragmentHome extends Fragment {
     public Fragment currentFragment;
 
-    private MainDashboardFragment mainDashboardFragment;
+    private MainDashboardFragmentNew mainDashboardFragment;
     private DaySummaryFragment daySummaryFragment;
     private InvoiceDetailsFragmentNew invoiceDetailsFragment;
     private PaymentDetailsFragment paymentDetailsFragment;
@@ -181,7 +181,7 @@ public class FragmentHome extends Fragment {
             switch (position) {
                 case 0:
                     if (mainDashboardFragment == null)
-                        mainDashboardFragment = MainDashboardFragment.newInstance();
+                        mainDashboardFragment = MainDashboardFragmentNew.newInstance();
                     currentFragment = mainDashboardFragment;
                     return mainDashboardFragment;
                 case 1:

@@ -74,7 +74,7 @@ dependencies {
     //    implementation 'com.squareup.picasso:picasso:2.4.0'
     implementation 'com.sothree.slidinguppanel:library:3.0.0'
     implementation 'se.emilsjolander:stickylistheaders:2.6.0'
-    implementation 'com.github.PhilJay:MPAndroidChart:v2.0.9'
+    implementation 'com.github.PhilJay:MPAndroidChart:v3.1.0'
     implementation 'com.squareup.picasso:picasso:2.5.2'
     implementation 'fm.jiecao:jiecaovideoplayer:3.0_preview'
     implementation files('libs/org.apache.http.legacy.jar')
