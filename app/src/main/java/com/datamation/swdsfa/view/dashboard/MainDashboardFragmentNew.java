@@ -953,6 +953,8 @@ public class MainDashboardFragmentNew extends Fragment {
         }else if(rdInvoice.isChecked()){
             type = "Invoice";
             pref.setType("Invoice");
+        }else{
+            type = "";
         }
         radioGroup1.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
@@ -963,6 +965,8 @@ public class MainDashboardFragmentNew extends Fragment {
                 }else if(rdInvoice.isChecked()){
                     type = "Invoice";
                     pref.setType("Invoice");
+                }else{
+                    type = "";
                 }
             }
         });
@@ -980,6 +984,8 @@ public class MainDashboardFragmentNew extends Fragment {
         }else if(rdValue.isChecked()){
             category = "Value";
             pref.setCategory("Value");
+        }else{
+            category = "";
         }
 
         radioGroup2.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {

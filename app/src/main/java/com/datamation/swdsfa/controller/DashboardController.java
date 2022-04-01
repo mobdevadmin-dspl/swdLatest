@@ -1408,17 +1408,17 @@ public class DashboardController {
             if(category.equals("Case")){
 
                 selectQuery   = " SELECT ifnull((sum(CaseQty)),0)  as Achieve from FOrddet " +
-                        " where Itemcode = '" + itemcode + "' AND Txndate BETWEEN  '" + from + "' and '" + to + "'";
+                        " where Itemcode = '" + itemcode + "' AND Types = 'SA' AND Txndate BETWEEN  '" + from + "' and '" + to + "'";
 
             }else if (category.equals("Piece")){
 
                 selectQuery   = " SELECT ifnull((sum(PiceQty)),0)  as Achieve from FOrddet " +
-                        " where Itemcode = '" + itemcode + "' AND Txndate BETWEEN  '" + from + "' and '" + to + "'";
+                        " where Itemcode = '" + itemcode + "' AND Types = 'SA' AND Txndate BETWEEN  '" + from + "' and '" + to + "'";
 
             }else if(category.equals("Value")){
 
                 selectQuery   = " SELECT ifnull((sum(Amt)),0)  as Achieve from FOrddet " +
-                        " where Itemcode = '" + itemcode + "' AND Txndate BETWEEN  '" + from + "' and '" + to + "'";
+                        " where Itemcode = '" + itemcode + "' AND Types = 'SA' AND Txndate BETWEEN  '" + from + "' and '" + to + "'";
 
             }
 
@@ -1573,24 +1573,40 @@ public class DashboardController {
 
             if(type.equals("Case")){
 
-                selectQuery = "SELECT ifnull((sum(a.CaseQty)),0)  as Achieve from FOrddet as a, fTargetCat as b," +
-                        " fItem itm where  itm.TarCatCode =  b.TarCatCode AND b.TarCatCode = '" + catcode + "' AND " +
-                        " itm.itemcode in (Select itemcode from FOrddet)  AND a.txndate LIKE '" + curYear + "-" + String.format("%02d", curMonth) + "-_%' " +
-                        "GROUP by itm.TarCatCode ";
+                selectQuery = " SELECT ifnull((sum(a.CaseQty)),0)  as Achieve from FOrddet as a, fTargetCat as b,\n" +
+                        "  fItem itm, fSubBrand as s where  itm.TarCatCode =  b.TarCatCode AND b.TarCatCode = '" + catcode + "' AND s.SBrandCode = itm.SBrandCode AND\n" +
+                        "  itm.itemcode in (Select itemcode from FOrddet) AND itm.itemcode = a.itemcode AND a.Types = 'SA' AND  a.txndate LIKE '" + curYear + "-" + String.format("%02d", curMonth) + "-_%' "  +
+                        "  GROUP by itm.TarCatCode";
+
+//                selectQuery = "SELECT ifnull((sum(a.CaseQty)),0)  as Achieve from FOrddet as a, fTargetCat as b," +
+//                        " fItem itm where  itm.TarCatCode =  b.TarCatCode AND b.TarCatCode = '" + catcode + "' AND " +
+//                        " itm.itemcode in (Select itemcode from FOrddet)  AND a.txndate LIKE '" + curYear + "-" + String.format("%02d", curMonth) + "-_%' " +
+//                        "GROUP by itm.TarCatCode ";
 
             }else if(type.equals("Piece")){
 
-                selectQuery = "SELECT ifnull((sum(a.PiceQty)),0)  as Achieve from FOrddet as a, fTargetCat as b," +
-                        " fItem itm where  itm.TarCatCode =  b.TarCatCode AND b.TarCatCode = '" + catcode + "' AND " +
-                        " itm.itemcode in (Select itemcode from FOrddet)  AND a.txndate LIKE '" + curYear + "-" + String.format("%02d", curMonth) + "-_%' " +
-                        "GROUP by itm.TarCatCode ";
+                selectQuery = "SELECT ifnull((sum(a.PiceQty)),0)  as Achieve from FOrddet as a, fTargetCat as b,\n" +
+                        "fItem itm, fSubBrand as s where  itm.TarCatCode =  b.TarCatCode AND b.TarCatCode = '" + catcode + "' AND s.SBrandCode = itm.SBrandCode AND \n" +
+                        "itm.itemcode in (Select itemcode from FOrddet) AND itm.itemcode = a.itemcode AND a.txndate LIKE '" + curYear + "-" + String.format("%02d", curMonth) + "-_%' " +
+                        "GROUP by itm.TarCatCode";
+
+//                selectQuery = "SELECT ifnull((sum(a.PiceQty)),0)  as Achieve from FOrddet as a, fTargetCat as b," +
+//                        " fItem itm where  itm.TarCatCode =  b.TarCatCode AND b.TarCatCode = '" + catcode + "' AND " +
+//                        " itm.itemcode in (Select itemcode from FOrddet)  AND a.txndate LIKE '" + curYear + "-" + String.format("%02d", curMonth) + "-_%' " +
+//                        "GROUP by itm.TarCatCode ";
 
             } else if(type.equals("Value")){
 
-                selectQuery = "SELECT ifnull((sum(a.Amt)),0)  as Achieve from FOrddet as a, fTargetCat as b," +
-                        " fItem itm where  itm.TarCatCode =  b.TarCatCode AND b.TarCatCode = '" + catcode + "' AND " +
-                        " itm.itemcode in (Select itemcode from FOrddet)  AND a.txndate LIKE '" + curYear + "-" + String.format("%02d", curMonth) + "-_%' " +
-                        "GROUP by itm.TarCatCode ";
+                selectQuery = "SELECT ifnull((sum(a.Amt)),0)  as Achieve from FOrddet as a, fTargetCat as b,\n" +
+                        " fItem itm, fSubBrand as s where  itm.TarCatCode =  b.TarCatCode AND b.TarCatCode = '" + catcode + "' AND s.SBrandCode = itm.SBrandCode AND \n" +
+                        " itm.itemcode in (Select itemcode from FOrddet) AND itm.itemcode = a.itemcode AND a.Types = 'SA' AND a.txndate LIKE '" + curYear + "-" + String.format("%02d", curMonth) + "-_%' " +
+                        " GROUP by itm.TarCatCode ";
+
+//                selectQuery = "SELECT ifnull((sum(a.Amt)),0)  as Achieve from FOrddet as a, fTargetCat as b," +
+//                        " fItem itm where  itm.TarCatCode =  b.TarCatCode AND b.TarCatCode = '" + catcode + "' AND " +
+//                        " itm.itemcode in (Select itemcode from FOrddet)  AND a.txndate LIKE '" + curYear + "-" + String.format("%02d", curMonth) + "-_%' " +
+//                        "GROUP by itm.TarCatCode ";
+
             }
 
 
@@ -1634,17 +1650,20 @@ public class DashboardController {
         try {
 
 
-            String selectQuery = " SELECT ifnull((sum(a.Volume)),0)  as Target from fItemTarDet as a, fTargetCat as b, fItem itm,fDayTargetD as d " +
-                    "where  itm.TarCatCode =  b.TarCatCode AND itm.itemcode =  a.itemcode AND b.TarCatCode = '" + catcode + "' and itm.itemcode in (Select itemcode from fItemTarDet) " +
-                    " and a.itemcode =  d.itemcode and  itm.itemcode = d.itemcode " +
-                    " AND d.Day LIKE '" + curYear + "-" + String.format("%02d", curMonth) + "-_%' " +
-                    " GROUP by itm.TarCatCode ";
-//
-//            SELECT ifnull((sum(a.Volume)),0)  as Target from fItemTarDet as a, fTargetCat as b, fItem itm, fDayTargetD as d
-//            where  itm.TarCatCode =  b.TarCatCode AND itm.itemcode =  a.itemcode AND b.TarCatCode = 'TCOTH01' and itm.itemcode in (Select itemcode from fItemTarDet)
-//            and a.itemcode =  d.itemcode and  itm.itemcode = d.itemcode
-//            And d.Day Like '2022-03-28'
-//            GROUP by itm.TarCatCode
+            String selectQuery = " SELECT ifnull((sum(a.Volume)),0)  as Target from fItemTarDet as a, fTargetCat as b, fItem itm,fDayTargetD as d ,fSubBrand as s\n" +
+                    "            where  itm.TarCatCode =  b.TarCatCode AND itm.SBrandCode =  a.SBrandCode\n" +
+                    "            AND b.TarCatCode = '" + catcode + "' and itm.SBrandCode in (Select SBrandCode from fItemTarDet)\n" +
+                    "            and s.SBrandCode =  a.SBrandCode and  itm.itemcode = d.itemcode\n" +
+                    "            AND d.Day LIKE '" + curYear + "-" + String.format("%02d", curMonth) + "-_%' " +
+                    "            GROUP by itm.TarCatCode";
+
+//            String selectQuery = " SELECT ifnull((sum(a.Volume)),0)  as Target from fItemTarDet as a, fTargetCat as b, fItem itm,fDayTargetD as d " +
+//                    "where  itm.TarCatCode =  b.TarCatCode AND itm.itemcode =  a.itemcode AND b.TarCatCode = '" + catcode + "' and itm.itemcode in (Select itemcode from fItemTarDet) " +
+//                    " and a.itemcode =  d.itemcode and  itm.itemcode = d.itemcode " +
+//                    " AND d.Day LIKE '" + curYear + "-" + String.format("%02d", curMonth) + "-_%' " +
+//                    " GROUP by itm.TarCatCode ";
+
+
 
                     cursor = dB.rawQuery(selectQuery, null);
 
@@ -1731,11 +1750,20 @@ public class DashboardController {
         ArrayList<Item> list = new ArrayList<Item>();
         String selectQuery = "";
 
-            selectQuery="select i.ItemCode,ifnull((sum(a.Qty)),0)  as Qty,a.Types ,i.UnitCode as ItemWeight from fItem as i, Forddet as a , fTargetCat h " +
-                    "where i.ItemCode in (select ItemCode from Forddet where a.Txndate LIKE  '" + curYear + "-" + String.format("%02d", curMonth) + "-_%' ) " +
-                    "and i.ItemCode = a.ItemCode  and a.Types ='SA' " +
-                    "and h.TarCatCode = i.TarCatCode AND h.TarCatCode = '" + catcode + "'" +
-                    " group by a.ItemCode ";
+            selectQuery="select i.ItemCode,ifnull((sum(a.Qty)),0) as Qty,a.Types ,i.UnitCode as ItemWeight from fItem as i, Forddet as a ,\n" +
+                    "  fTargetCat as h , fSubBrand as s \n" +
+                    "  where i.ItemCode in (select ItemCode from Forddet where a.Txndate LIKE  '" + curYear + "-" + String.format("%02d", curMonth) + "-_%' ) \n" +
+                    "  and i.ItemCode = a.ItemCode  and a.Types ='SA' and i.SBrandCode = s.SBrandCode \n" +
+                    "  and h.TarCatCode = i.TarCatCode and h.TarCatCode = '" + catcode + "'" +
+                    "  group by a.ItemCode";
+
+//        selectQuery="select i.ItemCode,ifnull((sum(a.Qty)),0)  as Qty,a.Types ,i.UnitCode as ItemWeight from fItem as i, Forddet as a , fTargetCat h " +
+//                "where i.ItemCode in (select ItemCode from Forddet where a.Txndate LIKE  '" + curYear + "-" + String.format("%02d", curMonth) + "-_%' ) " +
+//                "and i.ItemCode = a.ItemCode  and a.Types ='SA' " +
+//                "and h.TarCatCode = i.TarCatCode AND h.TarCatCode = '" + catcode + "'" +
+//                " group by a.ItemCode ";
+
+
 
         Cursor cursor = dB.rawQuery(selectQuery, null);
 
