@@ -16,7 +16,25 @@ public class FinvDetL3 {
 	private String FINVDETL3_TAX_COM_CODE;
 	private String FINVDETL3_TXN_DATE;
 	private String FINVDETL3_COST_CODE;
-	
+	private String FINVDETL3_NOU_CASE;
+	private String FINVDETL3_TOTAL_QTY;
+
+	public String getFINVDETL3_TOTAL_QTY() {
+		return FINVDETL3_TOTAL_QTY;
+	}
+
+	public void setFINVDETL3_TOTAL_QTY(String FINVDETL3_TOTAL_QTY) {
+		this.FINVDETL3_TOTAL_QTY = FINVDETL3_TOTAL_QTY;
+	}
+
+	public String getFINVDETL3_NOU_CASE() {
+		return FINVDETL3_NOU_CASE;
+	}
+
+	public void setFINVDETL3_NOU_CASE(String FINVDETL3_NOU_CASE) {
+		this.FINVDETL3_NOU_CASE = FINVDETL3_NOU_CASE;
+	}
+
 	public String getFINVDETL3_ID() {
 		return FINVDETL3_ID;
 	}

@@ -65,9 +65,17 @@ public class ItemController {
     public static final String FITEM_PACK_SIZE = "PackSize";
     public static final String FITEM_SUP_CODE = "SupCode";
     public static final String FITEM_MUST_FREE = "ChkMustFre";
+    public static final String FITEM_TAR_CATCODE = "TarCatCode";
+    public static final String FITEM_SBRAND_CODE = "SBrandCode";
 
     // create String
-    public static final String CREATE_FITEM_TABLE = "CREATE  TABLE IF NOT EXISTS " + TABLE_FITEM + " (" + FITEM_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " + FITEM_ADD_MATCH + " TEXT, " + FITEM_ADD_USER + " TEXT, " + FITEM_AVG_PRICE + " TEXT, " + FITEM_BRAND_CODE + " TEXT, " + FITEM_GROUP_CODE + " TEXT, " + FITEM_ITEM_CODE + " TEXT, " + FITEM_ITEM_NAME + " TEXT, " + FITEM_ITEM_STATUS + " TEXT, " + FITEM_MUST_SALE + " TEXT, " + FITEM_NOU_CASE + " TEXT, " + FITEM_ORD_SEQ + " TEXT, " + FITEM_PRIL_CODE + " TEXT, " + FITEM_RE_ORDER_LVL + " TEXT, " + FITEM_RE_ORDER_QTY + " TEXT, " + FITEM_TAX_COM_CODE + " TEXT, " + FITEM_TYPE_CODE + " TEXT, " + FITEM_UNIT_CODE + " TEXT, " + FITEM_CAT_CODE + " TEXT, " + FITEM_PACK + " TEXT, " + FITEM_PACK_SIZE + " TEXT, " + FITEM_SUP_CODE + " TEXT, " + FITEM_VEN_P_CODE + " TEXT, " + FITEM_MUST_FREE + " TEXT); ";
+    public static final String CREATE_FITEM_TABLE = "CREATE  TABLE IF NOT EXISTS " + TABLE_FITEM + " (" + FITEM_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " + FITEM_ADD_MATCH + " TEXT, "
+            + FITEM_ADD_USER + " TEXT, " + FITEM_AVG_PRICE + " TEXT, " + FITEM_BRAND_CODE + " TEXT, " + FITEM_GROUP_CODE + " TEXT, "
+            + FITEM_ITEM_CODE + " TEXT, " + FITEM_ITEM_NAME + " TEXT, " + FITEM_ITEM_STATUS + " TEXT, " + FITEM_MUST_SALE + " TEXT, "
+            + FITEM_NOU_CASE + " TEXT, " + FITEM_ORD_SEQ + " TEXT, " + FITEM_PRIL_CODE + " TEXT, " + FITEM_RE_ORDER_LVL + " TEXT, "
+            + FITEM_RE_ORDER_QTY + " TEXT, " + FITEM_TAX_COM_CODE + " TEXT, " + FITEM_TYPE_CODE + " TEXT, " + FITEM_UNIT_CODE + " TEXT, "
+            + FITEM_CAT_CODE + " TEXT, " + FITEM_PACK + " TEXT, " + FITEM_PACK_SIZE + " TEXT, " + FITEM_SUP_CODE + " TEXT, "
+            + FITEM_VEN_P_CODE + " TEXT, " + FITEM_MUST_FREE + " TEXT, " + FITEM_TAR_CATCODE + " TEXT, "  + FITEM_SBRAND_CODE + " TEXT); ";
 
     public static final String TESTITEM = "CREATE UNIQUE INDEX IF NOT EXISTS idxitem_something ON " + TABLE_FITEM + " (" + FITEM_ITEM_CODE + ")";
 
@@ -109,7 +117,8 @@ public class ItemController {
 
         try {
             dB.beginTransactionNonExclusive();
-            String sql = "INSERT OR REPLACE INTO " + TABLE_FITEM + " (AvgPrice,BrandCode,GroupCode,ItemCode,ItemName,ItemStatus,PrilCode,VenPcode,NouCase,ReOrderLvl,ReOrderQty,UnitCode,TypeCode,TaxComCode) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+            String sql = "INSERT OR REPLACE INTO " + TABLE_FITEM + " (AvgPrice,BrandCode,GroupCode,ItemCode,ItemName,ItemStatus,PrilCode,VenPcode," +
+                    "NouCase,ReOrderLvl,ReOrderQty,UnitCode,TypeCode,TaxComCode,TarCatCode,SBrandCode) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
 
             SQLiteStatement stmt = dB.compileStatement(sql);
 
@@ -129,6 +138,8 @@ public class ItemController {
                 stmt.bindString(12, items.getFITEM_UNITCODE());
                 stmt.bindString(13, items.getFITEM_TYPECODE());
                 stmt.bindString(14, items.getFITEM_TAXCOMCODE());
+                stmt.bindString(15, items.getFITEM_TAR_CATCODE());
+                stmt.bindString(16, items.getFITEM_SBRAND_CODE());
 
                 stmt.execute();
                 stmt.clearBindings();
@@ -1252,5 +1263,40 @@ public class ItemController {
         dB.close();
 
         return "";
+    }
+
+    // ------------------------ kaveesha - 25-03-2022 -------------------------------------------------------
+    public ArrayList<String> getItems() {
+        if (dB == null) {
+            open();
+        } else if (!dB.isOpen()) {
+            open();
+        }
+
+        ArrayList<String> list = new ArrayList<String>();
+        Cursor cursor = null;
+        try {
+            String selectQuery = "Select itm.ItemCode ,itm.ItemName from fItem as itm, fSubBrand as s where itm.SBrandCode = s.SBrandCode";
+            //String selectQuery = "select itm.ItemCode ,itm.ItemName from fItem as itm, fItemTarDet as itd where itm.ItemCode = itd.Itemcode";
+
+            cursor = dB.rawQuery(selectQuery, null);
+            while (cursor.moveToNext()) {
+
+
+                list.add(cursor.getString(cursor.getColumnIndex(FITEM_ITEM_CODE))+" - : "+cursor.getString(cursor.getColumnIndex(FITEM_ITEM_NAME)));
+
+            }
+        } catch (Exception e) {
+
+            e.printStackTrace();
+
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+            dB.close();
+        }
+
+        return list;
     }
 }

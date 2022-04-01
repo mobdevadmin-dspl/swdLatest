@@ -84,6 +84,8 @@ import com.datamation.swdsfa.controller.ReferenceSettingController;
 import com.datamation.swdsfa.controller.RouteController;
 import com.datamation.swdsfa.controller.RouteDetController;
 import com.datamation.swdsfa.controller.SalRepController;
+import com.datamation.swdsfa.controller.SubBrandController;
+import com.datamation.swdsfa.controller.TargetCatController;
 import com.datamation.swdsfa.controller.TownController;
 import com.datamation.swdsfa.customer.UploadEditedDebtors;
 import com.datamation.swdsfa.customer.UploadNewCustomer;
@@ -134,6 +136,8 @@ import com.datamation.swdsfa.model.Reason;
 import com.datamation.swdsfa.model.Route;
 import com.datamation.swdsfa.model.RouteDet;
 import com.datamation.swdsfa.model.SalRep;
+import com.datamation.swdsfa.model.SubBrand;
+import com.datamation.swdsfa.model.TargetCat;
 import com.datamation.swdsfa.model.Town;
 import com.datamation.swdsfa.model.User;
 import com.datamation.swdsfa.model.apimodel.APIUrl;
@@ -1498,6 +1502,45 @@ public class FragmentTools extends Fragment implements View.OnClickListener, Upl
                     }
 
                     /*****************end Branches**********************************************************************/
+                    /*****************SubBrand*****************************************************************************/
+
+                    String subBrand = "";
+                    try {
+                        subBrand = networkFunctions.getSubBrand();
+                        // Log.d(LOG_TAG, "OUTLETS :: " + outlets);
+                    } catch (IOException e) {
+                        errors.add("Error getting SubBrand "+e.toString());
+                        throw e;
+                    }
+
+                    getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            pdialog.setMessage("Processing downloaded data (SubBrand details)...");
+                        }
+                    });
+
+                    // Processing Branches
+                    SubBrandController subBrandController = new SubBrandController(getActivity());
+                    subBrandController.deleteAll();
+                    try {
+                        JSONObject settingJSON = new JSONObject(subBrand);
+                        JSONArray settingsJSONArray = settingJSON.getJSONArray("fSubBrandResult");
+                        ArrayList<SubBrand> subBrandArrayList = new ArrayList<SubBrand>();
+
+                        for (int i = 0; i < settingsJSONArray.length(); i++) {
+                            subBrandArrayList.add(SubBrand.parseSubBrand(settingsJSONArray.getJSONObject(i)));
+                        }
+                        subBrandController.CreateOrUpdateSubBrand(subBrandArrayList);
+                    } catch (JSONException | NumberFormatException e) {
+                        errors.add("SubBrand not downloaded "+e.toString());
+//                        ErrorUtil.logException("LoginActivity -> Authenticate -> doInBackground() # Process Routes and Outlets",
+//                                e, routes, BugReport.SEVERITY_HIGH);
+
+                        throw e;
+                    }
+
+                    /*****************end SubBrand**********************************************************************/
                     /*****************Item Loc*****************************************************************************/
 
                     String itemLocs = "";
@@ -2718,6 +2761,51 @@ public class FragmentTools extends Fragment implements View.OnClickListener, Upl
                     } catch (JSONException | NumberFormatException e) {
 
                         errors.add("DayTargetD not downloaded "+e.toString());
+                        throw e;
+                    }
+
+                    /*****************TargetCat - 25/03/2022 **********************************************************************/
+
+                    getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            pdialog.setMessage("Downloading TargetCat...");
+                        }
+                    });
+
+
+                    String targetCat = "";
+                    try {
+                        targetCat = networkFunctions.getTargetCat();
+                    } catch (IOException e) {
+                        errors.add("Error getting TargetCat "+e.toString());
+                        throw e;
+                    }
+
+                    getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            pdialog.setMessage("Processing downloaded data (TargetCat)...");
+                        }
+                    });
+
+                    // Processing TargetCat
+                    try {
+                        JSONObject targetCatDJSON = new JSONObject(targetCat);
+                        JSONArray targetCatJSONArray = targetCatDJSON.getJSONArray("FTargetcatResult");
+                        ArrayList<TargetCat> targetCatList = new ArrayList<TargetCat>();
+                        TargetCatController targetCatController = new TargetCatController(getActivity());
+                        targetCatController.deleteAll();
+                        for (int i = 0; i < targetCatJSONArray.length(); i++) {
+                            targetCatList.add(TargetCat.parseTargetCat(targetCatJSONArray.getJSONObject(i)));
+                        }
+
+                        targetCatController.CreateOrUpdateTargetCat(targetCatList);
+                        Log.d("TargetCat", "succes");
+
+                    } catch (JSONException | NumberFormatException e) {
+
+                        errors.add("TargetCat not downloaded "+e.toString());
                         throw e;
                     }
 

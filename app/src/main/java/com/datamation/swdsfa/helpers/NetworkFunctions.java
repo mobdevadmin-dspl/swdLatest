@@ -127,6 +127,17 @@ public class NetworkFunctions {
 
     }
 
+    // ----------------------------------- kaveesha - 25/03/2022 --------------------------------------------
+    public String getTargetCat() throws IOException {
+
+        List<CustomNameValuePair> params = new ArrayList<>();
+
+        Log.d(LOG_TAG, "Getting Targetcat : " + baseURL + "FTargetcat" + restOfURL + params);
+
+        return getFromServer(baseURL + "FTargetcat" + restOfURL , params);
+
+    }
+
     // ----------------------------------- kaveesha - 18/03/2022 --------------------------------------------
     public String getSalRep(String userId, String pw) throws IOException {
 
@@ -301,7 +312,14 @@ public class NetworkFunctions {
 
         return getFromServer(baseURL + "fCompanySetting" + restOfURL, params);
     }
+    public String getSubBrand() throws IOException {
 
+        List<CustomNameValuePair> params = new ArrayList<>();
+
+        Log.d(LOG_TAG, "Getting getSubBrand : " + baseURL + "fSubBrand" + restOfURL + params);
+
+        return getFromServer(baseURL + "fSubBrand" + restOfURL, params);
+    }
     public String getReasons() throws IOException {
 
         List<CustomNameValuePair> params = new ArrayList<>();

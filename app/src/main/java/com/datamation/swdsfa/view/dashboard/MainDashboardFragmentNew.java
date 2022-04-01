@@ -13,28 +13,38 @@ import android.text.SpannableString;
 import android.text.style.ForegroundColorSpan;
 import android.text.style.RelativeSizeSpan;
 import android.text.style.StyleSpan;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 
+import com.datamation.swdsfa.OtherUploads.UploadSalRef;
 import com.datamation.swdsfa.R;
 import com.datamation.swdsfa.controller.DashboardController;
 import com.datamation.swdsfa.controller.FItenrDetController;
+import com.datamation.swdsfa.controller.ItemController;
+import com.datamation.swdsfa.controller.ItemTarDetController;
 import com.datamation.swdsfa.controller.RouteDetController;
 import com.datamation.swdsfa.helpers.SharedPref;
+import com.datamation.swdsfa.model.FinvDetL3;
+import com.datamation.swdsfa.model.Item;
+import com.datamation.swdsfa.model.TargetCat;
 import com.github.mikephil.charting.animation.ChartAnimator;
 import com.github.mikephil.charting.charts.BarChart;
 import com.github.mikephil.charting.charts.HorizontalBarChart;
@@ -61,7 +71,9 @@ import com.toptoche.searchablespinnerlibrary.SearchableSpinner;
 import com.wdullaer.materialdatetimepicker.date.DatePickerDialog;
 
 import java.io.RandomAccessFile;
+import java.text.DecimalFormat;
 import java.text.NumberFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -85,15 +97,32 @@ public class MainDashboardFragmentNew extends Fragment {
 
     private ArrayList<Double> targetValues;
     private List<Double> achievementValues;
-
+    String type,category,itemcode = "";
+    int cases,pieces;
+    SharedPref pref;
+    PieChart pieChart;
     BarChart chart,groupBarChart ;
-    double precentage;
+    BarDataSet barDataSet1, barDataSet2;
+    ArrayList<BarEntry> barEntries,barAchieveEntries,barTargetEntries;
+    double precentage,target,achievement;
+    String changeDateFrom,changeDateTo;
     ImageView menu;
     ArrayList<String> targetItemList;
     CheckBox chCategoryView;
     RadioGroup radioGroup;
-    RadioButton rdCase,rdPiece,rdTonnage,rdValue;
+    RadioButton rdCase,rdPiece,rdTonnage,rdValue,rdSales,rdInvoice;;
     public DatePickerDialog datePickerDialogfrom,datePickerDialogTo;
+    DecimalFormat df = new DecimalFormat("####0.00");
+    TextView fromDate,toDate,itemName;
+    RadioGroup radioGroup1,radioGroup2;
+    SearchableSpinner spTargetItem;
+    ImageView btnFromDate ,btnToDate;
+    LinearLayout row_categorySelection;
+
+
+
+
+
 
 
 //    private IOnDashboardFragmentInteractionListener mListener;
@@ -126,9 +155,12 @@ public class MainDashboardFragmentNew extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_main_dashboard, container, false);
-        menu = (ImageView) rootView.findViewById(R.id.menu);
 
+        pref = SharedPref.getInstance(getActivity());
+
+        menu = (ImageView) rootView.findViewById(R.id.menu);
         cumulativeLineChart = (HorizontalBarChart) rootView.findViewById(R.id.dashboard_hBarChart);
+        pieChart = rootView.findViewById(R.id.piechart);
         targetValues = new ArrayList<Double>();
         cumulativeLineChart.setDrawGridBackground(false);
         cumulativeLineChart.setPinchZoom(true);
@@ -145,13 +177,16 @@ public class MainDashboardFragmentNew extends Fragment {
         rdPiece = rootView.findViewById(R.id.rdPieces);
         rdTonnage = rootView.findViewById(R.id.rdTonnage);
         rdValue = rootView.findViewById(R.id.rdValue);
+        row_categorySelection = rootView.findViewById(R.id.row_categorySelection);
 
         if(chCategoryView.isChecked()){
             groupBarChart.setVisibility(View.VISIBLE);
             chart.setVisibility(View.GONE);
+            row_categorySelection.setVisibility(View.VISIBLE);
         }else{
             chart.setVisibility(View.VISIBLE);
             groupBarChart.setVisibility(View.GONE);
+            row_categorySelection.setVisibility(View.INVISIBLE);
         }
 
         chCategoryView.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
@@ -160,36 +195,37 @@ public class MainDashboardFragmentNew extends Fragment {
                 if(chCategoryView.isChecked()){
                     groupBarChart.setVisibility(View.VISIBLE);
                     chart.setVisibility(View.GONE);
-
+                    row_categorySelection.setVisibility(View.VISIBLE);
                 }else{
                     chart.setVisibility(View.VISIBLE);
                     groupBarChart.setVisibility(View.GONE);
+                    row_categorySelection.setVisibility(View.INVISIBLE);
 
                 }
             }
         });
 
         if(rdCase.isChecked()){
-
+            getMonthAchievement(new DashboardController(getActivity()).getTargetCategories(),"Case");
         }else if(rdPiece.isChecked()){
-
+            getMonthAchievement(new DashboardController(getActivity()).getTargetCategories(),"Piece");
         }else if(rdTonnage.isChecked()){
-
+            getMonthAchievement(new DashboardController(getActivity()).getTargetCategories(),"Tonnage");
         }else if(rdValue.isChecked()){
-
+            getMonthAchievement(new DashboardController(getActivity()).getTargetCategories(),"Value");
         }
 
         radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup group, int checkedId) {
                 if(rdCase.isChecked()){
-
+                    getMonthAchievement(new DashboardController(getActivity()).getTargetCategories(),"Case");
                 }else if(rdPiece.isChecked()){
-
+                    getMonthAchievement(new DashboardController(getActivity()).getTargetCategories(),"Piece");
                 }else if(rdTonnage.isChecked()){
-
+                    getMonthAchievement(new DashboardController(getActivity()).getTargetCategories(),"Tonnage");
                 }else if(rdValue.isChecked()){
-
+                    getMonthAchievement(new DashboardController(getActivity()).getTargetCategories(),"Value");
                 }
             }
         });
@@ -312,17 +348,62 @@ public class MainDashboardFragmentNew extends Fragment {
 
 
         //--------------------------------------- Pie Chart -----------------------------------------------------------------
-        PieChart pieChart = rootView.findViewById(R.id.piechart);
+        create_pie_Chart(Double.parseDouble(pref.getAchievement()),Double.parseDouble(pref.getTarget()));
+
+
+
+        return rootView;
+    }
+
+    public void createGroupChart(ArrayList<BarEntry> achieveEntries,ArrayList<BarEntry> TargetEntries){
+
+        barDataSet1 = new BarDataSet(achieveEntries, "Achievement");
+       // barDataSet1 = new BarDataSet(getMonthAchievement(new DashboardController(getActivity()).getTargetCategories()), "First Set");
+        barDataSet1.setColor(getActivity().getResources().getColor(R.color.material_alert_negative_button));
+        barDataSet2 = new BarDataSet(TargetEntries, "Target");
+        barDataSet2.setColor(getActivity().getResources().getColor(R.color.green));
+
+
+        BarData data = new BarData(barDataSet1, barDataSet2);
+        groupBarChart.setData(data);
+        groupBarChart.getDescription().setEnabled(false);
+        XAxis xAxis = groupBarChart.getXAxis();
+
+        ArrayList<String> xValues = new DashboardController(getActivity()).getItemCategories();
+        xAxis.setValueFormatter(new IndexAxisValueFormatter(xValues));
+        xAxis.setCenterAxisLabels(true);
+        xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
+        xAxis.setGranularity(0.001f);
+        xAxis.setGranularityEnabled(false);
+        xAxis.setDrawGridLines(false);
+
+
+        groupBarChart.setDragEnabled(true);
+        groupBarChart.setVisibleXRangeMaximum(3);
+
+        float barSpace = 0.1f;
+        float groupSpace = 0.1f;
+
+        data.setBarWidth(0.15f);
+
+        groupBarChart.getXAxis().setAxisMinimum(0);
+        groupBarChart.animate();
+        groupBarChart.groupBars(0, groupSpace, barSpace);
+        groupBarChart.invalidate();
+    }
+
+    public void create_pie_Chart(double daily_Achieve, double daily_Target){
+
         ArrayList<PieEntry> pieChartValues = new ArrayList<>();
 
 
-        if(dailyAchieve == 0 && dailyTarget == 0){
+        if(daily_Achieve == 0 && daily_Target == 0){
             precentage = 0;
         }else {
-            precentage = (dailyAchieve / dailyTarget) * 100;
+            precentage = (daily_Achieve / daily_Target) * 100;
         }
 
-        pieChart.getDescription().setText("Item Name \n\n Sales Order - Cases");
+        pieChart.getDescription().setText(pref.getItemName() + "    -    " + pref.getType() + "    -    " + pref.getCategory());
         pieChart.setCenterText(Math.round(precentage) + " %");
         pieChart.setCenterTextSize(36);
         pieChart.setCenterTextColor(Color.BLUE);
@@ -338,8 +419,8 @@ public class MainDashboardFragmentNew extends Fragment {
         pieChart.setDrawRoundedSlices(true);
 
 
-        pieChartValues.add(0, new PieEntry((float)dailyTarget));
-        pieChartValues.add(1,new PieEntry((float)dailyAchieve));
+        pieChartValues.add(0, new PieEntry((float)daily_Target));
+        pieChartValues.add(1,new PieEntry((float)daily_Achieve));
 
         PieDataSet dataSet = new PieDataSet(pieChartValues, "(-values-)");
 
@@ -355,7 +436,11 @@ public class MainDashboardFragmentNew extends Fragment {
         pieChart.animateXY(3000, 3000);
         pieChart.setRenderer(new RoundedSlicesPieChartRenderer(pieChart, pieChart.getAnimator(), pieChart.getViewPortHandler()));
 
-        return rootView;
+        //Clear
+        pref.setType("");
+        pref.setCategory("");
+        pref.setItemName("");
+
     }
 
     public void create_graph(List<String> graph_label, List<Integer> graph_values) {
@@ -499,6 +584,10 @@ public class MainDashboardFragmentNew extends Fragment {
 
     private SpannableString generateCenterSpannableText() {
 
+        Double d = precentage;
+        String[] div = d.toString().split("\\.");
+        div[0].length();   // Before Decimal Count
+
         if(precentage == 0){
             String p = Math.round(precentage) + " %" ;
             SpannableString s = new SpannableString(p);
@@ -507,16 +596,43 @@ public class MainDashboardFragmentNew extends Fragment {
             s.setSpan(new ForegroundColorSpan(Color.BLACK), 0, 3 , 0);
             s.setSpan(new RelativeSizeSpan(.8f), 0, 3, 0);
             return s;
-        }else{
+        }else if(precentage > 0){
             String p = Math.round(precentage) + " %" ;
             SpannableString s = new SpannableString(p);
-            s.setSpan(new RelativeSizeSpan(4f), 0, 4, 0);
-            s.setSpan(new StyleSpan(Typeface.BOLD), 0, 4, 0);
-            s.setSpan(new ForegroundColorSpan(Color.BLACK), 0, 4 , 0);
-            s.setSpan(new RelativeSizeSpan(.8f), 0, 4, 0);
+            s.setSpan(new RelativeSizeSpan(4f), 0, 3, 0);
+            s.setSpan(new StyleSpan(Typeface.BOLD), 0, 3, 0);
+            s.setSpan(new ForegroundColorSpan(Color.BLACK), 0, 3 , 0);
+            s.setSpan(new RelativeSizeSpan(.8f), 0, 3, 0);
             return s;
         }
 
+
+//        else if(div[0].length() == 1){
+//            String p = Math.round(precentage) + " %" ;
+//            SpannableString s = new SpannableString(p);
+//            s.setSpan(new RelativeSizeSpan(3f), 0, 3, 0);
+//            s.setSpan(new StyleSpan(Typeface.BOLD), 0, 3, 0);
+//            s.setSpan(new ForegroundColorSpan(Color.BLACK), 0, 3 , 0);
+//            s.setSpan(new RelativeSizeSpan(.8f), 0, 3, 0);
+//            return s;
+//        }else if(div[0].length() == 2){
+//            String p = Math.round(precentage) + " %" ;
+//            SpannableString s = new SpannableString(p);
+//            s.setSpan(new RelativeSizeSpan(4f), 0, 3, 0);
+//            s.setSpan(new StyleSpan(Typeface.BOLD), 0, 3, 0);
+//            s.setSpan(new ForegroundColorSpan(Color.BLACK), 0, 3 , 0);
+//            s.setSpan(new RelativeSizeSpan(.8f), 0, 3, 0);
+//            return s;
+//        }else if(div[0].length() > 2){
+//            String p = Math.round(precentage) + " %" ;
+//            SpannableString s = new SpannableString(p);
+//            s.setSpan(new RelativeSizeSpan(4f), 0, 3, 0);
+//            s.setSpan(new StyleSpan(Typeface.BOLD), 0, 3, 0);
+//            s.setSpan(new ForegroundColorSpan(Color.BLACK), 0, 3 , 0);
+//            s.setSpan(new RelativeSizeSpan(.8f), 0, 3, 0);
+//            return s;
+//        }
+        return null;
     }
 
     public class RoundedSlicesPieChartRenderer extends PieChartRenderer {
@@ -717,20 +833,22 @@ public class MainDashboardFragmentNew extends Fragment {
 
         //initializations
 
-        final SearchableSpinner spTargetItem = (SearchableSpinner) targetDetDialog.findViewById(R.id.spTargetItem) ;
-        final TextView itemName = (TextView) targetDetDialog.findViewById(R.id.targetItemName) ;
-        final ImageView btnFromDate = (ImageView) targetDetDialog.findViewById(R.id.image_view_date_select_from) ;
-        final ImageView btnToDate = (ImageView) targetDetDialog.findViewById(R.id.image_view_date_select_to) ;
-        final TextView fromDate = (TextView) targetDetDialog.findViewById(R.id.fromDate) ;
-        final TextView toDate = (TextView) targetDetDialog.findViewById(R.id.toDate) ;
-        final RadioButton rdSales = (RadioButton) targetDetDialog.findViewById(R.id.rdSalesOrder) ;
-        final RadioButton rdInvoice = (RadioButton) targetDetDialog.findViewById(R.id.rdInvoice) ;
+        spTargetItem = (SearchableSpinner) targetDetDialog.findViewById(R.id.spTargetItem) ;
+        itemName = (TextView) targetDetDialog.findViewById(R.id.targetItemName) ;
+        btnFromDate = (ImageView) targetDetDialog.findViewById(R.id.image_view_date_select_from) ;
+        btnToDate = (ImageView) targetDetDialog.findViewById(R.id.image_view_date_select_to) ;
+        fromDate = (TextView) targetDetDialog.findViewById(R.id.fromDate) ;
+        toDate = (TextView) targetDetDialog.findViewById(R.id.toDate) ;
+        rdSales = (RadioButton) targetDetDialog.findViewById(R.id.rdSalesOrder) ;
+        rdInvoice = (RadioButton) targetDetDialog.findViewById(R.id.rdInvoice) ;
+        radioGroup1 = (RadioGroup) targetDetDialog.findViewById(R.id.groupradio) ;
+        radioGroup2 = (RadioGroup) targetDetDialog.findViewById(R.id.groupradioCategory) ;
+
         final RadioButton rdCase = (RadioButton) targetDetDialog.findViewById(R.id.rdCase) ;
         final RadioButton rdPiece = (RadioButton) targetDetDialog.findViewById(R.id.rdPieces) ;
         final RadioButton rdTonnage = (RadioButton) targetDetDialog.findViewById(R.id.rdTonnage) ;
         final RadioButton rdValue = (RadioButton) targetDetDialog.findViewById(R.id.rdValue) ;
-        final RadioGroup radioGroup1 = (RadioGroup) targetDetDialog.findViewById(R.id.groupradio) ;
-        final RadioGroup radioGroup2 = (RadioGroup) targetDetDialog.findViewById(R.id.groupradioCategory) ;
+
 
 
         //------------------------------- Set from date --------------------------------------------------------
@@ -750,17 +868,31 @@ public class MainDashboardFragmentNew extends Fragment {
                         String datesaveFrom = "";
                         if(String.valueOf(monthOfYear+1).length()<2 && String.valueOf(dayOfMonth).length()<2){
                             datesaveFrom = "" + year + "-" + "0"+(monthOfYear+1) + "-" + "0"+dayOfMonth ;
+                            changeDateFrom = "" +(monthOfYear+1) + "/" + "0" + dayOfMonth + "/" + year;
+                           // changeDateFrom = "" + "0"+(monthOfYear+1) + "/" + "0" + dayOfMonth + "/" + year;
                         }else{
                             if(String.valueOf(monthOfYear+1).length()<2){
                                 datesaveFrom = "" + year + "-" +"0"+(monthOfYear+1) +"-" + dayOfMonth ;
+                                changeDateFrom = "" + (monthOfYear+1) + "/" + dayOfMonth +"/" + year ;
+                              //  changeDateFrom = "" + "0" + (monthOfYear+1) + "/" + dayOfMonth +"/" + year ;
                             }else if(String.valueOf(dayOfMonth).length()<2){
-                                datesaveFrom = "" + year + "-" +(monthOfYear+1) + "-" + "0"+dayOfMonth ;
+                                datesaveFrom = "" + year + "-" + (monthOfYear+1) + "-" + "0"+dayOfMonth ;
+                                changeDateFrom = "" + (monthOfYear+1) + "/" + "0"+dayOfMonth + "/" + year ;
                             }else{
                                 datesaveFrom = "" + year + "-" +(monthOfYear+1) + "-" + dayOfMonth ;
+                                changeDateFrom = "" + (monthOfYear+1) + "/" + dayOfMonth + "/" + year ;
                             }
-
                         }
-                        fromDate.setText(""+datesaveFrom);
+
+                        int curYear = Integer.parseInt(new SimpleDateFormat("yyyy").format(new Date()));
+                        int curMonth = Integer.parseInt(new SimpleDateFormat("MM").format(new Date()));
+
+                        if ((curMonth == (monthOfYear +1)) && (curYear == year)) {
+                            fromDate.setText(""+datesaveFrom);
+                        }else{
+                            Toast.makeText(context,"You can't choose previous or future month date. ",Toast.LENGTH_LONG).show();
+                        }
+
                     }
                 });
 
@@ -783,16 +915,31 @@ public class MainDashboardFragmentNew extends Fragment {
                         String datesaveTo = "";
                         if(String.valueOf(monthOfYear+1).length()<2 && String.valueOf(dayOfMonth).length()<2){
                             datesaveTo = "" + year + "-" + "0"+(monthOfYear+1) + "-" + "0"+dayOfMonth ;
+                            changeDateTo = "" + (monthOfYear+1) + "/" + "0" + dayOfMonth + "/" + year;
+                          //  changeDateTo = "" + "0"+(monthOfYear+1) + "/" + "0" + dayOfMonth + "/" + year;
                         }else{
                             if(String.valueOf(monthOfYear+1).length()<2){
                                 datesaveTo = "" + year + "-" +"0"+(monthOfYear+1) +"-" + dayOfMonth ;
+                                changeDateTo = "" + (monthOfYear+1) + "/" + dayOfMonth +"/" + year ;
+                        //        changeDateTo = "" + "0" + (monthOfYear+1) + "/" + dayOfMonth +"/" + year ;
                             }else if(String.valueOf(dayOfMonth).length()<2){
-                                datesaveTo = "" + year + "-" +(monthOfYear+1) + "-" + "0"+dayOfMonth ;
+                                datesaveTo = "" + year + "-" + (monthOfYear+1) + "-" + "0"+dayOfMonth ;
+                                changeDateTo = "" + (monthOfYear+1) + "/" + "0"+dayOfMonth + "/" + year ;
                             }else{
                                 datesaveTo = "" + year + "-" +(monthOfYear+1) + "-" + dayOfMonth ;
+                                changeDateTo = "" + (monthOfYear+1) + "/" + dayOfMonth + "/" + year ;
                             }
                         }
-                        toDate.setText(""+datesaveTo);
+
+                        int curYear = Integer.parseInt(new SimpleDateFormat("yyyy").format(new Date()));
+                        int curMonth = Integer.parseInt(new SimpleDateFormat("MM").format(new Date()));
+
+                        if ((curMonth == (monthOfYear +1)) && (curYear == year)) {
+                            toDate.setText(""+datesaveTo);
+                        }else{
+                            Toast.makeText(context,"You can't choose previous or future month date. ",Toast.LENGTH_LONG).show();
+                        }
+
                     }
                 });
 
@@ -801,55 +948,83 @@ public class MainDashboardFragmentNew extends Fragment {
 
         //----------------------------------Select Sales or Invoice-----------------------------------------------------------------
         if(rdSales.isChecked()){
-
+            type = "Order";
+            pref.setType("Order");
         }else if(rdInvoice.isChecked()){
-
+            type = "Invoice";
+            pref.setType("Invoice");
         }
         radioGroup1.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup group, int checkedId) {
                 if(rdSales.isChecked()){
-
+                    type = "Order";
+                    pref.setType("Order");
                 }else if(rdInvoice.isChecked()){
-
+                    type = "Invoice";
+                    pref.setType("Invoice");
                 }
             }
         });
 
         //------------------------------Category selection--------------------------------------------------------
         if(rdCase.isChecked()){
-
+            category = "Case";
+            pref.setCategory("Case");
         }else if(rdPiece.isChecked()){
-
+            category = "Piece";
+            pref.setCategory("Piece");
         }else if(rdTonnage.isChecked()){
-
+            category = "Tonnage";
+            pref.setCategory("Tonnage");
         }else if(rdValue.isChecked()){
-
+            category = "Value";
+            pref.setCategory("Value");
         }
 
         radioGroup2.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup group, int checkedId) {
                 if(rdCase.isChecked()){
-
+                    category = "Case";
+                    pref.setCategory("Case");
                 }else if(rdPiece.isChecked()){
-
+                    category = "Piece";
+                    pref.setCategory("Piece");
                 }else if(rdTonnage.isChecked()){
-
+                    category = "Tonnage";
+                    pref.setCategory("Tonnage");
                 }else if(rdValue.isChecked()){
-
+                    category = "Value";
+                    pref.setCategory("Value");
                 }
             }
         });
 
 
         // set target item data into the spinner
-//            targetItemList = new CurrencyController(context).searchCurrency();
-//            targetItemList.add(0, "-SELECT-");
-//
-//            ArrayAdapter<String> adaptercur = new ArrayAdapter<String>(context, android.R.layout.simple_spinner_dropdown_item, targetItemList);
-//            adaptercur.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-//            spTargetItem.setAdapter(adaptercur);
+            targetItemList = new ItemController(context).getItems();
+            targetItemList.add(0, "-SELECT-");
+
+            ArrayAdapter<String> adaptercur = new ArrayAdapter<String>(context, android.R.layout.simple_spinner_dropdown_item, targetItemList);
+            adaptercur.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+            spTargetItem.setAdapter(adaptercur);
+
+            spTargetItem.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                @Override
+                public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                    if(!spTargetItem.getSelectedItem().equals("-SELECT-")){
+                        itemName.setText(spTargetItem.getSelectedItem().toString().split("- :")[1].trim());
+                        itemcode = spTargetItem.getSelectedItem().toString().split("- :")[0].trim();
+                        pref.setItemName(spTargetItem.getSelectedItem().toString().split("- :")[1].trim());
+                    }
+                }
+
+                @Override
+                public void onNothingSelected(AdapterView<?> parent) {
+
+                }
+            });
 
 
 
@@ -859,7 +1034,65 @@ public class MainDashboardFragmentNew extends Fragment {
             @Override
             public void onClick(View view) {
 
-                targetDetDialog.dismiss();
+                if(!type.equals("") && !category.equals("") && !spTargetItem.getSelectedItem().equals("-SELECT-")){
+
+                    target = new DashboardController(context).getTarget(fromDate.getText().toString(),toDate.getText().toString(),itemcode);
+                   // target = new DashboardController(context).getTarget(changeDateFrom,changeDateTo,itemcode);
+
+                    if(type.equals("Order")){
+
+                        if(category.equals("Tonnage")){
+                            create_pie_Chart(getTonnage("Order",itemcode),target);
+                            pref.setAchievement(""+getTonnage("Order",itemcode));
+                            pref.setTarget(""+target);
+                        }else{
+                            achievement = new DashboardController(context).getOrderAchievement(category,itemcode,fromDate.getText().toString(),toDate.getText().toString());
+                            create_pie_Chart(achievement,target);
+                            pref.setAchievement(""+achievement);
+                            pref.setTarget(""+target);
+                        }
+
+                    }else if(type.equals("Invoice")){
+
+                        FinvDetL3 finv = new DashboardController(context).getInvoiceDetails(itemcode,fromDate.getText().toString(),toDate.getText().toString());
+
+                        int totQty = 0,nouCase = 0;
+
+                        if (finv.getFINVDETL3_NOU_CASE().toString() != null && finv.getFINVDETL3_TOTAL_QTY().toString() != null) {
+                            totQty = Integer.parseInt(finv.getFINVDETL3_TOTAL_QTY());
+                            nouCase = Integer.parseInt(finv.getFINVDETL3_NOU_CASE());
+                        }
+
+                            if(category.equals("Case")){
+                                achievement = totQty / nouCase;
+                                create_pie_Chart(achievement,target);
+                                pref.setAchievement(""+achievement);
+                                pref.setTarget(""+target);
+                            }else if(category.equals("Piece")){
+                                achievement = totQty % nouCase;
+                                create_pie_Chart(achievement,target);
+                                pref.setAchievement(""+achievement);
+                                pref.setTarget(""+target);
+                            }else if(category.equals("Tonnage")){
+                                create_pie_Chart(getTonnage("Invoice",itemcode),target);
+                                pref.setAchievement(""+getTonnage("Invoice",itemcode));
+                                pref.setTarget(""+target);
+                            }else if(category.equals("Value")){
+                                String amount = df.format(Double.parseDouble(finv.getFINVDETL3_AMT()));
+                                achievement = Double.parseDouble(amount);
+                                create_pie_Chart(achievement,target);
+                                pref.setAchievement(""+achievement);
+                                pref.setTarget(""+target);
+                            }
+                        }
+
+
+                    targetDetDialog.dismiss();
+                }else{
+                    targetDetDialog.dismiss();
+                }
+
+
             }
         });
 
@@ -868,7 +1101,133 @@ public class MainDashboardFragmentNew extends Fragment {
     }
 
 
+    public double getTonnage(String type,String itemcode) {
+        double tonnage = 0.0;
+        String unitsPerCase = "";
+        DashboardController dashboardController = new DashboardController(getActivity());
+        ArrayList<Item> itemTonnageList = new ArrayList<>();
+        itemTonnageList = dashboardController.getTonnage(type,fromDate.getText().toString(),toDate.getText().toString(),itemcode);//get ItemCode ItemWeight Qty as list
+        for (Item item : itemTonnageList) {// filter item list
+            String weight = item.getFITEM_UNITCODE().split("\\*")[0].trim(); // filter only weight part
+            if (item.getFITEM_UNITCODE().split("\\*").length > 1) //check split array size
+                unitsPerCase = item.getFITEM_UNITCODE().split("\\*")[1].trim();// get units per case
+
+            double qty = Double.parseDouble(item.getFITEM_QOH());//get item quantity
+
+//            String weightWithoutUOM = weight.replaceAll("\\D+", "");//get weight removing string
+
+            String newWeight = "";
+            if (weight.contains("g")) {
+                newWeight = weight.replace("g", "");
+            } else if (weight.contains("G")) {
+                newWeight = weight.replace("G", "");
+            } else if (weight.contains("ml")) {
+                newWeight = weight.replace("ml", "");
+            } else if (weight.contains("ML")) {
+                newWeight = weight.replace("ML", "");
+            }
+
+            if (!weight.equals("") && !unitsPerCase.equals(""))
+                try {
+                    tonnage += (Double.parseDouble(newWeight) * qty) / (1000 * 1000);//tonnage sum
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+        }
+        Log.d(">>tonnage",">>tonnage"+tonnage);
+        return tonnage;
+
+    }
+
+    public double getMonthlyTonnage(String catcode) {
+        double tonnage = 0.0;
+        String unitsPerCase = "";
+        DashboardController dashboardController = new DashboardController(getActivity());
+        ArrayList<Item> itemTonnageList = new ArrayList<>();
+        itemTonnageList = dashboardController.getMonthlyTonnage(catcode);//get ItemCode ItemWeight Qty as list
+        for (Item item : itemTonnageList) {// filter item list
+            String weight = item.getFITEM_UNITCODE().split("\\*")[0].trim(); // filter only weight part
+            if (item.getFITEM_UNITCODE().split("\\*").length > 1) //check split array size
+                unitsPerCase = item.getFITEM_UNITCODE().split("\\*")[1].trim();// get units per case
+
+            double qty = Double.parseDouble(item.getFITEM_QOH());//get item quantity
+
+//            String weightWithoutUOM = weight.replaceAll("\\D+", "");//get weight removing string
+
+            String newWeight = "";
+            if (weight.contains("g")) {
+                newWeight = weight.replace("g", "");
+            } else if (weight.contains("G")) {
+                newWeight = weight.replace("G", "");
+            } else if (weight.contains("ml")) {
+                newWeight = weight.replace("ml", "");
+            } else if (weight.contains("ML")) {
+                newWeight = weight.replace("ML", "");
+            }
+
+            if (!weight.equals("") && !unitsPerCase.equals(""))
+                try {
+                    tonnage += (Double.parseDouble(newWeight) * qty) / (1000 * 1000);//tonnage sum
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+        }
+        Log.d(">>tonnage",">>tonnage"+tonnage);
+        return tonnage;
+
+    }
 
 
+    //---------------------------------------------- Group Chart -------------------------------------------------------------------------
+
+    public void getMonthAchievement( ArrayList<TargetCat> categories,String type) {
+   // public ArrayList<BarEntry> getMonthAchievement( ArrayList<TargetCat> categories,String type) {
+
+        barAchieveEntries = new ArrayList<>();
+        barTargetEntries = new ArrayList<>();
+
+        double monthlyCatAchieve, monthlyCatTarget =0.00;
+
+        if(type.equals("Tonnage")){
+            for(TargetCat cat : categories){
+                monthlyCatAchieve = getMonthlyTonnage(cat.getTarCatCode().trim());
+                barAchieveEntries.add(new BarEntry(cat.getId(), (float) monthlyCatAchieve));
+            }
+        }else{
+            for(TargetCat cat : categories){
+                monthlyCatAchieve = new DashboardController(getActivity()).getMonthlyAchievement(cat.getTarCatCode().trim(),type);
+                barAchieveEntries.add(new BarEntry(cat.getId(), (float) monthlyCatAchieve));
+            }
+        }
+
+        for(TargetCat cat : categories){
+            monthlyCatTarget = new DashboardController(getActivity()).getMonthlyTarget(cat.getTarCatCode().trim(),type);
+            barTargetEntries.add(new BarEntry(cat.getId(), (float) monthlyCatTarget));
+        }
+
+        createGroupChart(barAchieveEntries,barTargetEntries);
+//
+//        for (int i=1;i<=xValues.size();i++) {
+//            monthlyCat01Achieve = new DashboardController(getActivity()).getCaseAchievement();
+//            barEntries.add(new BarEntry((float)i, (float) monthlyCat01Achieve));
+//        }
+//        double monthlyCat01Achieve = new DashboardController(getActivity()).getCaseAchievement("TCCOS01");
+//        double monthlyCat02Achieve = new DashboardController(getActivity()).getCaseAchievement("TCKB01");
+//        double monthlyCat03Achieve = new DashboardController(getActivity()).getCaseAchievement("TCKH01");
+//        double monthlyCat04Achieve = new DashboardController(getActivity()).getCaseAchievement("TCOTH01");
+//        double monthlyCat05Achieve = new DashboardController(getActivity()).getCaseAchievement("TCRA01");
+//
+//
+//        // adding new entry to our array list with bar
+//        // entry and passing x and y axis value to it.
+//
+//        barEntries.add(new BarEntry(1f, (float) monthlyCat01Achieve));
+//        barEntries.add(new BarEntry(2f, (float) monthlyCat02Achieve));
+//        barEntries.add(new BarEntry(3f, (float) monthlyCat03Achieve));
+//        barEntries.add(new BarEntry(4f, (float) monthlyCat04Achieve));
+//        barEntries.add(new BarEntry(5f, (float) monthlyCat05Achieve));
+
+      //  return barEntries;
+    }
 
 }

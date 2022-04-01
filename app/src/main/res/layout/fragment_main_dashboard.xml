@@ -240,7 +240,7 @@
                             android:orientation="horizontal"
                             android:layout_marginTop="40dp"
                             android:padding="10dp"
-                            android:visibility="visible">
+                            android:visibility="invisible">
 
                             <RadioGroup
                                 android:id="@+id/groupradio"

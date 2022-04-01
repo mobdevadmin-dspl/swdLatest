@@ -27,10 +27,28 @@ public class Item {
 	private String FITEM_NOUCASE;
 	private String FITEM_REORDER_QTY;
 	private String FITEM_REORDER_LVL;
+	private String FITEM_TAR_CATCODE;
+	private String FITEM_SBRAND_CODE;
 
 	private String FITEM_QOH;
 	private String FITEM_CASEQTY;
 	private String FITEM_PICEQTY;
+
+	public String getFITEM_SBRAND_CODE() {
+		return FITEM_SBRAND_CODE;
+	}
+
+	public void setFITEM_SBRAND_CODE(String FITEM_SBRAND_CODE) {
+		this.FITEM_SBRAND_CODE = FITEM_SBRAND_CODE;
+	}
+
+	public String getFITEM_TAR_CATCODE() {
+		return FITEM_TAR_CATCODE;
+	}
+
+	public void setFITEM_TAR_CATCODE(String FITEM_TAR_CATCODE) {
+		this.FITEM_TAR_CATCODE = FITEM_TAR_CATCODE;
+	}
 
 	public String getFITEM_PICEQTY() {
 		return FITEM_PICEQTY;
@@ -250,6 +268,8 @@ public class Item {
 			itm.setFITEM_REORDER_LVL(instance.getString("ReOrderLvl"));
 			itm.setFITEM_REORDER_QTY(instance.getString("ReOrderQty"));
 			itm.setFITEM_TAXCOMCODE(instance.getString("TaxComCode"));
+			itm.setFITEM_TAR_CATCODE(instance.getString("tarCatCode"));
+			itm.setFITEM_SBRAND_CODE(instance.getString("SBrandCode"));
 
 
 			return itm;
@@ -260,6 +280,16 @@ public class Item {
 
 	@Override
 	public String toString() {
-		return "Item{" + "FITEM_ID='" + FITEM_ID + '\'' + ", FITEM_ITEM_CODE='" + FITEM_ITEM_CODE + '\'' + ", FITEM_ITEM_NAME='" + FITEM_ITEM_NAME + '\'' + ", FITEM_VENPCODE='" + FITEM_VENPCODE + '\'' + ", FITEM_GROUPCODE='" + FITEM_GROUPCODE + '\'' + ", FITEM_TYPECODE='" + FITEM_TYPECODE + '\'' + ", FITEM_TAXCOMCODE='" + FITEM_TAXCOMCODE + '\'' + ", FITEM_UNITCODE='" + FITEM_UNITCODE + '\'' + ", FITEM_ITEMSTATUS='" + FITEM_ITEMSTATUS + '\'' + ", FITEM_AVGPRICE='" + FITEM_AVGPRICE + '\'' + ", FITEM_PRILCODE='" + FITEM_PRILCODE + '\'' + ", FITEM_SCATCODE='" + FITEM_SCATCODE + '\'' + ", FITEM_SUBCATCODE='" + FITEM_SUBCATCODE + '\'' + ", FITEM_BRANDCODE='" + FITEM_BRANDCODE + '\'' + ", FITEM_COLORCODE='" + FITEM_COLORCODE + '\'' + ", FITEM_DISCOUNT='" + FITEM_DISCOUNT + '\'' + ", FITEM_CLASSCODE='" + FITEM_CLASSCODE + '\'' + ", FITEM_ISSIZE='" + FITEM_ISSIZE + '\'' + ", FITEM_ISDISCOUNT='" + FITEM_ISDISCOUNT + '\'' + ", FITEM_NOUCASE='" + FITEM_NOUCASE + '\'' + ", FITEM_REORDER_QTY='" + FITEM_REORDER_QTY + '\'' + ", FITEM_REORDER_LVL='" + FITEM_REORDER_LVL + '\'' + ", FITEM_QOH='" + FITEM_QOH + '\'' + '}';
+		return "Item{" + "FITEM_ID='" + FITEM_ID + '\'' + ", FITEM_ITEM_CODE='" + FITEM_ITEM_CODE + '\'' + ", FITEM_ITEM_NAME='"
+				+ FITEM_ITEM_NAME + '\'' + ", FITEM_VENPCODE='" + FITEM_VENPCODE + '\'' + ", FITEM_GROUPCODE='" + FITEM_GROUPCODE
+				+ '\'' + ", FITEM_TYPECODE='" + FITEM_TYPECODE + '\'' + ", FITEM_TAXCOMCODE='" + FITEM_TAXCOMCODE + '\''
+				+ ", FITEM_UNITCODE='" + FITEM_UNITCODE + '\'' + ", FITEM_ITEMSTATUS='" + FITEM_ITEMSTATUS + '\''
+				+ ", FITEM_AVGPRICE='" + FITEM_AVGPRICE + '\'' + ", FITEM_PRILCODE='" + FITEM_PRILCODE + '\''
+				+ ", FITEM_SCATCODE='" + FITEM_SCATCODE + '\'' + ", FITEM_SUBCATCODE='" + FITEM_SUBCATCODE + '\''
+				+ ", FITEM_BRANDCODE='" + FITEM_BRANDCODE + '\'' + ", FITEM_COLORCODE='" + FITEM_COLORCODE + '\''
+				+ ", FITEM_DISCOUNT='" + FITEM_DISCOUNT + '\'' + ", FITEM_CLASSCODE='" + FITEM_CLASSCODE + '\''
+				+ ", FITEM_ISSIZE='" + FITEM_ISSIZE + '\'' + ", FITEM_ISDISCOUNT='" + FITEM_ISDISCOUNT + '\''
+				+ ", FITEM_NOUCASE='" + FITEM_NOUCASE + '\'' + ", FITEM_REORDER_QTY='" + FITEM_REORDER_QTY + '\''
+				+ ", FITEM_REORDER_LVL='" + FITEM_REORDER_LVL + '\'' + ", FITEM_QOH='" + FITEM_QOH + '\'' + ", FITEM_TARCATCODE ='" + FITEM_TAR_CATCODE  + '\'' + '}';
 	}
 }

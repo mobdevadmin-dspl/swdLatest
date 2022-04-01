@@ -81,6 +81,53 @@ public class SharedPref {
     public boolean isValidate() {
         return sharedPref.getBoolean("validate_status", false);
     }
+
+    public  String getCategory(){
+        return  sharedPref.getString("SelectedCategory","");
+    }
+    public  void  setCategory(String category){
+        SharedPreferences.Editor editor = sharedPref.edit();
+        editor.putString("SelectedCategory", category);
+        editor.apply();
+    }
+
+    public  String getAchievement(){
+        return  sharedPref.getString("achievement","0");
+    }
+    public  void  setAchievement(String achievement){
+        SharedPreferences.Editor editor = sharedPref.edit();
+        editor.putString("achievement", achievement);
+        editor.apply();
+    }
+
+    public  String getTarget(){
+        return  sharedPref.getString("target","0");
+    }
+    public  void  setTarget(String target){
+        SharedPreferences.Editor editor = sharedPref.edit();
+        editor.putString("target", target);
+        editor.apply();
+    }
+
+    public  String getType(){
+        return  sharedPref.getString("SelectedType","");
+    }
+    public  void  setType(String type){
+        SharedPreferences.Editor editor = sharedPref.edit();
+        editor.putString("SelectedType", type);
+        editor.apply();
+    }
+
+    public  String getItemName(){
+        return  sharedPref.getString("SelectedItem","");
+    }
+    public  void  setItemName(String item){
+        SharedPreferences.Editor editor = sharedPref.edit();
+        editor.putString("SelectedItem", item);
+        editor.apply();
+    }
+
+
     public  void  setTMReturn(String ordSale){
         SharedPreferences.Editor editor = sharedPref.edit();
         editor.putString("TMReturn", ordSale);

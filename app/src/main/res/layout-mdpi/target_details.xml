@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="450dp"
+    android:layout_width="500dp"
     android:layout_height="350dp"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_margin="5dp"
@@ -17,19 +17,19 @@
         <com.datamation.swdsfa.utils.CustomFont
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="0.25"
-            android:layout_marginLeft="5dp"
-            android:textColor="#000"
-            android:textSize="14sp"
             android:layout_gravity="center"
+            android:layout_marginLeft="10dp"
+            android:layout_weight="0.24"
             android:gravity="center|left"
-            android:text="Target Item" />
+            android:text="Target Item"
+            android:textColor="#000"
+            android:textSize="14sp" />
 
         <com.toptoche.searchablespinnerlibrary.SearchableSpinner
             android:id="@+id/spTargetItem"
             android:layout_width="0dp"
             android:layout_height="35dp"
-            android:layout_weight="0.75"
+            android:layout_weight="0.76"
             android:layout_marginLeft="5dp"
             android:layout_margin="2dp"
             android:textAlignment="center"
@@ -53,7 +53,7 @@
             android:layout_weight="0.25"
             android:textColor="#000"
             android:textSize="14sp"
-            android:textAlignment="center"
+            android:paddingLeft="10dp"
             android:layout_gravity="center"
             android:gravity="center|left"
             android:text="Target Item Name" />
@@ -64,9 +64,12 @@
             android:layout_height="35dp"
             android:layout_weight="0.75"
             android:layout_margin="2dp"
-            android:gravity="center"
+            android:paddingLeft="5dp"
+            android:gravity="center|left"
             android:layout_gravity="center"
             android:background="@drawable/edittextstyle_black"
+            android:textStyle="normal"
+            android:textSize="14sp"
             android:textColor="#000"
             />
 
@@ -106,6 +109,8 @@
             android:gravity="center"
             android:layout_gravity="center"
             android:background="@drawable/edittextstyle_black"
+            android:textStyle="normal"
+            android:textSize="14sp"
             android:textColor="#000"
             />
 
@@ -138,6 +143,8 @@
             android:gravity="center"
             android:layout_gravity="center"
             android:background="@drawable/edittextstyle_black"
+            android:textStyle="normal"
+            android:textSize="14sp"
             android:textColor="#000"
             />
 
@@ -147,7 +154,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:padding="3dp"
-        android:weightSum="1">
+        android:weightSum="1"
+        android:layout_marginTop="10dp">
 
         <RadioGroup
             android:id="@+id/groupradio"
@@ -168,7 +176,7 @@
             android:textColor="#000"
             android:textSize="14sp"
             android:gravity="center"
-            android:buttonTint="@color/gray_btn_bg_pressed_color"/>
+            android:buttonTint="@color/half_black"/>
 
 
         <RadioButton
@@ -180,7 +188,7 @@
             android:textColor="#000"
             android:textSize="14sp"
             android:gravity="center"
-            android:buttonTint="@color/gray_btn_bg_pressed_color"/>
+            android:buttonTint="@color/half_black"/>
 
         </RadioGroup>
 
@@ -211,7 +219,7 @@
             android:textColor="#000"
             android:textSize="14sp"
             android:gravity="center"
-            android:buttonTint="@color/gray_btn_bg_pressed_color"/>
+            android:buttonTint="@color/half_black"/>
 
 
         <RadioButton
@@ -223,7 +231,7 @@
             android:textColor="#000"
             android:textSize="14sp"
             android:gravity="center"
-            android:buttonTint="@color/gray_btn_bg_pressed_color"/>
+            android:buttonTint="@color/half_black"/>
 
         <RadioButton
             android:id="@+id/rdTonnage"
@@ -234,7 +242,7 @@
             android:textColor="#000"
             android:textSize="14sp"
             android:gravity="center"
-            android:buttonTint="@color/gray_btn_bg_pressed_color"/>
+            android:buttonTint="@color/half_black"/>
 
         <RadioButton
             android:id="@+id/rdValue"
@@ -245,7 +253,7 @@
             android:textColor="#000"
             android:textSize="14sp"
             android:gravity="center"
-            android:buttonTint="@color/gray_btn_bg_pressed_color"/>
+            android:buttonTint="@color/half_black"/>
 
         </RadioGroup>
 

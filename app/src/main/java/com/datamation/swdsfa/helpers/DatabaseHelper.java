@@ -64,6 +64,8 @@ import com.datamation.swdsfa.controller.SalesReturnController;
 import com.datamation.swdsfa.controller.SalesReturnDetController;
 import com.datamation.swdsfa.controller.SalesReturnTaxDTController;
 import com.datamation.swdsfa.controller.SalesReturnTaxRGController;
+import com.datamation.swdsfa.controller.SubBrandController;
+import com.datamation.swdsfa.controller.TargetCatController;
 import com.datamation.swdsfa.controller.TaxController;
 import com.datamation.swdsfa.controller.TaxDetController;
 import com.datamation.swdsfa.controller.TaxHedController;
@@ -181,6 +183,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         arg0.execSQL(ItemTarHedController.CREATE_FITEM_TAR_HED_TABLE);
         arg0.execSQL(ItemTarDetController.CREATE_FITEM_TAR_DET_TABLE);
         arg0.execSQL(DayTargetDController.CREATE_FDAY_TARGETD_TABLE);
+        arg0.execSQL(TargetCatController.CREATE_FTARGET_CAT_TABLE);
+        arg0.execSQL(SubBrandController.CREATE_FSUB_BRAND_TABLE);
 
     }
     // --------------------------------------------------------------------------------------------------------------
@@ -231,6 +235,19 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         } catch (SQLiteException e) {
             Log.v("SQLiteException", e.toString());
         }
+
+        try {
+            arg0.execSQL("ALTER TABLE fItem ADD COLUMN TarCatCode TEXT DEFAULT ''");
+        } catch (SQLiteException e) {
+            Log.v("SQLiteException", e.toString());
+        }
+
+        try {
+            arg0.execSQL("ALTER TABLE fItem ADD COLUMN SBrandCode TEXT DEFAULT ''");
+        } catch (SQLiteException e) {
+            Log.v("SQLiteException", e.toString());
+        }
+
         try {
 
             arg0.execSQL(InvTaxDTController.CREATE_FINVTAXDT_TABLE);
@@ -264,7 +281,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             arg0.execSQL(ItemTarHedController.CREATE_FITEM_TAR_HED_TABLE);
             arg0.execSQL(ItemTarDetController.CREATE_FITEM_TAR_DET_TABLE);
             arg0.execSQL(DayTargetDController.CREATE_FDAY_TARGETD_TABLE);
-
+            arg0.execSQL(TargetCatController.CREATE_FTARGET_CAT_TABLE);
+            arg0.execSQL(SubBrandController.CREATE_FSUB_BRAND_TABLE);
         } catch (SQLiteException e) {
         }
 

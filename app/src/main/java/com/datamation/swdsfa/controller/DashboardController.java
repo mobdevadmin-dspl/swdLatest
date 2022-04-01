@@ -7,7 +7,11 @@ import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
 import com.datamation.swdsfa.helpers.DatabaseHelper;
+import com.datamation.swdsfa.model.FinvDetL3;
+import com.datamation.swdsfa.model.Group;
+import com.datamation.swdsfa.model.Item;
 import com.datamation.swdsfa.model.Target;
+import com.datamation.swdsfa.model.TargetCat;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -1351,4 +1355,415 @@ public class DashboardController {
         }
         return monthAchieve;
     }
+
+    //Get Target - Kaveesha - 25-03-2022 --------------------------------------------------------
+    public Double getTarget(String from, String to, String itemcode) {
+        if (dB == null) {
+            open();
+        } else if (!dB.isOpen()) {
+            open();
+        }
+
+        double targetsum = 0.00;
+//        String selectQuery = "SELECT ifnull((sum(a.Volume)),0)  as Target from fItemTarDet as a, fDayTargetD as b \n" +
+//                "where a.itemcode = b.itemcode AND b.itemcode = '" + itemcode + "' AND b.Day BETWEEN  '" + from + "' and '" + to + "'";
+
+        String selectQuery = "SELECT ifnull((sum(a.Volume)),0)  as Target from fItemTarDet as a, fDayTargetD as b , fItem as itm " +
+                " where a.SBrandCode = itm.SBrandCode AND itm.itemcode = '" + itemcode + "' AND itm.itemcode = b.itemcode " +
+                " AND b.Day BETWEEN  '" + from + "' and '" + to + "'";
+
+
+        Cursor cursor = dB.rawQuery(selectQuery, null);
+        try {
+
+            while (cursor.moveToNext()) {
+                targetsum = Double.parseDouble(cursor.getString(cursor.getColumnIndex("Target")));
+            }
+
+        } catch (Exception e) {
+
+            Log.v(TAG + " Excep getTarget", e.toString());
+
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+            dB.close();
+        }
+        return targetsum;
+
+    }
+
+    // Get Achievement
+    public Double getOrderAchievement(String category,String itemcode,String from, String to) {
+        if (dB == null) {
+            open();
+        } else if (!dB.isOpen()) {
+            open();
+        }
+
+        String selectQuery = "";
+        double Achieve = 0.00;
+
+            if(category.equals("Case")){
+
+                selectQuery   = " SELECT ifnull((sum(CaseQty)),0)  as Achieve from FOrddet " +
+                        " where Itemcode = '" + itemcode + "' AND Txndate BETWEEN  '" + from + "' and '" + to + "'";
+
+            }else if (category.equals("Piece")){
+
+                selectQuery   = " SELECT ifnull((sum(PiceQty)),0)  as Achieve from FOrddet " +
+                        " where Itemcode = '" + itemcode + "' AND Txndate BETWEEN  '" + from + "' and '" + to + "'";
+
+            }else if(category.equals("Value")){
+
+                selectQuery   = " SELECT ifnull((sum(Amt)),0)  as Achieve from FOrddet " +
+                        " where Itemcode = '" + itemcode + "' AND Txndate BETWEEN  '" + from + "' and '" + to + "'";
+
+            }
+
+
+        Cursor cursor = dB.rawQuery(selectQuery, null);
+        try {
+
+            while (cursor.moveToNext()) {
+                Achieve = Double.parseDouble(cursor.getString(cursor.getColumnIndex("Achieve")));
+            }
+
+        } catch (Exception e) {
+
+            Log.v(TAG + " Excep getAchieve", e.toString());
+
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+            dB.close();
+        }
+        return Achieve;
+
+    }
+
+    // ------------------------- Get Invoices  --------- 25-03-2022 ------------------------------------------
+    public FinvDetL3 getInvoiceDetails(String itemcode,String from,String to) {
+        if (dB == null) {
+            open();
+        } else if (!dB.isOpen()) {
+            open();
+        }
+
+        FinvDetL3 finvDetL3 = new FinvDetL3();
+        String selectQuery = "SELECT a.itemcode, ifnull((sum(Qty)),0)  as TotalQty,ifnull((sum(Amt)),0)  as TotalAmt, itm.NOUCase as NOUCase from FinvDetL3 as a, fItem as itm " +
+                " where a.Itemcode = '" + itemcode + "' AND a.itemcode = itm.itemcode AND " +
+                " a.Txndate BETWEEN  '" + from + "' and '" + to + "'";
+
+
+        Cursor cursor = dB.rawQuery(selectQuery, null);
+        try {
+            while (cursor.moveToNext()) {
+
+
+                finvDetL3.setFINVDETL3_ITEM_CODE(cursor.getString(cursor.getColumnIndex(FinvDetL3Controller.FINVDETL3_ITEM_CODE)));
+                finvDetL3.setFINVDETL3_NOU_CASE(cursor.getString(cursor.getColumnIndex("NOUCase")));
+                finvDetL3.setFINVDETL3_TOTAL_QTY(cursor.getString(cursor.getColumnIndex("TotalQty")));
+                finvDetL3.setFINVDETL3_AMT(cursor.getString(cursor.getColumnIndex("TotalAmt")));
+
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+            dB.close();
+        }
+
+        return finvDetL3;
+    }
+
+    // ------------------------- Get Target Categories  --------- 28-03-2022  ------------------------------------------
+    public ArrayList<String> getItemCategories() {
+        if (dB == null) {
+            open();
+        } else if (!dB.isOpen()) {
+            open();
+        }
+
+       ArrayList<String> list = new ArrayList<>();
+
+        String selectQuery = " SELECT TarcatName FROM fTargetCat";
+
+
+        Cursor cursor = dB.rawQuery(selectQuery, null);
+        try {
+            while (cursor.moveToNext()) {
+
+                list.add(cursor.getString(cursor.getColumnIndex(TargetCatController.FTARGETD_CAT_TARCATNAME)));
+
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+            dB.close();
+        }
+
+        return list;
+    }
+    public ArrayList<TargetCat> getTargetCategories() {
+        if (dB == null) {
+            open();
+        } else if (!dB.isOpen()) {
+            open();
+        }
+
+        ArrayList<TargetCat> list = new ArrayList<TargetCat>();
+
+        String selectQuery = " SELECT * FROM fTargetCat";
+
+
+        Cursor cursor = dB.rawQuery(selectQuery, null);
+        try {
+            while (cursor.moveToNext()) {
+                TargetCat cat = new TargetCat();
+                cat.setTarCatCode(cursor.getString(cursor.getColumnIndex(TargetCatController.FTARGETD_CAT_TARCATCODE)));
+                cat.setTarcatName(cursor.getString(cursor.getColumnIndex(TargetCatController.FTARGETD_CAT_TARCATNAME)));
+                cat.setId(Float.parseFloat(cursor.getString(cursor.getColumnIndex(TargetCatController.FTARGETD_CAT_ID))));
+                list.add(cat);
+
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+            dB.close();
+        }
+
+        return list;
+    }
+    public Double getMonthlyAchievement(String catcode,String type) {
+  //  public Double getCaseAchievement() {
+
+        if (dB == null) {
+            open();
+        } else if (!dB.isOpen()) {
+            open();
+        }
+
+        String selectQuery = "";
+        ArrayList<String[]> list = new ArrayList<String[]>();
+
+        int curYear = Integer.parseInt(new SimpleDateFormat("yyyy").format(new Date()));
+        int curMonth = Integer.parseInt(new SimpleDateFormat("MM").format(new Date()));
+        int curDate = Integer.parseInt(new SimpleDateFormat("dd").format(new Date()));
+        double monthAchieve = 0.0;
+        Cursor cursor = null;
+        try {
+
+
+            if(type.equals("Case")){
+
+                selectQuery = "SELECT ifnull((sum(a.CaseQty)),0)  as Achieve from FOrddet as a, fTargetCat as b," +
+                        " fItem itm where  itm.TarCatCode =  b.TarCatCode AND b.TarCatCode = '" + catcode + "' AND " +
+                        " itm.itemcode in (Select itemcode from FOrddet)  AND a.txndate LIKE '" + curYear + "-" + String.format("%02d", curMonth) + "-_%' " +
+                        "GROUP by itm.TarCatCode ";
+
+            }else if(type.equals("Piece")){
+
+                selectQuery = "SELECT ifnull((sum(a.PiceQty)),0)  as Achieve from FOrddet as a, fTargetCat as b," +
+                        " fItem itm where  itm.TarCatCode =  b.TarCatCode AND b.TarCatCode = '" + catcode + "' AND " +
+                        " itm.itemcode in (Select itemcode from FOrddet)  AND a.txndate LIKE '" + curYear + "-" + String.format("%02d", curMonth) + "-_%' " +
+                        "GROUP by itm.TarCatCode ";
+
+            } else if(type.equals("Value")){
+
+                selectQuery = "SELECT ifnull((sum(a.Amt)),0)  as Achieve from FOrddet as a, fTargetCat as b," +
+                        " fItem itm where  itm.TarCatCode =  b.TarCatCode AND b.TarCatCode = '" + catcode + "' AND " +
+                        " itm.itemcode in (Select itemcode from FOrddet)  AND a.txndate LIKE '" + curYear + "-" + String.format("%02d", curMonth) + "-_%' " +
+                        "GROUP by itm.TarCatCode ";
+            }
+
+
+            cursor = dB.rawQuery(selectQuery, null);
+
+            while (cursor.moveToNext()) {
+                monthAchieve = Double.parseDouble(cursor.getString(cursor.getColumnIndex("Achieve")));
+            }
+
+        } catch (Exception e) {
+
+            Log.v(TAG + " Excep getMonthAchieve", e.toString());
+
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+            dB.close();
+        }
+
+        return monthAchieve;
+
+    }
+
+    // ------------------------------------ Get Monthly Target -------------------------------------------------------
+    public Double getMonthlyTarget(String catcode,String type) {
+
+        if (dB == null) {
+            open();
+        } else if (!dB.isOpen()) {
+            open();
+        }
+
+        ArrayList<String[]> list = new ArrayList<String[]>();
+
+        int curYear = Integer.parseInt(new SimpleDateFormat("yyyy").format(new Date()));
+        int curMonth = Integer.parseInt(new SimpleDateFormat("MM").format(new Date()));
+        int curDate = Integer.parseInt(new SimpleDateFormat("dd").format(new Date()));
+        double monthTarget = 0.0;
+        Cursor cursor = null;
+        try {
+
+
+            String selectQuery = " SELECT ifnull((sum(a.Volume)),0)  as Target from fItemTarDet as a, fTargetCat as b, fItem itm,fDayTargetD as d " +
+                    "where  itm.TarCatCode =  b.TarCatCode AND itm.itemcode =  a.itemcode AND b.TarCatCode = '" + catcode + "' and itm.itemcode in (Select itemcode from fItemTarDet) " +
+                    " and a.itemcode =  d.itemcode and  itm.itemcode = d.itemcode " +
+                    " AND d.Day LIKE '" + curYear + "-" + String.format("%02d", curMonth) + "-_%' " +
+                    " GROUP by itm.TarCatCode ";
+//
+//            SELECT ifnull((sum(a.Volume)),0)  as Target from fItemTarDet as a, fTargetCat as b, fItem itm, fDayTargetD as d
+//            where  itm.TarCatCode =  b.TarCatCode AND itm.itemcode =  a.itemcode AND b.TarCatCode = 'TCOTH01' and itm.itemcode in (Select itemcode from fItemTarDet)
+//            and a.itemcode =  d.itemcode and  itm.itemcode = d.itemcode
+//            And d.Day Like '2022-03-28'
+//            GROUP by itm.TarCatCode
+
+                    cursor = dB.rawQuery(selectQuery, null);
+
+            while (cursor.moveToNext()) {
+                monthTarget = Double.parseDouble(cursor.getString(cursor.getColumnIndex("Target")));
+            }
+
+        } catch (Exception e) {
+
+            Log.v(TAG + " Excep getMonthTarget", e.toString());
+
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+            dB.close();
+        }
+
+        return monthTarget;
+
+    }
+
+    public ArrayList<Item> getTonnage(String type,String fromDate,String toDate,String itemcode) {
+        if (dB == null) {
+            open();
+        } else if (!dB.isOpen()) {
+            open();
+        }
+
+        ArrayList<Item> list = new ArrayList<Item>();
+        String selectQuery = "";
+
+        if(type.equals("Order")){
+
+            selectQuery="select i.ItemCode,ifnull((sum(a.Qty)),0)  as Qty ,a.Types ,i.UnitCode as ItemWeight " + " from fItem as i, Forddet as a  " + " " +
+                    "where i.ItemCode in (select ItemCode from Forddet where a.Txndate BETWEEN  '" + fromDate + "' and '" + toDate + "') " +
+                    "and i.ItemCode = a.ItemCode and a.ItemCode = '" + itemcode + "' and a.Types ='SA' " + " group by a.ItemCode";
+
+        }else if(type.equals("Invoice")){
+
+            selectQuery="select i.ItemCode,ifnull((sum(a.Qty)),0)  as Qty,i.UnitCode as ItemWeight from fItem as i, FinvDetL3 as a " +
+                    " where i.ItemCode in (select ItemCode from FinvDetL3 where a.Txndate BETWEEN  '" + fromDate + "' and '" + toDate + "') " +
+                    " and i.ItemCode = a.ItemCode and a.ItemCode = '" + itemcode + "' group by a.ItemCode";
+
+        }
+
+        Cursor cursor = dB.rawQuery(selectQuery, null);
+
+        Log.d("##", "getTonnage cursor: "+cursor);
+
+        try {
+            while(cursor.moveToNext()) {
+                Item items = new Item();
+                items.setFITEM_ITEM_CODE(cursor.getString(cursor.getColumnIndex("ItemCode")));
+                items.setFITEM_UNITCODE(cursor.getString(cursor.getColumnIndex("ItemWeight")));
+                items.setFITEM_QOH(cursor.getString(cursor.getColumnIndex("Qty")));
+                list.add(items);
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+            dB.close();
+        }
+
+
+        return list;
+    }
+
+    public ArrayList<Item> getMonthlyTonnage(String catcode) {
+        if (dB == null) {
+            open();
+        } else if (!dB.isOpen()) {
+            open();
+        }
+        int curYear = Integer.parseInt(new SimpleDateFormat("yyyy").format(new Date()));
+        int curMonth = Integer.parseInt(new SimpleDateFormat("MM").format(new Date()));
+        int curDate = Integer.parseInt(new SimpleDateFormat("dd").format(new Date()));
+
+        ArrayList<Item> list = new ArrayList<Item>();
+        String selectQuery = "";
+
+            selectQuery="select i.ItemCode,ifnull((sum(a.Qty)),0)  as Qty,a.Types ,i.UnitCode as ItemWeight from fItem as i, Forddet as a , fTargetCat h " +
+                    "where i.ItemCode in (select ItemCode from Forddet where a.Txndate LIKE  '" + curYear + "-" + String.format("%02d", curMonth) + "-_%' ) " +
+                    "and i.ItemCode = a.ItemCode  and a.Types ='SA' " +
+                    "and h.TarCatCode = i.TarCatCode AND h.TarCatCode = '" + catcode + "'" +
+                    " group by a.ItemCode ";
+
+        Cursor cursor = dB.rawQuery(selectQuery, null);
+
+        Log.d("##", "getMonthlyTonnage cursor: "+cursor);
+
+        try {
+            while(cursor.moveToNext()) {
+                Item items = new Item();
+                items.setFITEM_ITEM_CODE(cursor.getString(cursor.getColumnIndex("ItemCode")));
+                items.setFITEM_UNITCODE(cursor.getString(cursor.getColumnIndex("ItemWeight")));
+                items.setFITEM_QOH(cursor.getString(cursor.getColumnIndex("Qty")));
+                list.add(items);
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+            dB.close();
+        }
+
+
+        return list;
+    }
+
+
+
 }
