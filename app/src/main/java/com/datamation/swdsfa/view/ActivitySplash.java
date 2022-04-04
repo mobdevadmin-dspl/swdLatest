@@ -106,10 +106,10 @@ public class ActivitySplash extends AppCompatActivity{
         }
 
 
-//        if(pref.getLoginUser()==null) {
-//            validateDialog();
-//
-//        }else{
+        if(pref.getLoginUser()==null) {
+            validateDialog();
+
+        }else{
            // if(pref.isLoggedIn() || !pref.getLoginUser().equals(null)){
             if(pref.isLoggedIn()){
                 goToHome();
@@ -117,7 +117,7 @@ public class ActivitySplash extends AppCompatActivity{
             }else {
                 goToLogin();
             }
-      //  }
+        }
 
 //        tryAgain.setOnClickListener(new View.OnClickListener() {
 //            @Override
@@ -226,7 +226,11 @@ public class ActivitySplash extends AppCompatActivity{
                                 Toast.makeText(ActivitySplash.this, "Mac ID for Test. "+pref.getMacAddress().trim() , Toast.LENGTH_LONG).show();
 
                               //  new Validate("942DDCC28922",URL,DBList.getSelectedItem().toString().trim()).execute();
-                                new Validate(pref.getMacAddress().trim(),URL,DBList.getSelectedItem().toString().trim()).execute();
+                             //   new Validate(pref.getMacAddress().trim(),URL,DBList.getSelectedItem().toString().trim()).execute();
+
+                                Intent loginActivity = new Intent(ActivitySplash.this, ActivityLogin.class);
+                                startActivity(loginActivity);
+                                finish();
                                 isValidate = false;
                                 //TODO: validate uname pwd with server details
                             }

@@ -136,7 +136,7 @@ public class ActivityLogin extends AppCompatActivity implements View.OnClickList
                 tap += 1;
                 // StartTimer(3000);
                 if (tap >= 7) {
-               //     validateDialog();
+                 //   validateDialog();
                 }
             }
         });
@@ -173,6 +173,7 @@ public class ActivityLogin extends AppCompatActivity implements View.OnClickList
                             Log.d("myapp", inputDistributor.getText().toString().trim());
                             //pref.setConsoleDB(inputConsole.getText().toString().trim());
                             new Validate(pref.getMacAddress().trim(), URL).execute();
+
                             //TODO: validate uname pwd with server details
 //                            String debtorURL = getResources().getString(R.string.ConnURL) + "/fSalrep/mobile123/"+pref.getDBNAME() +"/"+ pref.getMacAddress().replace(":", "");
 //                            // String URL = getResources().getString(R.string.ConnectionURL) + "/femployee/mobile123/" + databaseName + "/" + UIdStr.toString() + "/" + UserNameStr.toString();
