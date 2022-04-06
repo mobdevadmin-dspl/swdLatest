@@ -30,7 +30,7 @@ public class DayTargetDController {
     // table attributes
     public static final String FDAYTARGETD_ID = "Id";
     public static final String FDAYTARGETD_REPNO = "RefNo";
-    public static final String FDAYTARGETD_ITEMCODE = "Itemcode";
+    public static final String FDAYTARGETD_SBRANDCODE = "SBrandCode";
     public static final String FDAYTARGETD_TXNDATE = "TxnDate";
     public static final String FDAYTARGETD_TARGET_PERCEN = "TargetPercen";
     public static final String FDAYTARGETD_DAY = "Day";
@@ -38,7 +38,7 @@ public class DayTargetDController {
     // create String
     public static final String CREATE_FDAY_TARGETD_TABLE = "CREATE  TABLE IF NOT EXISTS " + TABLE_FDAY_TARGETD +
             " (" + FDAYTARGETD_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " + FDAYTARGETD_REPNO + " TEXT, " +
-            FDAYTARGETD_TXNDATE + " TEXT, " + FDAYTARGETD_ITEMCODE + " TEXT, " + FDAYTARGETD_TARGET_PERCEN + " TEXT, " + FDAYTARGETD_DAY + " TEXT); ";
+            FDAYTARGETD_TXNDATE + " TEXT, " + FDAYTARGETD_SBRANDCODE + " TEXT, " + FDAYTARGETD_TARGET_PERCEN + " TEXT, " + FDAYTARGETD_DAY + " TEXT); ";
 
 
     public DayTargetDController(Context context) {
@@ -76,7 +76,7 @@ public class DayTargetDController {
 
                 values.put(FDAYTARGETD_REPNO, dayTargetD.getRefNo());
                 values.put(FDAYTARGETD_TXNDATE, dayTargetD.getTxnDate());
-                values.put(FDAYTARGETD_ITEMCODE, dayTargetD.getItemcode());
+                values.put(FDAYTARGETD_SBRANDCODE, dayTargetD.getItemcode());
                 values.put(FDAYTARGETD_TARGET_PERCEN, dayTargetD.getTargetPercen());
                 values.put(FDAYTARGETD_DAY, dayTargetD.getDay());
 

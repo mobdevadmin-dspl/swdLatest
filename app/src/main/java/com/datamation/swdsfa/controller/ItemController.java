@@ -1276,14 +1276,15 @@ public class ItemController {
         ArrayList<String> list = new ArrayList<String>();
         Cursor cursor = null;
         try {
-            String selectQuery = "Select itm.ItemCode ,itm.ItemName from fItem as itm, fSubBrand as s where itm.SBrandCode = s.SBrandCode";
+            String selectQuery = "Select * from fSubBrand";
+            //String selectQuery = "Select itm.ItemCode ,itm.ItemName from fItem as itm, fSubBrand as s where itm.SBrandCode = s.SBrandCode";
             //String selectQuery = "select itm.ItemCode ,itm.ItemName from fItem as itm, fItemTarDet as itd where itm.ItemCode = itd.Itemcode";
 
             cursor = dB.rawQuery(selectQuery, null);
             while (cursor.moveToNext()) {
 
 
-                list.add(cursor.getString(cursor.getColumnIndex(FITEM_ITEM_CODE))+" - : "+cursor.getString(cursor.getColumnIndex(FITEM_ITEM_NAME)));
+                list.add(cursor.getString(cursor.getColumnIndex(SubBrandController.SUB_BRANDCODE))+" - : "+cursor.getString(cursor.getColumnIndex(SubBrandController.SUB_BRANDNAME)));
 
             }
         } catch (Exception e) {

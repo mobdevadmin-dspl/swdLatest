@@ -10,6 +10,15 @@ public class DayTargetD {
     private String TxnDate;
     private String TargetPercen;
     private String Day;
+    private String Volume;
+
+    public String getVolume() {
+        return Volume;
+    }
+
+    public void setVolume(String volume) {
+        Volume = volume;
+    }
 
     public String getItemcode() {
         return Itemcode;

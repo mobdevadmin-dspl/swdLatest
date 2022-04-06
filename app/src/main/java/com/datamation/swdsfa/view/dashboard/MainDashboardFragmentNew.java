@@ -42,6 +42,7 @@ import com.datamation.swdsfa.controller.ItemController;
 import com.datamation.swdsfa.controller.ItemTarDetController;
 import com.datamation.swdsfa.controller.RouteDetController;
 import com.datamation.swdsfa.helpers.SharedPref;
+import com.datamation.swdsfa.model.DayTargetD;
 import com.datamation.swdsfa.model.FinvDetL3;
 import com.datamation.swdsfa.model.Item;
 import com.datamation.swdsfa.model.TargetCat;
@@ -104,7 +105,7 @@ public class MainDashboardFragmentNew extends Fragment {
     BarChart chart,groupBarChart ;
     BarDataSet barDataSet1, barDataSet2;
     ArrayList<BarEntry> barEntries,barAchieveEntries,barTargetEntries;
-    double precentage,target,achievement;
+    double precentage,target,achievement,TotalAchieve = 0,TotalTonnage = 0,tonnage;
     String changeDateFrom,changeDateTo;
     ImageView menu;
     ArrayList<String> targetItemList;
@@ -118,9 +119,6 @@ public class MainDashboardFragmentNew extends Fragment {
     SearchableSpinner spTargetItem;
     ImageView btnFromDate ,btnToDate;
     LinearLayout row_categorySelection;
-
-
-
 
 
 
@@ -1042,53 +1040,116 @@ public class MainDashboardFragmentNew extends Fragment {
 
                 if(!type.equals("") && !category.equals("") && !spTargetItem.getSelectedItem().equals("-SELECT-")){
 
-                    target = new DashboardController(context).getTarget(fromDate.getText().toString(),toDate.getText().toString(),itemcode);
-                   // target = new DashboardController(context).getTarget(changeDateFrom,changeDateTo,itemcode);
+                    achievement = 0;
+                    TotalAchieve = 0;
+                    TotalTonnage = 0;
+
+                   ArrayList<Item> list = new DashboardController(context).getItemsBySbrand(itemcode);
+
+                 target =  getTarget(context,fromDate.getText().toString(),toDate.getText().toString(),itemcode);
+
+//                    //target = new DashboardController(context).getTarget(fromDate.getText().toString(),toDate.getText().toString(),itemcode);
+//                    DayTargetD targetD = new DashboardController(context).getTarget(fromDate.getText().toString(),toDate.getText().toString(),itemcode);
+//
+
 
                     if(type.equals("Order")){
 
                         if(category.equals("Tonnage")){
-                            create_pie_Chart(getTonnage("Order",itemcode),target);
-                            pref.setAchievement(""+getTonnage("Order",itemcode));
+
+                            //ArrayList<Item> list = new DashboardController(context).getItemsBySbrand(itemcode);
+                            //achievement = 0;
+                            for(Item item : list){
+                                tonnage = getTonnage("Order",item.getFITEM_ITEM_CODE());
+                                TotalTonnage = TotalTonnage + tonnage;
+                            }
+
+                            create_pie_Chart(TotalTonnage,target);
+                            pref.setAchievement(""+TotalTonnage);
                             pref.setTarget(""+target);
+
                         }else{
-                            achievement = new DashboardController(context).getOrderAchievement(category,itemcode,fromDate.getText().toString(),toDate.getText().toString());
-                            create_pie_Chart(achievement,target);
+
+
+                             for(Item item : list){
+                                achievement = new DashboardController(context).getOrderAchievement(category,item.getFITEM_ITEM_CODE(),fromDate.getText().toString(),toDate.getText().toString());
+                                TotalAchieve = TotalAchieve + achievement;
+                            }
+//                            achievement = new DashboardController(context).getOrderAchievement(category,itemcode,fromDate.getText().toString(),toDate.getText().toString());
+                            create_pie_Chart(TotalAchieve,target);
                             pref.setAchievement(""+achievement);
                             pref.setTarget(""+target);
                         }
 
                     }else if(type.equals("Invoice")){
 
-                        FinvDetL3 finv = new DashboardController(context).getInvoiceDetails(itemcode,fromDate.getText().toString(),toDate.getText().toString());
+                        FinvDetL3 finv;
 
                         int totQty = 0,nouCase = 0;
 
-                        if (finv.getFINVDETL3_NOU_CASE().toString() != null && finv.getFINVDETL3_TOTAL_QTY().toString() != null) {
-                            totQty = Integer.parseInt(finv.getFINVDETL3_TOTAL_QTY());
-                            nouCase = Integer.parseInt(finv.getFINVDETL3_NOU_CASE());
-                        }
+                       // achievement = 0;
 
                             if(category.equals("Case")){
-                                achievement = totQty / nouCase;
+
+                                for(Item item : list){
+                                    finv = new DashboardController(context).getInvoiceDetails(item.getFITEM_ITEM_CODE(),fromDate.getText().toString(),toDate.getText().toString());
+                                       if (finv.getFINVDETL3_NOU_CASE().toString() != null && finv.getFINVDETL3_TOTAL_QTY().toString() != null) {
+
+                                           totQty =  Integer.parseInt(finv.getFINVDETL3_TOTAL_QTY());
+                                           nouCase =  Integer.parseInt(finv.getFINVDETL3_NOU_CASE());
+
+                                           achievement = achievement +(totQty / nouCase) ;
+
+                                     }
+                                }
                                 create_pie_Chart(achievement,target);
                                 pref.setAchievement(""+achievement);
                                 pref.setTarget(""+target);
+
                             }else if(category.equals("Piece")){
-                                achievement = totQty % nouCase;
+
+                                for(Item item : list){
+                                    finv = new DashboardController(context).getInvoiceDetails(item.getFITEM_ITEM_CODE(),fromDate.getText().toString(),toDate.getText().toString());
+                                    if (finv.getFINVDETL3_NOU_CASE().toString() != null && finv.getFINVDETL3_TOTAL_QTY().toString() != null) {
+
+                                        totQty =  Integer.parseInt(finv.getFINVDETL3_TOTAL_QTY());
+                                        nouCase =  Integer.parseInt(finv.getFINVDETL3_NOU_CASE());
+
+                                        achievement = achievement + (totQty % nouCase);
+
+                                    }
+                                }
+
                                 create_pie_Chart(achievement,target);
                                 pref.setAchievement(""+achievement);
                                 pref.setTarget(""+target);
+
                             }else if(category.equals("Tonnage")){
-                                create_pie_Chart(getTonnage("Invoice",itemcode),target);
-                                pref.setAchievement(""+getTonnage("Invoice",itemcode));
+
+                                for(Item item : list){
+                                    tonnage = getTonnage("Order",item.getFITEM_ITEM_CODE());
+                                    TotalTonnage = TotalTonnage + tonnage;
+                                }
+
+                                create_pie_Chart(TotalTonnage,target);
+                                pref.setAchievement(""+TotalTonnage);
                                 pref.setTarget(""+target);
+
                             }else if(category.equals("Value")){
-                                String amount = df.format(Double.parseDouble(finv.getFINVDETL3_AMT()));
-                                achievement = Double.parseDouble(amount);
+
+                                for(Item item : list){
+                                    finv = new DashboardController(context).getInvoiceDetails(item.getFITEM_ITEM_CODE(),fromDate.getText().toString(),toDate.getText().toString());
+                                    if (finv.getFINVDETL3_NOU_CASE().toString() != null && finv.getFINVDETL3_TOTAL_QTY().toString() != null) {
+
+                                        String amount = df.format(Double.parseDouble(finv.getFINVDETL3_AMT()));
+                                        achievement = achievement + Double.parseDouble(amount);
+
+                                    }
+                                }
                                 create_pie_Chart(achievement,target);
                                 pref.setAchievement(""+achievement);
                                 pref.setTarget(""+target);
+
                             }
                         }
 
@@ -1104,6 +1165,24 @@ public class MainDashboardFragmentNew extends Fragment {
 
 
         targetDetDialog.show();
+    }
+
+    public double getTarget(Context mcontext,String fromDate,String toDate, String sBrand){
+
+
+        //target = new DashboardController(context).getTarget(fromDate.getText().toString(),toDate.getText().toString(),itemcode);
+      //  DayTargetD targetD = new DashboardController(mcontext).getTarget(fromDate,toDate,sBrand);
+
+        double totTargetPer = 0;
+        double monthlyVolume = 0;
+        double dayTarget = 0;
+
+        totTargetPer = new DashboardController(mcontext).getTargetPrecent(fromDate,toDate,sBrand);
+        monthlyVolume = new DashboardController(mcontext).getTargetVolume(fromDate,toDate,sBrand);
+
+        dayTarget = monthlyVolume * (totTargetPer/100);
+
+        return dayTarget;
     }
 
 

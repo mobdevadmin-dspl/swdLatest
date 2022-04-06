@@ -7,6 +7,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
 import com.datamation.swdsfa.helpers.DatabaseHelper;
+import com.datamation.swdsfa.model.DayTargetD;
 import com.datamation.swdsfa.model.FinvDetL3;
 import com.datamation.swdsfa.model.Group;
 import com.datamation.swdsfa.model.Item;
@@ -1357,27 +1358,71 @@ public class DashboardController {
     }
 
     //Get Target - Kaveesha - 25-03-2022 --------------------------------------------------------
-    public Double getTarget(String from, String to, String itemcode) {
+//    public DayTargetD getTarget(String from, String to, String sbrandCode) {
+//        if (dB == null) {
+//            open();
+//        } else if (!dB.isOpen()) {
+//            open();
+//        }
+//
+//        double targetsum = 0.00;
+//
+//        DayTargetD targetD = new DayTargetD();
+//
+//        String selectQuery = "SELECT ifnull((sum(b.TargetPercen)),0)  as TotPercen, a.Volume from fItemTarDet as a, fDayTargetD as b \n" +
+//                "where a.sBrandCode = b.sBrandCode AND b.sBrandCode = '" + sbrandCode + "' AND b.Day BETWEEN  '" + from + "' and '" + to + "'";
+//
+////        String selectQuery = "SELECT ifnull((sum(a.Volume)),0)  as Target from fItemTarDet as a, fDayTargetD as b \n" +
+////                "where a.sBrandCode = b.sBrandCode AND b.sBrandCode = '" + sbrandCode + "' AND b.Day BETWEEN  '" + from + "' and '" + to + "'";
+//
+////        String selectQuery = "SELECT ifnull((sum(a.Volume)),0)  as Target from fItemTarDet as a, fDayTargetD as b , fItem as itm " +
+////                " where a.SBrandCode = itm.SBrandCode AND itm.itemcode = '" + sBrandCode + "' AND itm.itemcode = b.itemcode " +
+////                " AND b.Day BETWEEN  '" + from + "' and '" + to + "'";
+//
+//
+//        Cursor cursor = dB.rawQuery(selectQuery, null);
+//        try {
+//
+//            while (cursor.moveToNext()) {
+//                targetD.setVolume(cursor.getString(cursor.getColumnIndex(ItemTarDetController.FITEMTARDET_VOLUME)));
+//                targetD.setTargetPercen(cursor.getString(cursor.getColumnIndex("TotPercen")));
+//               // targetsum = Double.parseDouble(cursor.getString(cursor.getColumnIndex("Target")));
+//            }
+//
+//        } catch (Exception e) {
+//
+//            Log.v(TAG + " Excep getTarget", e.toString());
+//
+//        } finally {
+//            if (cursor != null) {
+//                cursor.close();
+//            }
+//            dB.close();
+//        }
+//        return targetD;
+//
+//    }
+
+    public Double getTargetPrecent(String from, String to, String sbrandCode) {
         if (dB == null) {
             open();
         } else if (!dB.isOpen()) {
             open();
         }
 
-        double targetsum = 0.00;
+        double targetPrecent = 0.00;
 //        String selectQuery = "SELECT ifnull((sum(a.Volume)),0)  as Target from fItemTarDet as a, fDayTargetD as b \n" +
 //                "where a.itemcode = b.itemcode AND b.itemcode = '" + itemcode + "' AND b.Day BETWEEN  '" + from + "' and '" + to + "'";
 
-        String selectQuery = "SELECT ifnull((sum(a.Volume)),0)  as Target from fItemTarDet as a, fDayTargetD as b , fItem as itm " +
-                " where a.SBrandCode = itm.SBrandCode AND itm.itemcode = '" + itemcode + "' AND itm.itemcode = b.itemcode " +
-                " AND b.Day BETWEEN  '" + from + "' and '" + to + "'";
+        String selectQuery = "SELECT ifnull((sum(b.TargetPercen)),0)  as TotPercen  from fItemTarDet as a, fDayTargetD as b \n" +
+                " where a.sBrandCode = b.sBrandCode AND b.sBrandCode = '" + sbrandCode + "' AND b.Day BETWEEN  '" + from + "' and '" + to + "'";
 
 
         Cursor cursor = dB.rawQuery(selectQuery, null);
         try {
 
             while (cursor.moveToNext()) {
-                targetsum = Double.parseDouble(cursor.getString(cursor.getColumnIndex("Target")));
+                targetPrecent = Double.parseDouble(cursor.getString(cursor.getColumnIndex("TotPercen")));
             }
 
         } catch (Exception e) {
@@ -1390,7 +1435,43 @@ public class DashboardController {
             }
             dB.close();
         }
-        return targetsum;
+        return targetPrecent;
+
+    }
+
+    public Double getTargetVolume(String from, String to, String sbrandCode) {
+        if (dB == null) {
+            open();
+        } else if (!dB.isOpen()) {
+            open();
+        }
+
+        double targetVolume= 0.00;
+//        String selectQuery = "SELECT ifnull((sum(a.Volume)),0)  as Target from fItemTarDet as a, fDayTargetD as b \n" +
+//                "where a.itemcode = b.itemcode AND b.itemcode = '" + itemcode + "' AND b.Day BETWEEN  '" + from + "' and '" + to + "'";
+
+        String selectQuery = "SELECT a.Volume from fItemTarDet as a, fDayTargetD as b \n" +
+                "where a.sBrandCode = b.sBrandCode AND b.sBrandCode = '" + sbrandCode + "' AND b.Day BETWEEN  '" + from + "' and '" + to + "'";
+
+
+        Cursor cursor = dB.rawQuery(selectQuery, null);
+        try {
+
+            while (cursor.moveToNext()) {
+                targetVolume = Double.parseDouble(cursor.getString(cursor.getColumnIndex(ItemTarDetController.FITEMTARDET_VOLUME)));
+            }
+
+        } catch (Exception e) {
+
+            Log.v(TAG + " Excep getTarget", e.toString());
+
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+            dB.close();
+        }
+        return targetVolume;
 
     }
 
@@ -1649,15 +1730,21 @@ public class DashboardController {
         Cursor cursor = null;
         try {
 
+//
+//            String selectQuery = " SELECT ifnull((sum(a.Volume)),0)  as Target from fItemTarDet as a, fTargetCat as b, fItem itm,fDayTargetD as d ,fSubBrand as s\n" +
+//                    "            where  itm.TarCatCode =  b.TarCatCode AND itm.SBrandCode =  a.SBrandCode\n" +
+//                    "            AND b.TarCatCode = '" + catcode + "' and itm.SBrandCode in (Select SBrandCode from fItemTarDet)\n" +
+//                    "            and s.SBrandCode =  a.SBrandCode and  itm.itemcode = d.itemcode\n" +
+//                    "            AND d.Day LIKE '" + curYear + "-" + String.format("%02d", curMonth) + "-_%' " +
+//                    "            GROUP by itm.TarCatCode";
 
-            String selectQuery = " SELECT ifnull((sum(a.Volume)),0)  as Target from fItemTarDet as a, fTargetCat as b, fItem itm,fDayTargetD as d ,fSubBrand as s\n" +
-                    "            where  itm.TarCatCode =  b.TarCatCode AND itm.SBrandCode =  a.SBrandCode\n" +
-                    "            AND b.TarCatCode = '" + catcode + "' and itm.SBrandCode in (Select SBrandCode from fItemTarDet)\n" +
-                    "            and s.SBrandCode =  a.SBrandCode and  itm.itemcode = d.itemcode\n" +
-                    "            AND d.Day LIKE '" + curYear + "-" + String.format("%02d", curMonth) + "-_%' " +
-                    "            GROUP by itm.TarCatCode";
+            String selectQuery = " SELECT ifnull((sum(a.Volume)),0)  as Target from fItemTarDet as a, fTargetCat as b, fItem itm,fDayTargetD as d " +
+                    "where  itm.TarCatCode =  b.TarCatCode AND itm.SBrandCode =  a.SBrandCode AND b.TarCatCode = '" + catcode + "' and itm.SBrandCode in (Select SBrandCode from fItemTarDet) " +
+                    " and a.SBrandCode =  d.SBrandCode and  itm.SBrandCode = d.SBrandCode " +
+                    " AND d.Day LIKE '" + curYear + "-" + String.format("%02d", curMonth) + "-_%' " +
+                    " GROUP by itm.TarCatCode ";
 
-//            String selectQuery = " SELECT ifnull((sum(a.Volume)),0)  as Target from fItemTarDet as a, fTargetCat as b, fItem itm,fDayTargetD as d " +
+            //            String selectQuery = " SELECT ifnull((sum(a.Volume)),0)  as Target from fItemTarDet as a, fTargetCat as b, fItem itm,fDayTargetD as d " +
 //                    "where  itm.TarCatCode =  b.TarCatCode AND itm.itemcode =  a.itemcode AND b.TarCatCode = '" + catcode + "' and itm.itemcode in (Select itemcode from fItemTarDet) " +
 //                    " and a.itemcode =  d.itemcode and  itm.itemcode = d.itemcode " +
 //                    " AND d.Day LIKE '" + curYear + "-" + String.format("%02d", curMonth) + "-_%' " +
@@ -1788,6 +1875,44 @@ public class DashboardController {
             dB.close();
         }
 
+
+        return list;
+    }
+
+    public ArrayList<Item> getItemsBySbrand(String sBrand) {
+        if (dB == null) {
+            open();
+        } else if (!dB.isOpen()) {
+            open();
+        }
+
+        ArrayList<Item> list = new ArrayList<>();
+
+        String selectQuery = " SELECT ItemCode,SBrandCode FROM fItem Where SBrandCode = '" + sBrand + "'";
+
+
+        Cursor cursor = dB.rawQuery(selectQuery, null);
+        try {
+            while (cursor.moveToNext()) {
+
+                Item item = new Item();
+
+                item.setFITEM_ITEM_CODE(cursor.getString(cursor.getColumnIndex(ItemController.FITEM_ITEM_CODE)));
+                item.setFITEM_SBRAND_CODE(cursor.getString(cursor.getColumnIndex(ItemController.FITEM_SBRAND_CODE)));
+
+                list.add(item);
+
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+            dB.close();
+        }
 
         return list;
     }
