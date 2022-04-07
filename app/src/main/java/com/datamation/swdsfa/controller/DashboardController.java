@@ -1357,53 +1357,7 @@ public class DashboardController {
         return monthAchieve;
     }
 
-    //Get Target - Kaveesha - 25-03-2022 --------------------------------------------------------
-//    public DayTargetD getTarget(String from, String to, String sbrandCode) {
-//        if (dB == null) {
-//            open();
-//        } else if (!dB.isOpen()) {
-//            open();
-//        }
-//
-//        double targetsum = 0.00;
-//
-//        DayTargetD targetD = new DayTargetD();
-//
-//        String selectQuery = "SELECT ifnull((sum(b.TargetPercen)),0)  as TotPercen, a.Volume from fItemTarDet as a, fDayTargetD as b \n" +
-//                "where a.sBrandCode = b.sBrandCode AND b.sBrandCode = '" + sbrandCode + "' AND b.Day BETWEEN  '" + from + "' and '" + to + "'";
-//
-////        String selectQuery = "SELECT ifnull((sum(a.Volume)),0)  as Target from fItemTarDet as a, fDayTargetD as b \n" +
-////                "where a.sBrandCode = b.sBrandCode AND b.sBrandCode = '" + sbrandCode + "' AND b.Day BETWEEN  '" + from + "' and '" + to + "'";
-//
-////        String selectQuery = "SELECT ifnull((sum(a.Volume)),0)  as Target from fItemTarDet as a, fDayTargetD as b , fItem as itm " +
-////                " where a.SBrandCode = itm.SBrandCode AND itm.itemcode = '" + sBrandCode + "' AND itm.itemcode = b.itemcode " +
-////                " AND b.Day BETWEEN  '" + from + "' and '" + to + "'";
-//
-//
-//        Cursor cursor = dB.rawQuery(selectQuery, null);
-//        try {
-//
-//            while (cursor.moveToNext()) {
-//                targetD.setVolume(cursor.getString(cursor.getColumnIndex(ItemTarDetController.FITEMTARDET_VOLUME)));
-//                targetD.setTargetPercen(cursor.getString(cursor.getColumnIndex("TotPercen")));
-//               // targetsum = Double.parseDouble(cursor.getString(cursor.getColumnIndex("Target")));
-//            }
-//
-//        } catch (Exception e) {
-//
-//            Log.v(TAG + " Excep getTarget", e.toString());
-//
-//        } finally {
-//            if (cursor != null) {
-//                cursor.close();
-//            }
-//            dB.close();
-//        }
-//        return targetD;
-//
-//    }
-
-    public Double getTargetPrecent(String from, String to, String sbrandCode) {
+    public Double getTargetBySubCode(String from, String to, String sbrandCode) {
         if (dB == null) {
             open();
         } else if (!dB.isOpen()) {
@@ -1411,18 +1365,20 @@ public class DashboardController {
         }
 
         double targetPrecent = 0.00;
-//        String selectQuery = "SELECT ifnull((sum(a.Volume)),0)  as Target from fItemTarDet as a, fDayTargetD as b \n" +
-//                "where a.itemcode = b.itemcode AND b.itemcode = '" + itemcode + "' AND b.Day BETWEEN  '" + from + "' and '" + to + "'";
 
-        String selectQuery = "SELECT ifnull((sum(b.TargetPercen)),0)  as TotPercen  from fItemTarDet as a, fDayTargetD as b \n" +
-                " where a.sBrandCode = b.sBrandCode AND b.sBrandCode = '" + sbrandCode + "' AND b.Day BETWEEN  '" + from + "' and '" + to + "'";
+
+        String selectQuery = " SELECT  (a.Volume*SUM(b.TargetPercen))/100  as SBTar \n" +
+                " FROM fItemTarDet a, FdayTargetD b WHERE  a.SBrandCode=B.SBrandCode AND b.SBrandCode ='" + sbrandCode + "' AND b.day BETWEEN '" + from + "' and '" + to + "'";
+
+//        String selectQuery = "SELECT ifnull((sum(b.TargetPercen)),0)  as TotPercen  from fItemTarDet as a, fDayTargetD as b \n" +
+//                " where a.sBrandCode = b.sBrandCode AND b.sBrandCode = '" + sbrandCode + "' AND b.Day BETWEEN  '" + from + "' and '" + to + "'";
 
 
         Cursor cursor = dB.rawQuery(selectQuery, null);
         try {
 
             while (cursor.moveToNext()) {
-                targetPrecent = Double.parseDouble(cursor.getString(cursor.getColumnIndex("TotPercen")));
+                targetPrecent = Double.parseDouble(cursor.getString(cursor.getColumnIndex("SBTar")));
             }
 
         } catch (Exception e) {
@@ -1439,44 +1395,9 @@ public class DashboardController {
 
     }
 
-    public Double getTargetVolume(String from, String to, String sbrandCode) {
-        if (dB == null) {
-            open();
-        } else if (!dB.isOpen()) {
-            open();
-        }
-
-        double targetVolume= 0.00;
-//        String selectQuery = "SELECT ifnull((sum(a.Volume)),0)  as Target from fItemTarDet as a, fDayTargetD as b \n" +
-//                "where a.itemcode = b.itemcode AND b.itemcode = '" + itemcode + "' AND b.Day BETWEEN  '" + from + "' and '" + to + "'";
-
-        String selectQuery = "SELECT a.Volume from fItemTarDet as a, fDayTargetD as b \n" +
-                "where a.sBrandCode = b.sBrandCode AND b.sBrandCode = '" + sbrandCode + "' AND b.Day BETWEEN  '" + from + "' and '" + to + "'";
-
-
-        Cursor cursor = dB.rawQuery(selectQuery, null);
-        try {
-
-            while (cursor.moveToNext()) {
-                targetVolume = Double.parseDouble(cursor.getString(cursor.getColumnIndex(ItemTarDetController.FITEMTARDET_VOLUME)));
-            }
-
-        } catch (Exception e) {
-
-            Log.v(TAG + " Excep getTarget", e.toString());
-
-        } finally {
-            if (cursor != null) {
-                cursor.close();
-            }
-            dB.close();
-        }
-        return targetVolume;
-
-    }
 
     // Get Achievement
-    public Double getOrderAchievement(String category,String itemcode,String from, String to) {
+    public Double getOrderAchievement(String category,String subBrand,String from, String to) {
         if (dB == null) {
             open();
         } else if (!dB.isOpen()) {
@@ -1486,22 +1407,31 @@ public class DashboardController {
         String selectQuery = "";
         double Achieve = 0.00;
 
-            if(category.equals("Case")){
+        if(category.equals("Case")){
 
-                selectQuery   = " SELECT ifnull((sum(CaseQty)),0)  as Achieve from FOrddet " +
-                        " where Itemcode = '" + itemcode + "' AND Types = 'SA' AND Txndate BETWEEN  '" + from + "' and '" + to + "'";
+            selectQuery   = "SELECT Sum(x.CS ) as Achieve \n" +
+                    " FROM (SELECT b.SBrandCode,a.itemcode,Sum(a.Qty) as Qty, b.NOUCase, Sum(a.Qty)/b.NOUCase as CS \n" +
+                    "FROM FOrddet a, fitem b WHERE a.txndate BETWEEN '" + from + "' AND '" + to + "' AND a.itemcode=b.itemcode AND " +
+                    " b.SBrandCode = '" + subBrand + "' AND a.Types='SA' GROUP BY b.SBrandCode,a.itemcode,b.NOUCase) x\n" +
+                    "GROUP BY x.SBrandCode";
 
-            }else if (category.equals("Piece")){
+        }else if (category.equals("Piece")){
 
-                selectQuery   = " SELECT ifnull((sum(PiceQty)),0)  as Achieve from FOrddet " +
-                        " where Itemcode = '" + itemcode + "' AND Types = 'SA' AND Txndate BETWEEN  '" + from + "' and '" + to + "'";
+            selectQuery   = "SELECT Sum(x.CS ) as Achieve \n" +
+                    " FROM (SELECT b.SBrandCode,a.itemcode,Sum(a.Qty) as Qty, b.NOUCase, Sum(a.Qty) % b.NOUCase as CS \n" +
+                    "FROM FOrddet a, fitem b WHERE a.txndate BETWEEN '" + from + "' AND '" + to + "' AND a.itemcode=b.itemcode AND " +
+                    " b.SBrandCode = '" + subBrand + "' AND a.Types='SA' GROUP BY b.SBrandCode,a.itemcode,b.NOUCase) x\n" +
+                    "GROUP BY x.SBrandCode";
 
-            }else if(category.equals("Value")){
+        }else if(category.equals("Value")){
 
-                selectQuery   = " SELECT ifnull((sum(Amt)),0)  as Achieve from FOrddet " +
-                        " where Itemcode = '" + itemcode + "' AND Types = 'SA' AND Txndate BETWEEN  '" + from + "' and '" + to + "'";
+            selectQuery   = " SELECT Sum(x.CS ) as Achieve \n" +
+                    " FROM (SELECT b.SBrandCode,a.itemcode,Sum(a.Amt) as CS \n" +
+                    "FROM FOrddet a, fitem b WHERE a.txndate BETWEEN '" + from + "' AND '" + to + "' AND a.itemcode=b.itemcode AND" +
+                    " b.SBrandCode = '" + subBrand + "' AND a.Types='SA' GROUP BY b.SBrandCode,a.itemcode,b.NOUCase) x\n" +
+                    "GROUP BY x.SBrandCode";
 
-            }
+        }
 
 
         Cursor cursor = dB.rawQuery(selectQuery, null);
@@ -1525,34 +1455,114 @@ public class DashboardController {
 
     }
 
-    // ------------------------- Get Invoices  --------- 25-03-2022 ------------------------------------------
-    public FinvDetL3 getInvoiceDetails(String itemcode,String from,String to) {
+    public Double getInvoiceAchievement(String category,String subBrand,String from, String to) {
         if (dB == null) {
             open();
         } else if (!dB.isOpen()) {
             open();
         }
 
-        FinvDetL3 finvDetL3 = new FinvDetL3();
-        String selectQuery = "SELECT a.itemcode, ifnull((sum(Qty)),0)  as TotalQty,ifnull((sum(Amt)),0)  as TotalAmt, itm.NOUCase as NOUCase from FinvDetL3 as a, fItem as itm " +
-                " where a.Itemcode = '" + itemcode + "' AND a.itemcode = itm.itemcode AND " +
-                " a.Txndate BETWEEN  '" + from + "' and '" + to + "'";
+        String selectQuery = "";
+        double Achieve = 0.00;
+
+        if(category.equals("Case")){
+
+            selectQuery   = "SELECT Sum(x.CS ) as Achieve \n" +
+                    " FROM (SELECT b.SBrandCode,a.itemcode,Sum(a.Qty) as Qty, b.NOUCase, Sum(a.Qty)/b.NOUCase as CS \n" +
+                    "FROM FinvDetL3 a, fitem b WHERE a.txndate BETWEEN '" + from + "' AND '" + to + "' AND a.itemcode=b.itemcode AND " +
+                    " b.SBrandCode = '" + subBrand + "' GROUP BY b.SBrandCode,a.itemcode,b.NOUCase) x\n" +
+                    "GROUP BY x.SBrandCode";
+
+        }else if (category.equals("Piece")){
+
+            selectQuery   = "SELECT Sum(x.CS ) as Achieve \n" +
+                    " FROM (SELECT b.SBrandCode,a.itemcode,Sum(a.Qty) as Qty, b.NOUCase, Sum(a.Qty) % b.NOUCase as CS \n" +
+                    "FROM FinvDetL3 a, fitem b WHERE a.txndate BETWEEN '" + from + "' AND '" + to + "' AND a.itemcode=b.itemcode AND " +
+                    " b.SBrandCode = '" + subBrand + "' GROUP BY b.SBrandCode,a.itemcode,b.NOUCase) x\n" +
+                    "GROUP BY x.SBrandCode";
+
+        }else if(category.equals("Value")){
+
+            selectQuery   = " SELECT Sum(x.CS ) as Achieve \n" +
+                    " FROM (SELECT b.SBrandCode,a.itemcode,Sum(a.Amt) as CS \n" +
+                    "FROM FinvDetL3 a, fitem b WHERE a.txndate BETWEEN '" + from + "' AND '" + to + "' AND a.itemcode=b.itemcode AND" +
+                    " b.SBrandCode = '" + subBrand + "' GROUP BY b.SBrandCode,a.itemcode,b.NOUCase) x\n" +
+                    "GROUP BY x.SBrandCode";
+
+        }
 
 
         Cursor cursor = dB.rawQuery(selectQuery, null);
         try {
+
             while (cursor.moveToNext()) {
-
-
-                finvDetL3.setFINVDETL3_ITEM_CODE(cursor.getString(cursor.getColumnIndex(FinvDetL3Controller.FINVDETL3_ITEM_CODE)));
-                finvDetL3.setFINVDETL3_NOU_CASE(cursor.getString(cursor.getColumnIndex("NOUCase")));
-                finvDetL3.setFINVDETL3_TOTAL_QTY(cursor.getString(cursor.getColumnIndex("TotalQty")));
-                finvDetL3.setFINVDETL3_AMT(cursor.getString(cursor.getColumnIndex("TotalAmt")));
-
+                Achieve = Double.parseDouble(cursor.getString(cursor.getColumnIndex("Achieve")));
             }
 
         } catch (Exception e) {
-            e.printStackTrace();
+
+            Log.v(TAG + " Excep getAchieve", e.toString());
+
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+            dB.close();
+        }
+        return Achieve;
+
+    }
+
+    public boolean isAnyInvoice(String category,String subBrand,String from, String to)
+    {
+        if (dB == null) {
+            open();
+        } else if (!dB.isOpen()) {
+            open();
+        }
+        String selectQuery = "";
+
+        if(category.equals("Case")){
+
+            selectQuery   = "SELECT Sum(x.CS ) as Achieve \n" +
+                    " FROM (SELECT b.SBrandCode,a.itemcode,Sum(a.Qty) as Qty, b.NOUCase, Sum(a.Qty)/b.NOUCase as CS \n" +
+                    "FROM FinvDetL3 a, fitem b WHERE a.txndate BETWEEN '" + from + "' AND '" + to + "' AND a.itemcode=b.itemcode AND " +
+                    " b.SBrandCode = '" + subBrand + "' GROUP BY b.SBrandCode,a.itemcode,b.NOUCase) x\n" +
+                    "GROUP BY x.SBrandCode";
+
+        }else if (category.equals("Piece")){
+
+            selectQuery   = "SELECT Sum(x.CS ) as Achieve \n" +
+                    " FROM (SELECT b.SBrandCode,a.itemcode,Sum(a.Qty) as Qty, b.NOUCase, Sum(a.Qty) % b.NOUCase as CS \n" +
+                    "FROM FinvDetL3 a, fitem b WHERE a.txndate BETWEEN '" + from + "' AND '" + to + "' AND a.itemcode=b.itemcode AND " +
+                    " b.SBrandCode = '" + subBrand + "' GROUP BY b.SBrandCode,a.itemcode,b.NOUCase) x\n" +
+                    "GROUP BY x.SBrandCode";
+
+        }else if(category.equals("Value")){
+
+            selectQuery   = " SELECT Sum(x.CS ) as Achieve \n" +
+                    " FROM (SELECT b.SBrandCode,a.itemcode,Sum(a.Amt) as CS \n" +
+                    "FROM FinvDetL3 a, fitem b WHERE a.txndate BETWEEN '" + from + "' AND '" + to + "' AND a.itemcode=b.itemcode AND" +
+                    " b.SBrandCode = '" + subBrand + "' GROUP BY b.SBrandCode,a.itemcode,b.NOUCase) x\n" +
+                    "GROUP BY x.SBrandCode";
+
+        }
+
+        Cursor cursor = dB.rawQuery(selectQuery, null);
+
+        try {
+            if (cursor.getCount()>0)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+
+        } catch (Exception e) {
+
+            Log.v(TAG + " Exception", e.toString());
 
         } finally {
             if (cursor != null) {
@@ -1561,7 +1571,69 @@ public class DashboardController {
             dB.close();
         }
 
-        return finvDetL3;
+        return false;
+    }
+
+
+    public boolean isAnyOrder(String category,String subBrand,String from, String to)
+    {
+        if (dB == null) {
+            open();
+        } else if (!dB.isOpen()) {
+            open();
+        }
+        String selectQuery = "";
+
+        if(category.equals("Case")){
+
+            selectQuery   = "SELECT Sum(x.CS ) as Achieve \n" +
+                    " FROM (SELECT b.SBrandCode,a.itemcode,Sum(a.Qty) as Qty, b.NOUCase, Sum(a.Qty)/b.NOUCase as CS \n" +
+                    "FROM FOrddet a, fitem b WHERE a.txndate BETWEEN '" + from + "' AND '" + to + "' AND a.itemcode=b.itemcode AND " +
+                    " b.SBrandCode = '" + subBrand + "' AND a.Types='SA' GROUP BY b.SBrandCode,a.itemcode,b.NOUCase) x\n" +
+                    "GROUP BY x.SBrandCode";
+
+        }else if (category.equals("Piece")){
+
+            selectQuery   = "SELECT Sum(x.CS ) as Achieve \n" +
+                    " FROM (SELECT b.SBrandCode,a.itemcode,Sum(a.Qty) as Qty, b.NOUCase, Sum(a.Qty) % b.NOUCase as CS \n" +
+                    "FROM FOrddet a, fitem b WHERE a.txndate BETWEEN '" + from + "' AND '" + to + "' AND a.itemcode=b.itemcode AND " +
+                    " b.SBrandCode = '" + subBrand + "' AND a.Types='SA' GROUP BY b.SBrandCode,a.itemcode,b.NOUCase) x\n" +
+                    "GROUP BY x.SBrandCode";
+
+        }else if(category.equals("Value")){
+
+            selectQuery   = " SELECT Sum(x.CS ) as Achieve \n" +
+                    " FROM (SELECT b.SBrandCode,a.itemcode,Sum(a.Amt) as CS \n" +
+                    "FROM FOrddet a, fitem b WHERE a.txndate BETWEEN '" + from + "' AND '" + to + "' AND a.itemcode=b.itemcode AND" +
+                    " b.SBrandCode = '" + subBrand + "' AND a.Types='SA' GROUP BY b.SBrandCode,a.itemcode,b.NOUCase) x\n" +
+                    "GROUP BY x.SBrandCode";
+
+        }
+
+        Cursor cursor = dB.rawQuery(selectQuery, null);
+
+        try {
+            if (cursor.getCount()>0)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+
+        } catch (Exception e) {
+
+            Log.v(TAG + " Exception", e.toString());
+
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+            dB.close();
+        }
+
+        return false;
     }
 
     // ------------------------- Get Target Categories  --------- 28-03-2022  ------------------------------------------
@@ -1572,7 +1644,7 @@ public class DashboardController {
             open();
         }
 
-       ArrayList<String> list = new ArrayList<>();
+        ArrayList<String> list = new ArrayList<>();
 
         String selectQuery = " SELECT TarcatName FROM fTargetCat";
 
@@ -1633,7 +1705,7 @@ public class DashboardController {
         return list;
     }
     public Double getMonthlyAchievement(String catcode,String type) {
-  //  public Double getCaseAchievement() {
+        //  public Double getCaseAchievement() {
 
         if (dB == null) {
             open();
@@ -1654,27 +1726,30 @@ public class DashboardController {
 
             if(type.equals("Case")){
 
-                selectQuery = " SELECT ifnull((sum(a.CaseQty)),0)  as Achieve from FOrddet as a, fTargetCat as b,\n" +
-                        "  fItem itm, fSubBrand as s where  itm.TarCatCode =  b.TarCatCode AND b.TarCatCode = '" + catcode + "' AND s.SBrandCode = itm.SBrandCode AND\n" +
-                        "  itm.itemcode in (Select itemcode from FOrddet) AND itm.itemcode = a.itemcode AND a.Types = 'SA' AND  a.txndate LIKE '" + curYear + "-" + String.format("%02d", curMonth) + "-_%' "  +
-                        "  GROUP by itm.TarCatCode";
+                selectQuery = "SELECT Sum(x.CS ) as Achieve\n" +
+                        " FROM (SELECT Sum(a.Qty) as Qty, itm.NOUCase, Sum(a.Qty)/itm.NOUCase as CS from FOrddet as a, fTargetCat as b,\n" +
+                        " fItem itm, fSubBrand as s where  itm.TarCatCode =  b.TarCatCode AND b.TarCatCode = '" + catcode + "' AND s.SBrandCode = itm.SBrandCode AND " +
+                        " itm.itemcode in (Select itemcode from FOrddet) AND itm.itemcode = a.itemcode AND a.Types = 'SA' AND  a.txndate LIKE '" + curYear + "-" + String.format("%02d", curMonth) + "-_%' "  +
+                        " GROUP by itm.TarCatCode) x";
 
-//                selectQuery = "SELECT ifnull((sum(a.CaseQty)),0)  as Achieve from FOrddet as a, fTargetCat as b," +
-//                        " fItem itm where  itm.TarCatCode =  b.TarCatCode AND b.TarCatCode = '" + catcode + "' AND " +
-//                        " itm.itemcode in (Select itemcode from FOrddet)  AND a.txndate LIKE '" + curYear + "-" + String.format("%02d", curMonth) + "-_%' " +
-//                        "GROUP by itm.TarCatCode ";
+//                selectQuery = " SELECT ifnull((sum(a.CaseQty)),0)  as Achieve from FOrddet as a, fTargetCat as b,\n" +
+//                        "  fItem itm, fSubBrand as s where  itm.TarCatCode =  b.TarCatCode AND b.TarCatCode = '" + catcode + "' AND s.SBrandCode = itm.SBrandCode AND\n" +
+//                        "  itm.itemcode in (Select itemcode from FOrddet) AND itm.itemcode = a.itemcode AND a.Types = 'SA' AND  a.txndate LIKE '" + curYear + "-" + String.format("%02d", curMonth) + "-_%' "  +
+//                        "  GROUP by itm.TarCatCode";
+
 
             }else if(type.equals("Piece")){
 
-                selectQuery = "SELECT ifnull((sum(a.PiceQty)),0)  as Achieve from FOrddet as a, fTargetCat as b,\n" +
-                        "fItem itm, fSubBrand as s where  itm.TarCatCode =  b.TarCatCode AND b.TarCatCode = '" + catcode + "' AND s.SBrandCode = itm.SBrandCode AND \n" +
-                        "itm.itemcode in (Select itemcode from FOrddet) AND itm.itemcode = a.itemcode AND a.txndate LIKE '" + curYear + "-" + String.format("%02d", curMonth) + "-_%' " +
-                        "GROUP by itm.TarCatCode";
+                selectQuery = "SELECT Sum(x.CS ) as Achieve\n" +
+                        " FROM (SELECT Sum(a.Qty) as Qty, itm.NOUCase, Sum(a.Qty) % itm.NOUCase as CS from FOrddet as a, fTargetCat as b,\n" +
+                        " fItem itm, fSubBrand as s where  itm.TarCatCode =  b.TarCatCode AND b.TarCatCode = '" + catcode + "' AND s.SBrandCode = itm.SBrandCode AND " +
+                        " itm.itemcode in (Select itemcode from FOrddet) AND itm.itemcode = a.itemcode AND a.Types = 'SA' AND  a.txndate LIKE '" + curYear + "-" + String.format("%02d", curMonth) + "-_%' "  +
+                        " GROUP by itm.TarCatCode) x";
 
-//                selectQuery = "SELECT ifnull((sum(a.PiceQty)),0)  as Achieve from FOrddet as a, fTargetCat as b," +
-//                        " fItem itm where  itm.TarCatCode =  b.TarCatCode AND b.TarCatCode = '" + catcode + "' AND " +
-//                        " itm.itemcode in (Select itemcode from FOrddet)  AND a.txndate LIKE '" + curYear + "-" + String.format("%02d", curMonth) + "-_%' " +
-//                        "GROUP by itm.TarCatCode ";
+//                selectQuery = "SELECT ifnull((sum(a.PiceQty)),0)  as Achieve from FOrddet as a, fTargetCat as b,\n" +
+//                        "fItem itm, fSubBrand as s where  itm.TarCatCode =  b.TarCatCode AND b.TarCatCode = '" + catcode + "' AND s.SBrandCode = itm.SBrandCode AND \n" +
+//                        "itm.itemcode in (Select itemcode from FOrddet) AND itm.itemcode = a.itemcode AND a.txndate LIKE '" + curYear + "-" + String.format("%02d", curMonth) + "-_%' " +
+//                        "GROUP by itm.TarCatCode";
 
             } else if(type.equals("Value")){
 
@@ -1738,7 +1813,7 @@ public class DashboardController {
 //                    "            AND d.Day LIKE '" + curYear + "-" + String.format("%02d", curMonth) + "-_%' " +
 //                    "            GROUP by itm.TarCatCode";
 
-            String selectQuery = " SELECT ifnull((sum(a.Volume)),0)  as Target from fItemTarDet as a, fTargetCat as b, fItem itm,fDayTargetD as d " +
+            String selectQuery = " SELECT (a.Volume*SUM(d.TargetPercen)) /100   as Target from fItemTarDet as a, fTargetCat as b, fItem itm,fDayTargetD as d " +
                     "where  itm.TarCatCode =  b.TarCatCode AND itm.SBrandCode =  a.SBrandCode AND b.TarCatCode = '" + catcode + "' and itm.SBrandCode in (Select SBrandCode from fItemTarDet) " +
                     " and a.SBrandCode =  d.SBrandCode and  itm.SBrandCode = d.SBrandCode " +
                     " AND d.Day LIKE '" + curYear + "-" + String.format("%02d", curMonth) + "-_%' " +
@@ -1752,7 +1827,7 @@ public class DashboardController {
 
 
 
-                    cursor = dB.rawQuery(selectQuery, null);
+            cursor = dB.rawQuery(selectQuery, null);
 
             while (cursor.moveToNext()) {
                 monthTarget = Double.parseDouble(cursor.getString(cursor.getColumnIndex("Target")));
@@ -1837,12 +1912,12 @@ public class DashboardController {
         ArrayList<Item> list = new ArrayList<Item>();
         String selectQuery = "";
 
-            selectQuery="select i.ItemCode,ifnull((sum(a.Qty)),0) as Qty,a.Types ,i.UnitCode as ItemWeight from fItem as i, Forddet as a ,\n" +
-                    "  fTargetCat as h , fSubBrand as s \n" +
-                    "  where i.ItemCode in (select ItemCode from Forddet where a.Txndate LIKE  '" + curYear + "-" + String.format("%02d", curMonth) + "-_%' ) \n" +
-                    "  and i.ItemCode = a.ItemCode  and a.Types ='SA' and i.SBrandCode = s.SBrandCode \n" +
-                    "  and h.TarCatCode = i.TarCatCode and h.TarCatCode = '" + catcode + "'" +
-                    "  group by a.ItemCode";
+        selectQuery="select i.ItemCode,ifnull((sum(a.Qty)),0) as Qty,a.Types ,i.UnitCode as ItemWeight from fItem as i, Forddet as a ,\n" +
+                "  fTargetCat as h , fSubBrand as s \n" +
+                "  where i.ItemCode in (select ItemCode from Forddet where a.Txndate LIKE  '" + curYear + "-" + String.format("%02d", curMonth) + "-_%' ) \n" +
+                "  and i.ItemCode = a.ItemCode  and a.Types ='SA' and i.SBrandCode = s.SBrandCode \n" +
+                "  and h.TarCatCode = i.TarCatCode and h.TarCatCode = '" + catcode + "'" +
+                "  group by a.ItemCode";
 
 //        selectQuery="select i.ItemCode,ifnull((sum(a.Qty)),0)  as Qty,a.Types ,i.UnitCode as ItemWeight from fItem as i, Forddet as a , fTargetCat h " +
 //                "where i.ItemCode in (select ItemCode from Forddet where a.Txndate LIKE  '" + curYear + "-" + String.format("%02d", curMonth) + "-_%' ) " +

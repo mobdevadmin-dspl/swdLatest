@@ -105,7 +105,7 @@ public class MainDashboardFragmentNew extends Fragment {
     BarChart chart,groupBarChart ;
     BarDataSet barDataSet1, barDataSet2;
     ArrayList<BarEntry> barEntries,barAchieveEntries,barTargetEntries;
-    double precentage,target,achievement,TotalAchieve = 0,TotalTonnage = 0,tonnage;
+    double precentage,target,achievement,TotalTonnage = 0,tonnage;
     String changeDateFrom,changeDateTo;
     ImageView menu;
     ArrayList<String> targetItemList;
@@ -267,29 +267,29 @@ public class MainDashboardFragmentNew extends Fragment {
             entries.add((int)monthlyTarget);
         }
 
-      if(monthlyAchieve == 0){
-          entries.add(0);
-      }else{
-          entries.add((int)monthlyAchieve);
-      }
-
-      if(monthlyAchieveInv == 0){
+        if(monthlyAchieve == 0){
             entries.add(0);
-      }else{
+        }else{
+            entries.add((int)monthlyAchieve);
+        }
+
+        if(monthlyAchieveInv == 0){
+            entries.add(0);
+        }else{
             entries.add((int)monthlyAchieveInv);
-      }
+        }
 
-      if(monthlyReturn == 0){
+        if(monthlyReturn == 0){
             entries.add(0);
-      }else{
+        }else{
             entries.add((int)monthlyReturn);
-      }
+        }
 
-      if(monthlyBalanceInv == 0){
+        if(monthlyBalanceInv == 0){
             entries.add(0);
-      }else{
+        }else{
             entries.add((int)monthlyBalanceInv);
-      }
+        }
 
 
         List<String> labels = new ArrayList<>();
@@ -356,7 +356,7 @@ public class MainDashboardFragmentNew extends Fragment {
     public void createGroupChart(ArrayList<BarEntry> achieveEntries,ArrayList<BarEntry> TargetEntries){
 
         barDataSet1 = new BarDataSet(achieveEntries, "Achievement");
-       // barDataSet1 = new BarDataSet(getMonthAchievement(new DashboardController(getActivity()).getTargetCategories()), "First Set");
+        // barDataSet1 = new BarDataSet(getMonthAchievement(new DashboardController(getActivity()).getTargetCategories()), "First Set");
         barDataSet1.setColor(getActivity().getResources().getColor(R.color.material_alert_negative_button));
         barDataSet2 = new BarDataSet(TargetEntries, "Target");
         barDataSet2.setColor(getActivity().getResources().getColor(R.color.green));
@@ -570,7 +570,7 @@ public class MainDashboardFragmentNew extends Fragment {
         xAxis.setDrawGridLinesBehindData(true);
         xAxis.setDrawAxisLine(true);
         xAxis.setDrawLabels(true);
-      //  xAxis.setLabelCount(4,true);
+        //  xAxis.setLabelCount(4,true);
 
 
 
@@ -867,12 +867,12 @@ public class MainDashboardFragmentNew extends Fragment {
                         if(String.valueOf(monthOfYear+1).length()<2 && String.valueOf(dayOfMonth).length()<2){
                             datesaveFrom = "" + year + "-" + "0"+(monthOfYear+1) + "-" + "0"+dayOfMonth ;
                             changeDateFrom = "" +(monthOfYear+1) + "/" + "0" + dayOfMonth + "/" + year;
-                           // changeDateFrom = "" + "0"+(monthOfYear+1) + "/" + "0" + dayOfMonth + "/" + year;
+                            // changeDateFrom = "" + "0"+(monthOfYear+1) + "/" + "0" + dayOfMonth + "/" + year;
                         }else{
                             if(String.valueOf(monthOfYear+1).length()<2){
                                 datesaveFrom = "" + year + "-" +"0"+(monthOfYear+1) +"-" + dayOfMonth ;
                                 changeDateFrom = "" + (monthOfYear+1) + "/" + dayOfMonth +"/" + year ;
-                              //  changeDateFrom = "" + "0" + (monthOfYear+1) + "/" + dayOfMonth +"/" + year ;
+                                //  changeDateFrom = "" + "0" + (monthOfYear+1) + "/" + dayOfMonth +"/" + year ;
                             }else if(String.valueOf(dayOfMonth).length()<2){
                                 datesaveFrom = "" + year + "-" + (monthOfYear+1) + "-" + "0"+dayOfMonth ;
                                 changeDateFrom = "" + (monthOfYear+1) + "/" + "0"+dayOfMonth + "/" + year ;
@@ -914,12 +914,12 @@ public class MainDashboardFragmentNew extends Fragment {
                         if(String.valueOf(monthOfYear+1).length()<2 && String.valueOf(dayOfMonth).length()<2){
                             datesaveTo = "" + year + "-" + "0"+(monthOfYear+1) + "-" + "0"+dayOfMonth ;
                             changeDateTo = "" + (monthOfYear+1) + "/" + "0" + dayOfMonth + "/" + year;
-                          //  changeDateTo = "" + "0"+(monthOfYear+1) + "/" + "0" + dayOfMonth + "/" + year;
+                            //  changeDateTo = "" + "0"+(monthOfYear+1) + "/" + "0" + dayOfMonth + "/" + year;
                         }else{
                             if(String.valueOf(monthOfYear+1).length()<2){
                                 datesaveTo = "" + year + "-" +"0"+(monthOfYear+1) +"-" + dayOfMonth ;
                                 changeDateTo = "" + (monthOfYear+1) + "/" + dayOfMonth +"/" + year ;
-                        //        changeDateTo = "" + "0" + (monthOfYear+1) + "/" + dayOfMonth +"/" + year ;
+                                //        changeDateTo = "" + "0" + (monthOfYear+1) + "/" + dayOfMonth +"/" + year ;
                             }else if(String.valueOf(dayOfMonth).length()<2){
                                 datesaveTo = "" + year + "-" + (monthOfYear+1) + "-" + "0"+dayOfMonth ;
                                 changeDateTo = "" + (monthOfYear+1) + "/" + "0"+dayOfMonth + "/" + year ;
@@ -1007,30 +1007,28 @@ public class MainDashboardFragmentNew extends Fragment {
 
 
         // set target item data into the spinner
-            targetItemList = new ItemController(context).getItems();
-            targetItemList.add(0, "-SELECT-");
+        targetItemList = new ItemController(context).getItems();
+        targetItemList.add(0, "-SELECT-");
 
-            ArrayAdapter<String> adaptercur = new ArrayAdapter<String>(context, android.R.layout.simple_spinner_dropdown_item, targetItemList);
-            adaptercur.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-            spTargetItem.setAdapter(adaptercur);
+        ArrayAdapter<String> adaptercur = new ArrayAdapter<String>(context, android.R.layout.simple_spinner_dropdown_item, targetItemList);
+        adaptercur.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spTargetItem.setAdapter(adaptercur);
 
-            spTargetItem.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-                @Override
-                public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                    if(!spTargetItem.getSelectedItem().equals("-SELECT-")){
-                        itemName.setText(spTargetItem.getSelectedItem().toString().split("- :")[1].trim());
-                        itemcode = spTargetItem.getSelectedItem().toString().split("- :")[0].trim();
-                        pref.setItemName(spTargetItem.getSelectedItem().toString().split("- :")[1].trim());
-                    }
+        spTargetItem.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                if(!spTargetItem.getSelectedItem().equals("-SELECT-")){
+                    itemName.setText(spTargetItem.getSelectedItem().toString().split("- :")[1].trim());
+                    itemcode = spTargetItem.getSelectedItem().toString().split("- :")[0].trim();
+                    pref.setItemName(spTargetItem.getSelectedItem().toString().split("- :")[1].trim());
                 }
+            }
 
-                @Override
-                public void onNothingSelected(AdapterView<?> parent) {
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
 
-                }
-            });
-
-
+            }
+        });
 
 
 
@@ -1040,25 +1038,17 @@ public class MainDashboardFragmentNew extends Fragment {
 
                 if(!type.equals("") && !category.equals("") && !spTargetItem.getSelectedItem().equals("-SELECT-")){
 
-                    achievement = 0;
-                    TotalAchieve = 0;
-                    TotalTonnage = 0;
+                    achievement = 0.00;
+                    TotalTonnage = 0.00;
 
-                   ArrayList<Item> list = new DashboardController(context).getItemsBySbrand(itemcode);
+                    ArrayList<Item> list = new DashboardController(context).getItemsBySbrand(itemcode);
 
-                 target =  getTarget(context,fromDate.getText().toString(),toDate.getText().toString(),itemcode);
-
-//                    //target = new DashboardController(context).getTarget(fromDate.getText().toString(),toDate.getText().toString(),itemcode);
-//                    DayTargetD targetD = new DashboardController(context).getTarget(fromDate.getText().toString(),toDate.getText().toString(),itemcode);
-//
-
+                    target =  new DashboardController(context).getTargetBySubCode(fromDate.getText().toString(),toDate.getText().toString(),itemcode);
 
                     if(type.equals("Order")){
 
                         if(category.equals("Tonnage")){
 
-                            //ArrayList<Item> list = new DashboardController(context).getItemsBySbrand(itemcode);
-                            //achievement = 0;
                             for(Item item : list){
                                 tonnage = getTonnage("Order",item.getFITEM_ITEM_CODE());
                                 TotalTonnage = TotalTonnage + tonnage;
@@ -1070,88 +1060,45 @@ public class MainDashboardFragmentNew extends Fragment {
 
                         }else{
 
-
-                             for(Item item : list){
-                                achievement = new DashboardController(context).getOrderAchievement(category,item.getFITEM_ITEM_CODE(),fromDate.getText().toString(),toDate.getText().toString());
-                                TotalAchieve = TotalAchieve + achievement;
+                            if(new DashboardController(context).isAnyOrder(category,itemcode,fromDate.getText().toString(),toDate.getText().toString())){
+                                achievement = new DashboardController(context).getOrderAchievement(category,itemcode,fromDate.getText().toString(),toDate.getText().toString());
+                            }else{
+                                Toast.makeText(context,"No data for display",Toast.LENGTH_LONG).show();
+                                achievement = 0.00;
                             }
-//                            achievement = new DashboardController(context).getOrderAchievement(category,itemcode,fromDate.getText().toString(),toDate.getText().toString());
-                            create_pie_Chart(TotalAchieve,target);
+
+                            create_pie_Chart(achievement,target);
                             pref.setAchievement(""+achievement);
                             pref.setTarget(""+target);
                         }
 
                     }else if(type.equals("Invoice")){
 
-                        FinvDetL3 finv;
+                        if(category.equals("Tonnage")){
 
-                        int totQty = 0,nouCase = 0;
-
-                       // achievement = 0;
-
-                            if(category.equals("Case")){
-
-                                for(Item item : list){
-                                    finv = new DashboardController(context).getInvoiceDetails(item.getFITEM_ITEM_CODE(),fromDate.getText().toString(),toDate.getText().toString());
-                                       if (finv.getFINVDETL3_NOU_CASE().toString() != null && finv.getFINVDETL3_TOTAL_QTY().toString() != null) {
-
-                                           totQty =  Integer.parseInt(finv.getFINVDETL3_TOTAL_QTY());
-                                           nouCase =  Integer.parseInt(finv.getFINVDETL3_NOU_CASE());
-
-                                           achievement = achievement +(totQty / nouCase) ;
-
-                                     }
-                                }
-                                create_pie_Chart(achievement,target);
-                                pref.setAchievement(""+achievement);
-                                pref.setTarget(""+target);
-
-                            }else if(category.equals("Piece")){
-
-                                for(Item item : list){
-                                    finv = new DashboardController(context).getInvoiceDetails(item.getFITEM_ITEM_CODE(),fromDate.getText().toString(),toDate.getText().toString());
-                                    if (finv.getFINVDETL3_NOU_CASE().toString() != null && finv.getFINVDETL3_TOTAL_QTY().toString() != null) {
-
-                                        totQty =  Integer.parseInt(finv.getFINVDETL3_TOTAL_QTY());
-                                        nouCase =  Integer.parseInt(finv.getFINVDETL3_NOU_CASE());
-
-                                        achievement = achievement + (totQty % nouCase);
-
-                                    }
-                                }
-
-                                create_pie_Chart(achievement,target);
-                                pref.setAchievement(""+achievement);
-                                pref.setTarget(""+target);
-
-                            }else if(category.equals("Tonnage")){
-
-                                for(Item item : list){
-                                    tonnage = getTonnage("Order",item.getFITEM_ITEM_CODE());
-                                    TotalTonnage = TotalTonnage + tonnage;
-                                }
-
-                                create_pie_Chart(TotalTonnage,target);
-                                pref.setAchievement(""+TotalTonnage);
-                                pref.setTarget(""+target);
-
-                            }else if(category.equals("Value")){
-
-                                for(Item item : list){
-                                    finv = new DashboardController(context).getInvoiceDetails(item.getFITEM_ITEM_CODE(),fromDate.getText().toString(),toDate.getText().toString());
-                                    if (finv.getFINVDETL3_NOU_CASE().toString() != null && finv.getFINVDETL3_TOTAL_QTY().toString() != null) {
-
-                                        String amount = df.format(Double.parseDouble(finv.getFINVDETL3_AMT()));
-                                        achievement = achievement + Double.parseDouble(amount);
-
-                                    }
-                                }
-                                create_pie_Chart(achievement,target);
-                                pref.setAchievement(""+achievement);
-                                pref.setTarget(""+target);
-
+                            for(Item item : list){
+                                tonnage = getTonnage("Order",item.getFITEM_ITEM_CODE());
+                                TotalTonnage = TotalTonnage + tonnage;
                             }
+
+                            create_pie_Chart(TotalTonnage,target);
+                            pref.setAchievement(""+TotalTonnage);
+                            pref.setTarget(""+target);
+
+                        }else {
+
+                            if(new DashboardController(context).isAnyInvoice(category,itemcode,fromDate.getText().toString(),toDate.getText().toString())){
+                                achievement = new DashboardController(context).getInvoiceAchievement(category,itemcode,fromDate.getText().toString(),toDate.getText().toString());
+                            }else{
+                                Toast.makeText(context,"No data for display",Toast.LENGTH_LONG).show();
+                                achievement = 0.00;
+                            }
+
+                            create_pie_Chart(achievement,target);
+                            pref.setAchievement(""+achievement);
+                            pref.setTarget(""+target);
                         }
+                    }
 
 
                     targetDetDialog.dismiss();
@@ -1165,24 +1112,6 @@ public class MainDashboardFragmentNew extends Fragment {
 
 
         targetDetDialog.show();
-    }
-
-    public double getTarget(Context mcontext,String fromDate,String toDate, String sBrand){
-
-
-        //target = new DashboardController(context).getTarget(fromDate.getText().toString(),toDate.getText().toString(),itemcode);
-      //  DayTargetD targetD = new DashboardController(mcontext).getTarget(fromDate,toDate,sBrand);
-
-        double totTargetPer = 0;
-        double monthlyVolume = 0;
-        double dayTarget = 0;
-
-        totTargetPer = new DashboardController(mcontext).getTargetPrecent(fromDate,toDate,sBrand);
-        monthlyVolume = new DashboardController(mcontext).getTargetVolume(fromDate,toDate,sBrand);
-
-        dayTarget = monthlyVolume * (totTargetPer/100);
-
-        return dayTarget;
     }
 
 
@@ -1266,7 +1195,6 @@ public class MainDashboardFragmentNew extends Fragment {
     //---------------------------------------------- Group Chart -------------------------------------------------------------------------
 
     public void getMonthAchievement( ArrayList<TargetCat> categories,String type) {
-   // public ArrayList<BarEntry> getMonthAchievement( ArrayList<TargetCat> categories,String type) {
 
         barAchieveEntries = new ArrayList<>();
         barTargetEntries = new ArrayList<>();
@@ -1291,28 +1219,7 @@ public class MainDashboardFragmentNew extends Fragment {
         }
 
         createGroupChart(barAchieveEntries,barTargetEntries);
-//
-//        for (int i=1;i<=xValues.size();i++) {
-//            monthlyCat01Achieve = new DashboardController(getActivity()).getCaseAchievement();
-//            barEntries.add(new BarEntry((float)i, (float) monthlyCat01Achieve));
-//        }
-//        double monthlyCat01Achieve = new DashboardController(getActivity()).getCaseAchievement("TCCOS01");
-//        double monthlyCat02Achieve = new DashboardController(getActivity()).getCaseAchievement("TCKB01");
-//        double monthlyCat03Achieve = new DashboardController(getActivity()).getCaseAchievement("TCKH01");
-//        double monthlyCat04Achieve = new DashboardController(getActivity()).getCaseAchievement("TCOTH01");
-//        double monthlyCat05Achieve = new DashboardController(getActivity()).getCaseAchievement("TCRA01");
-//
-//
-//        // adding new entry to our array list with bar
-//        // entry and passing x and y axis value to it.
-//
-//        barEntries.add(new BarEntry(1f, (float) monthlyCat01Achieve));
-//        barEntries.add(new BarEntry(2f, (float) monthlyCat02Achieve));
-//        barEntries.add(new BarEntry(3f, (float) monthlyCat03Achieve));
-//        barEntries.add(new BarEntry(4f, (float) monthlyCat04Achieve));
-//        barEntries.add(new BarEntry(5f, (float) monthlyCat05Achieve));
 
-      //  return barEntries;
     }
 
 }
