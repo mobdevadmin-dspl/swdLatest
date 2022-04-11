@@ -305,7 +305,8 @@ public class MainDashboardFragmentNew extends Fragment {
 
         //---------------------------- horizontal bar chart ----------------------------------------------------------------------
 
-        int nonprd = new DashboardController(getActivity()).getNonPrdCount();
+        int nonprd = 0;
+        nonprd = new DashboardController(getActivity()).getNonPrdCount();
         int ordcount = new DashboardController(getActivity()).getProductiveCount();
         String route = "";
         int curYear = Integer.parseInt(new SimpleDateFormat("yyyy").format(new Date()));
@@ -325,24 +326,18 @@ public class MainDashboardFragmentNew extends Fragment {
         }else{
             notVisit = 0;
         }
+        Log.d(">>>route",">>>"+route);
+        Log.d(">>>outlets",">>>"+outlets);
+        Log.d(">>>notVisit",">>>"+notVisit);
+        Log.d(">>>visit",">>>"+ordcount);
 
 
         // PREPARING THE ARRAY LIST OF BAR ENTRIES
-        ArrayList<BarEntry> barEntries = new ArrayList<>();
-        barEntries.add(new BarEntry(1f, ordcount));
-        barEntries.add(new BarEntry(2f, notVisit));
-        barEntries.add(new BarEntry(3f, nonprd));
 
 
-        // TO ADD THE VALUES IN X-AXIS
-        ArrayList<String> xAxisName = new ArrayList<>();
 
-        xAxisName.add("visit("+ordcount+")");
-        xAxisName.add("not visit("+notVisit+")");
-        xAxisName.add("nonproductive("+nonprd+")");
-
-
-        barchart(cumulativeLineChart,barEntries,xAxisName);
+        barchart(ordcount,notVisit,nonprd,"visit("+ordcount+")","not visit("+notVisit+")","nonproductive("+nonprd+")");
+      //  setHorizontalBarchart(3,outlets);
 
 
         //--------------------------------------- Pie Chart -----------------------------------------------------------------
@@ -352,6 +347,59 @@ public class MainDashboardFragmentNew extends Fragment {
 
         return rootView;
     }
+
+    public void barchart(int visit,int notVisit,int nonpro,String labelVisit,String labelNotVisit,String labelNonPro) {
+
+        cumulativeLineChart.animateXY(2000, 2000);
+        cumulativeLineChart.setDrawGridBackground(false);
+        cumulativeLineChart.setDrawBorders(false);
+        cumulativeLineChart.setDrawValueAboveBar(false);
+        cumulativeLineChart.getAxisLeft().setDrawGridLines(false);
+        cumulativeLineChart.getAxisLeft().setEnabled(false);
+        cumulativeLineChart.getAxisRight().setEnabled(false);
+        cumulativeLineChart.invalidate();
+        cumulativeLineChart.getDescription().setEnabled(false);
+        cumulativeLineChart.setFitBars(false);
+        ArrayList<BarEntry> barEntries = new ArrayList<>();
+        barEntries.add(new BarEntry(1f, (float)nonpro));
+        barEntries.add(new BarEntry(2f,  (float)notVisit));
+        barEntries.add(new BarEntry(3f, (float) visit) );
+
+
+        // TO ADD THE VALUES IN X-AXIS
+        ArrayList<String> xAxisName = new ArrayList<>();
+
+        xAxisName.add(labelNonPro);
+        xAxisName.add(labelNonPro);
+        xAxisName.add(labelNotVisit);
+        xAxisName.add(labelVisit);
+
+        BarDataSet barDataSet = new BarDataSet(barEntries, "Values");
+        barDataSet.setColors(new int[]{ContextCompat.getColor(getActivity(), R.color.visit_not_visited),
+                ContextCompat.getColor(getActivity(), R.color.theme_color_dark),
+                ContextCompat.getColor(getActivity(), R.color.main_green_stroke_color)});
+
+        BarData barData = new BarData(barDataSet);
+        barData.setBarWidth(0.5f);
+        barData.setValueTextSize(0f);
+        cumulativeLineChart.setBackgroundColor(Color.TRANSPARENT);
+        cumulativeLineChart.setDrawGridBackground(false);
+        Legend l = cumulativeLineChart.getLegend();
+        l.setTextSize(10f);
+        l.setFormSize(10f);
+        //To set components of x axis
+        XAxis xAxis = cumulativeLineChart.getXAxis();
+        xAxis.setTextSize(13f);
+        xAxis.setPosition(XAxis.XAxisPosition.TOP);
+        xAxis.setValueFormatter(new IndexAxisValueFormatter(xAxisName));
+        xAxis.setDrawGridLines(true);
+        xAxis.setDrawGridLinesBehindData(true);
+        xAxis.setDrawAxisLine(true);
+        xAxis.setDrawLabels(true);
+    //    xAxis.setLabelCount(3,true);
+        cumulativeLineChart.setData(barData);
+    }
+
 
     public void createGroupChart(ArrayList<BarEntry> achieveEntries,ArrayList<BarEntry> TargetEntries){
 
@@ -529,54 +577,6 @@ public class MainDashboardFragmentNew extends Fragment {
 
         } catch (Exception ignored) {
         }
-    }
-
-    public void barchart(BarChart barChart, ArrayList<BarEntry> arrayList, final ArrayList<String> xAxisValues) {
-
-        barChart.animateXY(2000, 2000);
-        barChart.setDrawGridBackground(false);
-        barChart.setDrawBorders(false);
-        barChart.setDrawValueAboveBar(false);
-        barChart.getAxisLeft().setDrawGridLines(false);
-        barChart.getAxisLeft().setEnabled(false);
-        barChart.getAxisRight().setEnabled(false);
-        barChart.invalidate();
-        barChart.getDescription().setEnabled(false);
-        barChart.setFitBars(false);
-
-
-        BarDataSet barDataSet = new BarDataSet(arrayList, "Values");
-        barDataSet.setColors(new int[]{ContextCompat.getColor(getActivity(), R.color.main_green_stroke_color),
-                ContextCompat.getColor(getActivity(), R.color.theme_color_dark),
-                ContextCompat.getColor(getActivity(), R.color.visit_not_visited)});
-
-        BarData barData = new BarData(barDataSet);
-        barData.setBarWidth(0.5f);
-        barData.setValueTextSize(0f);
-
-        barChart.setBackgroundColor(Color.TRANSPARENT);
-        barChart.setDrawGridBackground(false);
-
-        Legend l = barChart.getLegend();
-        l.setTextSize(10f);
-        l.setFormSize(10f);
-
-        //To set components of x axis
-        XAxis xAxis = barChart.getXAxis();
-        xAxis.setTextSize(13f);
-        xAxis.setPosition(XAxis.XAxisPosition.TOP);
-        xAxis.setValueFormatter(new IndexAxisValueFormatter(xAxisValues));
-        xAxis.setDrawGridLines(true);
-        xAxis.setDrawGridLinesBehindData(true);
-        xAxis.setDrawAxisLine(true);
-        xAxis.setDrawLabels(true);
-        //  xAxis.setLabelCount(4,true);
-
-
-
-
-        barChart.setData(barData);
-
     }
 
 
