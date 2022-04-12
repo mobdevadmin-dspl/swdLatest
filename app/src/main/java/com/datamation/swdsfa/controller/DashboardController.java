@@ -1805,32 +1805,17 @@ public class DashboardController {
         Cursor cursor = null;
         try {
 
-//
-//            String selectQuery = " SELECT ifnull((sum(a.Volume)),0)  as Target from fItemTarDet as a, fTargetCat as b, fItem itm,fDayTargetD as d ,fSubBrand as s\n" +
-//                    "            where  itm.TarCatCode =  b.TarCatCode AND itm.SBrandCode =  a.SBrandCode\n" +
-//                    "            AND b.TarCatCode = '" + catcode + "' and itm.SBrandCode in (Select SBrandCode from fItemTarDet)\n" +
-//                    "            and s.SBrandCode =  a.SBrandCode and  itm.itemcode = d.itemcode\n" +
-//                    "            AND d.Day LIKE '" + curYear + "-" + String.format("%02d", curMonth) + "-_%' " +
-//                    "            GROUP by itm.TarCatCode";
-
-            String selectQuery = " SELECT (a.Volume*SUM(d.TargetPercen)) /100   as Target from fItemTarDet as a, fTargetCat as b, fItem itm,fDayTargetD as d " +
-                    "where  itm.TarCatCode =  b.TarCatCode AND itm.SBrandCode =  a.SBrandCode AND b.TarCatCode = '" + catcode + "' and itm.SBrandCode in (Select SBrandCode from fItemTarDet) " +
-                    " and a.SBrandCode =  d.SBrandCode and  itm.SBrandCode = d.SBrandCode " +
-                    " AND d.Day LIKE '" + curYear + "-" + String.format("%02d", curMonth) + "-_%' " +
-                    " GROUP by itm.TarCatCode ";
-
-            //            String selectQuery = " SELECT ifnull((sum(a.Volume)),0)  as Target from fItemTarDet as a, fTargetCat as b, fItem itm,fDayTargetD as d " +
-//                    "where  itm.TarCatCode =  b.TarCatCode AND itm.itemcode =  a.itemcode AND b.TarCatCode = '" + catcode + "' and itm.itemcode in (Select itemcode from fItemTarDet) " +
-//                    " and a.itemcode =  d.itemcode and  itm.itemcode = d.itemcode " +
-//                    " AND d.Day LIKE '" + curYear + "-" + String.format("%02d", curMonth) + "-_%' " +
-//                    " GROUP by itm.TarCatCode ";
-
-
+            String selectQuery = "select (b.Volume*a.tarper)/100 as targetcases FROM " +
+                    "(select sum(TargetPercen) as tarper from fDayTargetD where SBrandCode in " +
+                    "(select SBrandCode from fitem where TarCatCode= '" + catcode + "') and Day LIKE '" + curYear + "-" + String.format("%02d", curMonth) + "-_%') a," +
+                    "(select sum(Volume) as Volume from fItemTarDet where SBrandCode in " +
+                    "(select SBrandCode from fitem where TarCatCode='" + catcode + "') and SBrandCode in " +
+                    "(Select SBrandCode From fDayTargetD Where Day LIKE '" + curYear + "-" + String.format("%02d", curMonth) + "-_%')) b";
 
             cursor = dB.rawQuery(selectQuery, null);
 
             while (cursor.moveToNext()) {
-                monthTarget = Double.parseDouble(cursor.getString(cursor.getColumnIndex("Target")));
+                monthTarget = Double.parseDouble(cursor.getString(cursor.getColumnIndex("targetcases")));
             }
 
         } catch (Exception e) {

@@ -443,7 +443,7 @@ public class MainDashboardFragmentNew extends Fragment {
         ArrayList<PieEntry> pieChartValues = new ArrayList<>();
 
 
-        if(daily_Achieve == 0 && daily_Target == 0){
+        if(daily_Achieve == 0 || daily_Target == 0){
             precentage = 0;
         }else {
             precentage = (daily_Achieve / daily_Target) * 100;
