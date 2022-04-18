@@ -503,11 +503,11 @@ public class MainDashboardFragmentNew extends Fragment {
             YAxis yAxis = chart.getAxisLeft();
 
             yAxis.setPosition(YAxis.YAxisLabelPosition.OUTSIDE_CHART);
-            yAxis.setStartAtZero(true);
+            yAxis.setAxisMinimum(0f);
 
 
             YAxis axisRight = chart.getAxisRight();
-            axisRight.setStartAtZero(true);    //Get the label on the left y-axis
+            axisRight.setAxisMinimum(0f);    //Get the label on the left y-axis
 
             chart.getAxisRight().setEnabled(true);
             chart.getAxisLeft().setEnabled(true);
@@ -554,7 +554,9 @@ public class MainDashboardFragmentNew extends Fragment {
                 ArrayList<IBarDataSet> dataSets = new ArrayList<IBarDataSet>();
                 dataSets.add(set1);
 
+
                 BarData data = new BarData(dataSets);
+                data.setDrawValues(true);
                 chart.setData(data);
 
 
