@@ -69,7 +69,7 @@ public class DayTargetDController {
 //                        " = '" + dayTargetD.getItemcode()+ "' and " + FDAYTARGETD_TXNDATE +"  = '" + dayTargetD.getTxnDate()+ "'", null);
 
                 Cursor cursor = dB.rawQuery("SELECT * FROM " + TABLE_FDAY_TARGETD + " WHERE " +
-                        FDAYTARGETD_DAY +"  = '" + dayTargetD.getDay()+ "'", null);
+                        FDAYTARGETD_DAY +"  = '" + dayTargetD.getDay()+ "' AND "+ FDAYTARGETD_SBRANDCODE +"  = '" + dayTargetD.getItemcode()+ "'", null);
 
 
                 ContentValues values = new ContentValues();
