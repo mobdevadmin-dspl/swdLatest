@@ -422,24 +422,26 @@ public class MainDashboardFragmentNew extends Fragment {
         xAxis.setGranularity(0.6f);
         xAxis.setGranularityEnabled(true);
         xAxis.setDrawGridLines(true);
-
-
+        xAxis.setLabelCount(xValues.size());
+        
         groupBarChart.setDragEnabled(true);
-        groupBarChart.setVisibleXRangeMaximum(xValues.size());
+        //groupBarChart.setVisibleXRangeMaximum(xValues.size());
+
 
         float barSpace = 0.1f;
-        float groupSpace = 0.1f;
+        float groupSpace = 0.5f;
 
         data.setBarWidth(0.15f);
 
         Legend l = groupBarChart.getLegend();
 
         groupBarChart.getXAxis().setAxisMinimum(0);
-        groupBarChart.getXAxis().setAxisMaximum(0+groupBarChart.getBarData().getGroupWidth(groupSpace,barSpace) * xValues.size());
+    //    groupBarChart.getXAxis().setAxisMaximum(0+groupBarChart.getBarData().getGroupWidth(groupSpace,barSpace) * xValues.size());
        // groupBarChart.getAxisLeft().setAxisMinimum(0);
 
         groupBarChart.animate();
         groupBarChart.groupBars(0, groupSpace, barSpace);
+        groupBarChart.setFitBars(true);
         groupBarChart.invalidate();
     }
 
