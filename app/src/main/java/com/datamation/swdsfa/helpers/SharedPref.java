@@ -118,6 +118,15 @@ public class SharedPref {
         editor.apply();
     }
 
+    public  String getProductType(){
+        return  sharedPref.getString("ProductType","");
+    }
+    public  void  setProductType(String type){
+        SharedPreferences.Editor editor = sharedPref.edit();
+        editor.putString("ProductType", type);
+        editor.apply();
+    }
+
     public  String getItemName(){
         return  sharedPref.getString("SelectedItem","");
     }

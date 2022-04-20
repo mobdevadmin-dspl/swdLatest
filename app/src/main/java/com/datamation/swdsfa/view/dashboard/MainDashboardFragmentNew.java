@@ -419,20 +419,25 @@ public class MainDashboardFragmentNew extends Fragment {
         xAxis.setValueFormatter(new IndexAxisValueFormatter(xValues));
         xAxis.setCenterAxisLabels(true);
         xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
-        xAxis.setGranularity(0.001f);
-        xAxis.setGranularityEnabled(false);
-        xAxis.setDrawGridLines(false);
+        xAxis.setGranularity(0.6f);
+        xAxis.setGranularityEnabled(true);
+        xAxis.setDrawGridLines(true);
 
 
         groupBarChart.setDragEnabled(true);
-        groupBarChart.setVisibleXRangeMaximum(3);
+        groupBarChart.setVisibleXRangeMaximum(xValues.size());
 
         float barSpace = 0.1f;
         float groupSpace = 0.1f;
 
         data.setBarWidth(0.15f);
 
+        Legend l = groupBarChart.getLegend();
+
         groupBarChart.getXAxis().setAxisMinimum(0);
+        groupBarChart.getXAxis().setAxisMaximum(0+groupBarChart.getBarData().getGroupWidth(groupSpace,barSpace) * xValues.size());
+       // groupBarChart.getAxisLeft().setAxisMinimum(0);
+
         groupBarChart.animate();
         groupBarChart.groupBars(0, groupSpace, barSpace);
         groupBarChart.invalidate();
@@ -516,11 +521,12 @@ public class MainDashboardFragmentNew extends Fragment {
             XAxis xAxis = chart.getXAxis();
             xAxis.setGranularity(1f);
             xAxis.setGranularityEnabled(true);
-            xAxis.setCenterAxisLabels(true);
+            xAxis.setCenterAxisLabels(false);
             xAxis.setDrawGridLines(false);
 
             xAxis.setPosition(XAxis.XAxisPosition.TOP);
             xAxis.setValueFormatter(new IndexAxisValueFormatter(graph_label));
+            xAxis.setLabelCount(graph_label.size());
 
             List<BarEntry> yVals1 = new ArrayList<BarEntry>();
 

@@ -2,8 +2,35 @@ package com.datamation.swdsfa.model;
 
 public class Target {
     String date;
+    String brandName;
+    String brandCode;
     double targetAmt;
     double achieveAmt;
+    double precentage;
+
+    public String getBrandName() {
+        return brandName;
+    }
+
+    public void setBrandName(String brandName) {
+        this.brandName = brandName;
+    }
+
+    public String getBrandCode() {
+        return brandCode;
+    }
+
+    public void setBrandCode(String brandCode) {
+        this.brandCode = brandCode;
+    }
+
+    public double getPrecentage() {
+        return precentage;
+    }
+
+    public void setPrecentage(double precentage) {
+        this.precentage = precentage;
+    }
 
     public String getDate() {
         return date;

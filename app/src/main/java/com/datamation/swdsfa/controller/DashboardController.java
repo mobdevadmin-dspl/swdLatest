@@ -1646,14 +1646,14 @@ public class DashboardController {
 
         ArrayList<String> list = new ArrayList<>();
 
-        String selectQuery = " SELECT TarcatName FROM fTargetCat";
+        String selectQuery = " SELECT TarCatCode FROM fTargetCat";
 
 
         Cursor cursor = dB.rawQuery(selectQuery, null);
         try {
             while (cursor.moveToNext()) {
 
-                list.add(cursor.getString(cursor.getColumnIndex(TargetCatController.FTARGETD_CAT_TARCATNAME)));
+                list.add(cursor.getString(cursor.getColumnIndex(TargetCatController.FTARGETD_CAT_TARCATCODE)));
 
             }
 
