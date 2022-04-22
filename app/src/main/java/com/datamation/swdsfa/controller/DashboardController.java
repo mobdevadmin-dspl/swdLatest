@@ -1805,17 +1805,15 @@ public class DashboardController {
         Cursor cursor = null;
         try {
 
-            String selectQuery = "select (b.Volume*a.tarper)/100 as targetcases FROM " +
-                    "(select sum(TargetPercen) as tarper from fDayTargetD where SBrandCode in " +
-                    "(select SBrandCode from fitem where TarCatCode= '" + catcode + "') and Day LIKE '" + curYear + "-" + String.format("%02d", curMonth) + "-_%') a," +
-                    "(select sum(Volume) as Volume from fItemTarDet where SBrandCode in " +
-                    "(select SBrandCode from fitem where TarCatCode='" + catcode + "') and SBrandCode in " +
-                    "(Select SBrandCode From fDayTargetD Where Day LIKE '" + curYear + "-" + String.format("%02d", curMonth) + "-_%')) b";
+            String selectQuery = "select sum(Volume) as Volume from fItemTarDet where SBrandCode in \n" +
+                    "(select SBrandCode from fitem where TarCatCode='" + catcode + "') and SBrandCode in \n" +
+                    "(Select SBrandCode From fDayTargetD Where Day LIKE '" + curYear + "-" + String.format("%02d", curMonth) + "-_%')";
+
 
             cursor = dB.rawQuery(selectQuery, null);
 
             while (cursor.moveToNext()) {
-                monthTarget = Double.parseDouble(cursor.getString(cursor.getColumnIndex("targetcases")));
+                monthTarget = Double.parseDouble(cursor.getString(cursor.getColumnIndex("Volume")));
             }
 
         } catch (Exception e) {
