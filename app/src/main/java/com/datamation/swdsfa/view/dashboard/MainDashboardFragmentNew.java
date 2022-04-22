@@ -423,7 +423,7 @@ public class MainDashboardFragmentNew extends Fragment {
         xAxis.setGranularityEnabled(true);
         xAxis.setDrawGridLines(true);
         xAxis.setLabelCount(xValues.size());
-        
+
         groupBarChart.setDragEnabled(true);
         //groupBarChart.setVisibleXRangeMaximum(xValues.size());
 

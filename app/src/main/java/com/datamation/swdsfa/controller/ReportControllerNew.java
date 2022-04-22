@@ -57,34 +57,34 @@ public ArrayList<Target> getTargetVsActualsOrder(String category,String from, St
                 " FROM (SELECT b.SBrandCode,a.itemcode,Sum(a.Qty) as Qty, b.NOUCase, Sum(a.Qty)/b.NOUCase as CS \n" +
                 " FROM FOrddet a, fitem b WHERE a.txndate BETWEEN '" + from + "' AND '" + to + "' AND a.itemcode=b.itemcode AND a.Types='SA' GROUP BY b.SBrandCode,a.itemcode,b.NOUCase) x\n" +
                 " GROUP BY x.SBrandCode)" +
-                " SELECT t.SBrandCode as SBrandCode,t.SBrandName AS SBrandName, t.SBTar as Target, a.achieve,(a.achieve/t.SBTar)* 100 as precentage FROM tmpTarget t\n" +
+                " SELECT t.SBrandCode as SBrandCode,t.SBrandName AS SBrandName, t.SBTar as Target, a.achieve as Achievement,(a.achieve/t.SBTar)* 100 as precentage FROM tmpTarget t\n" +
                 " LEFT JOIN tmpAchieve a ON t.SBrandCode = a.SBrandCode Where a.achieve > 0";
 
     }else if (category.equals("Piece")){
 
-        selectQuery   = "With tmpTarget AS (SELECT a.SBrandCode,s.SBrandName, a.Volume, SUM(b.TargetPercen) as Target, (a.Volume*SUM(b.TargetPercen))/100  as SBTar\n" +
-                " FROM fItemTarDet a, FdayTargetD b, fSubBrand as s WHERE  a.SBrandCode=B.SBrandCode AND a.SBrandCode = s.SBrandCode AND b.day BETWEEN '2022-04-01' AND '2022-04-07'\n" +
-                " GROUP BY a.SBrandCode), " +
-                " tmpAchieve AS(\n" +
-                " SELECT x.SBrandCode,Sum(x.CS )as Achieve\n" +
-                " FROM (SELECT b.SBrandCode,a.itemcode,Sum(a.Qty) as Qty, b.NOUCase, Sum(a.Qty) % b.NOUCase as CS \n" +
-                " FROM FOrddet a, fitem b WHERE a.txndate BETWEEN '" + from + "' AND '" + to + "' AND a.itemcode=b.itemcode AND a.Types='SA' GROUP BY b.SBrandCode,a.itemcode,b.NOUCase) x\n" +
-                " GROUP BY x.SBrandCode)" +
-                " SELECT t.SBrandCode as SBrandCode,t.SBrandName AS SBrandName, t.SBTar as Target, a.achieve,(a.achieve/t.SBTar)* 100 as precentage FROM tmpTarget t\n" +
-                " LEFT JOIN tmpAchieve a ON t.SBrandCode = a.SBrandCode Where a.achieve > 0";
+//        selectQuery   = "With tmpTarget AS (SELECT a.SBrandCode,s.SBrandName, a.Volume, SUM(b.TargetPercen) as Target, (a.Volume*SUM(b.TargetPercen))/100  as SBTar\n" +
+//                " FROM fItemTarDet a, FdayTargetD b, fSubBrand as s WHERE  a.SBrandCode=B.SBrandCode AND a.SBrandCode = s.SBrandCode AND b.day BETWEEN '2022-04-01' AND '2022-04-07'\n" +
+//                " GROUP BY a.SBrandCode), " +
+//                " tmpAchieve AS(\n" +
+//                " SELECT x.SBrandCode,Sum(x.CS )as Achieve\n" +
+//                " FROM (SELECT b.SBrandCode,a.itemcode,Sum(a.Qty) as Qty, b.NOUCase, Sum(a.Qty) % b.NOUCase as CS \n" +
+//                " FROM FOrddet a, fitem b WHERE a.txndate BETWEEN '" + from + "' AND '" + to + "' AND a.itemcode=b.itemcode AND a.Types='SA' GROUP BY b.SBrandCode,a.itemcode,b.NOUCase) x\n" +
+//                " GROUP BY x.SBrandCode)" +
+//                " SELECT t.SBrandCode as SBrandCode,t.SBrandName AS SBrandName, t.SBTar as Target, a.achieve as Achievement,(a.achieve/t.SBTar)* 100 as precentage FROM tmpTarget t\n" +
+//                " LEFT JOIN tmpAchieve a ON t.SBrandCode = a.SBrandCode Where a.achieve > 0";
 
     }else if(category.equals("Value")){
 
-        selectQuery   = "With tmpTarget AS (SELECT a.SBrandCode,s.SBrandName, a.Volume, SUM(b.TargetPercen) as Target, (a.Volume*SUM(b.TargetPercen))/100  as SBTar\n" +
-                " FROM fItemTarDet a, FdayTargetD b, fSubBrand as s WHERE  a.SBrandCode=B.SBrandCode AND a.SBrandCode = s.SBrandCode AND b.day BETWEEN '2022-04-01' AND '2022-04-07'\n" +
-                " GROUP BY a.SBrandCode), " +
-                " tmpAchieve AS(\n" +
-                " SELECT x.SBrandCode,Sum(x.CS )as Achieve\n" +
-                " FROM (SELECT b.SBrandCode,a.itemcode,b.SBrandCode,a.itemcode,Sum(a.Amt) as CS \n" +
-                " FROM FOrddet a, fitem b WHERE a.txndate BETWEEN '" + from + "' AND '" + to + "' AND a.itemcode=b.itemcode AND a.Types='SA' GROUP BY b.SBrandCode,a.itemcode,b.NOUCase) x\n" +
-                " GROUP BY x.SBrandCode)" +
-                " SELECT t.SBrandCode as SBrandCode,t.SBrandName AS SBrandName, t.SBTar as Target, a.achieve as Achievement,(a.achieve/t.SBTar)* 100 as precentage FROM tmpTarget t\n" +
-                " LEFT JOIN tmpAchieve a ON t.SBrandCode = a.SBrandCode Where a.achieve > 0";
+//        selectQuery   = "With tmpTarget AS (SELECT a.SBrandCode,s.SBrandName, a.Volume, SUM(b.TargetPercen) as Target, (a.Volume*SUM(b.TargetPercen))/100  as SBTar\n" +
+//                " FROM fItemTarDet a, FdayTargetD b, fSubBrand as s WHERE  a.SBrandCode=B.SBrandCode AND a.SBrandCode = s.SBrandCode AND b.day BETWEEN '2022-04-01' AND '2022-04-07'\n" +
+//                " GROUP BY a.SBrandCode), " +
+//                " tmpAchieve AS(\n" +
+//                " SELECT x.SBrandCode,Sum(x.CS )as Achieve\n" +
+//                " FROM (SELECT b.SBrandCode,a.itemcode,b.SBrandCode,a.itemcode,Sum(a.Amt) as CS \n" +
+//                " FROM FOrddet a, fitem b WHERE a.txndate BETWEEN '" + from + "' AND '" + to + "' AND a.itemcode=b.itemcode AND a.Types='SA' GROUP BY b.SBrandCode,a.itemcode,b.NOUCase) x\n" +
+//                " GROUP BY x.SBrandCode)" +
+//                " SELECT t.SBrandCode as SBrandCode,t.SBrandName AS SBrandName, t.SBTar as Target, a.achieve as Achievement,(a.achieve/t.SBTar)* 100 as precentage FROM tmpTarget t\n" +
+//                " LEFT JOIN tmpAchieve a ON t.SBrandCode = a.SBrandCode Where a.achieve > 0";
 
     }
 
@@ -118,6 +118,78 @@ public ArrayList<Target> getTargetVsActualsOrder(String category,String from, St
     return list;
 }
 
+    public ArrayList<Target> getTargetVsActualsOrderForBoth(String category,String from, String to) {//developed by Kaveesha - 20-04-2022
+
+        if (dB == null) {
+            open();
+        } else if (!dB.isOpen()) {
+            open();
+        }
+
+        String selectQuery = "";
+        ArrayList<Target> list = new ArrayList<Target>();
+
+        if(category.equals("Case")){
+
+            selectQuery   = "SELECT x.SBrandCode,x.SBrandName,Sum(x.CS )as Achievement " +
+                    "FROM (Select b.SBrandCode , s.SBrandName , sum(a.Qty) as Qty, b.NOUCase, Sum(a.Qty)/b.NOUCase as CS " +
+                    "FROM FOrddet as a, fitem as b, fSubBrand as s where " +
+                    "a.txndate BETWEEN '" + from + "' AND '" + to + "' AND a.itemcode=b.itemcode AND a.Types='SA' and b.SBrandCode = s.SBrandCode " +
+                    "AND b.SBrandCode NOT IN (Select SBrandCode from fItemTarDet) " +
+                    "GROUP BY b.SBrandCode,a.itemcode,b.NOUCase) x GROUP BY x.SBrandCode ";
+
+        }else if (category.equals("Piece")){
+
+//            selectQuery   = "SELECT x.SBrandCode,x.SBrandName,Sum(x.CS )as Achieve " +
+//                    "FROM (Select b.SBrandCode , s.SBrandName , sum(a.Qty) as Qty, b.NOUCase, Sum(a.Qty)/b.NOUCase as CS " +
+//                    "FROM FOrddet as a, fitem as b, fSubBrand as s where " +
+//                    "a.txndate BETWEEN '" + from + "' AND '" + to + "' AND a.itemcode=b.itemcode AND a.Types='SA' and b.SBrandCode = s.SBrandCode " +
+//                    "AND b.SBrandCode NOT IN (Select SBrandCode from fItemTarDet) " +
+//                    "GROUP BY b.SBrandCode,a.itemcode,b.NOUCase) x GROUP BY x.SBrandCode ";
+
+        }else if(category.equals("Value")){
+/*
+
+            selectQuery   = "SELECT x.SBrandCode,x.SBrandName,Sum(x.CS )as Achieve " +
+                    "FROM (Select b.SBrandCode , s.SBrandName , sum(a.Qty) as Qty, b.NOUCase, Sum(a.Qty)/b.NOUCase as CS " +
+                    "FROM FOrddet as a, fitem as b, fSubBrand as s where " +
+                    "a.txndate BETWEEN '" + from + "' AND '" + to + "' AND a.itemcode=b.itemcode AND a.Types='SA' and b.SBrandCode = s.SBrandCode " +
+                    "AND b.SBrandCode NOT IN (Select SBrandCode from fItemTarDet) " +
+                    "GROUP BY b.SBrandCode,a.itemcode,b.NOUCase) x GROUP BY x.SBrandCode ";
+*/
+
+        }
+
+
+        Cursor cursor = dB.rawQuery(selectQuery, null);
+
+        try {
+            while (cursor.moveToNext()) {
+
+                Target target = new Target();
+                target.setBrandCode(cursor.getString(cursor.getColumnIndex("SBrandCode")));
+                target.setBrandName(cursor.getString(cursor.getColumnIndex("SBrandName")));
+                target.setTargetAmt(Double.parseDouble("0.0"));
+                target.setAchieveAmt(Double.parseDouble(cursor.getString(cursor.getColumnIndex("Achievement"))));
+                target.setPrecentage(Double.parseDouble("0.0"));
+
+                list.add(target);
+
+            }
+        } catch (Exception e) {
+
+            Log.v(TAG + " Except getTargtVsActul", e.toString());
+
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+            dB.close();
+        }
+
+        return list;
+    }
+
     public ArrayList<Target> getTargetVsActualsInvoice(String category,String from, String to) {//developed by Kaveesha - 19-04-2022
 
         if (dB == null) {
@@ -137,7 +209,7 @@ public ArrayList<Target> getTargetVsActualsOrder(String category,String from, St
                     " tmpAchieve AS(\n" +
                     " SELECT x.SBrandCode,Sum(x.CS )as Achieve\n" +
                     " FROM (SELECT b.SBrandCode,a.itemcode,Sum(a.Qty) as Qty, b.NOUCase, Sum(a.Qty)/b.NOUCase as CS \n" +
-                    " FROM FinvDetL3 a, fitem b WHERE a.txndate BETWEEN '" + from + "' AND '" + to + "' AND a.itemcode=b.itemcode AND a.Types='SA' GROUP BY b.SBrandCode,a.itemcode,b.NOUCase) x\n" +
+                    " FROM FinvDetL3 a, fitem b WHERE a.txndate BETWEEN '" + from + "' AND '" + to + "' AND a.itemcode=b.itemcode GROUP BY b.SBrandCode,a.itemcode,b.NOUCase) x\n" +
                     " GROUP BY x.SBrandCode)" +
                     " SELECT t.SBrandCode as SBrandCode,t.SBrandName AS SBrandName, t.SBTar as Target, a.achieve,(a.achieve/t.SBTar)* 100 as precentage FROM tmpTarget t\n" +
                     " LEFT JOIN tmpAchieve a ON t.SBrandCode = a.SBrandCode Where a.achieve > 0";
@@ -150,7 +222,7 @@ public ArrayList<Target> getTargetVsActualsOrder(String category,String from, St
                     " tmpAchieve AS(\n" +
                     " SELECT x.SBrandCode,Sum(x.CS )as Achieve\n" +
                     " FROM (SELECT b.SBrandCode,a.itemcode,Sum(a.Qty) as Qty, b.NOUCase, Sum(a.Qty) % b.NOUCase as CS \n" +
-                    " FROM FinvDetL3 a, fitem b WHERE a.txndate BETWEEN '" + from + "' AND '" + to + "' AND a.itemcode=b.itemcode AND a.Types='SA' GROUP BY b.SBrandCode,a.itemcode,b.NOUCase) x\n" +
+                    " FROM FinvDetL3 a, fitem b WHERE a.txndate BETWEEN '" + from + "' AND '" + to + "' AND a.itemcode=b.itemcode GROUP BY b.SBrandCode,a.itemcode,b.NOUCase) x\n" +
                     " GROUP BY x.SBrandCode)" +
                     " SELECT t.SBrandCode as SBrandCode,t.SBrandName AS SBrandName, t.SBTar as Target, a.achieve,(a.achieve/t.SBTar)* 100 as precentage FROM tmpTarget t\n" +
                     " LEFT JOIN tmpAchieve a ON t.SBrandCode = a.SBrandCode Where a.achieve > 0";
@@ -163,7 +235,7 @@ public ArrayList<Target> getTargetVsActualsOrder(String category,String from, St
                     " tmpAchieve AS(\n" +
                     " SELECT x.SBrandCode,Sum(x.CS )as Achieve\n" +
                     " FROM (SELECT b.SBrandCode,a.itemcode,b.SBrandCode,a.itemcode,Sum(a.Amt) as CS \n" +
-                    " FROM FinvDetL3 a, fitem b WHERE a.txndate BETWEEN '" + from + "' AND '" + to + "' AND a.itemcode=b.itemcode AND a.Types='SA' GROUP BY b.SBrandCode,a.itemcode,b.NOUCase) x\n" +
+                    " FROM FinvDetL3 a, fitem b WHERE a.txndate BETWEEN '" + from + "' AND '" + to + "' AND a.itemcode=b.itemcode GROUP BY b.SBrandCode,a.itemcode,b.NOUCase) x\n" +
                     " GROUP BY x.SBrandCode)" +
                     " SELECT t.SBrandCode as SBrandCode,t.SBrandName AS SBrandName, t.SBTar as Target, a.achieve as Achievement,(a.achieve/t.SBTar)* 100 as precentage FROM tmpTarget t\n" +
                     " LEFT JOIN tmpAchieve a ON t.SBrandCode = a.SBrandCode Where a.achieve > 0";
@@ -182,6 +254,75 @@ public ArrayList<Target> getTargetVsActualsOrder(String category,String from, St
                 target.setTargetAmt(Double.parseDouble(cursor.getString(cursor.getColumnIndex("Target"))));
                 target.setAchieveAmt(Double.parseDouble(cursor.getString(cursor.getColumnIndex("Achievement"))));
                 target.setPrecentage(Double.parseDouble(cursor.getString(cursor.getColumnIndex("precentage"))));
+
+                list.add(target);
+
+            }
+        } catch (Exception e) {
+
+            Log.v(TAG + " Except getTargtVsActul", e.toString());
+
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+            dB.close();
+        }
+
+        return list;
+    }
+
+    public ArrayList<Target> getTargetVsActualsInvoiceForBoth(String category,String from, String to) {//developed by Kaveesha - 20-04-2022
+
+        if (dB == null) {
+            open();
+        } else if (!dB.isOpen()) {
+            open();
+        }
+
+        String selectQuery = "";
+        ArrayList<Target> list = new ArrayList<Target>();
+
+        if(category.equals("Case")){
+
+            selectQuery   = "SELECT x.SBrandCode,x.SBrandName,Sum(x.CS )as Achieve " +
+                    "FROM (Select b.SBrandCode , s.SBrandName , sum(a.Qty) as Qty, b.NOUCase, Sum(a.Qty)/b.NOUCase as CS " +
+                    "FROM FinvDetL3 as a, fitem as b, fSubBrand as s where " +
+                    "a.txndate BETWEEN '" + from + "' AND '" + to + "' AND a.itemcode=b.itemcode AND b.SBrandCode = s.SBrandCode " +
+                    "AND b.SBrandCode NOT IN (Select SBrandCode from fItemTarDet) " +
+                    "GROUP BY b.SBrandCode,a.itemcode,b.NOUCase) x GROUP BY x.SBrandCode ";
+
+        }else if (category.equals("Piece")){
+
+//            selectQuery   = "SELECT x.SBrandCode,x.SBrandName,Sum(x.CS )as Achieve " +
+//                    "FROM (Select b.SBrandCode , s.SBrandName , sum(a.Qty) as Qty, b.NOUCase, Sum(a.Qty)/b.NOUCase as CS " +
+//                    "FROM FinvDetL3 as a, fitem as b, fSubBrand as s where " +
+//                    "a.txndate BETWEEN '" + from + "' AND '" + to + "' AND a.itemcode=b.itemcode and b.SBrandCode = s.SBrandCode " +
+//                    "AND b.SBrandCode NOT IN (Select SBrandCode from fItemTarDet) " +
+//                    "GROUP BY b.SBrandCode,a.itemcode,b.NOUCase) x GROUP BY x.SBrandCode ";
+
+        }else if(category.equals("Value")){
+
+//            selectQuery   = "SELECT x.SBrandCode,x.SBrandName,Sum(x.CS )as Achieve " +
+//                    "FROM (Select b.SBrandCode , s.SBrandName , sum(a.Qty) as Qty, b.NOUCase, Sum(a.Qty)/b.NOUCase as CS " +
+//                    "FROM FinvDetL3 as a, fitem as b, fSubBrand as s where " +
+//                    "a.txndate BETWEEN '" + from + "' AND '" + to + "' AND a.itemcode=b.itemcode AND  b.SBrandCode = s.SBrandCode " +
+//                    "AND b.SBrandCode NOT IN (Select SBrandCode from fItemTarDet) " +
+//                    "GROUP BY b.SBrandCode,a.itemcode,b.NOUCase) x GROUP BY x.SBrandCode ";
+        }
+
+
+        Cursor cursor = dB.rawQuery(selectQuery, null);
+
+        try {
+            while (cursor.moveToNext()) {
+
+                Target target = new Target();
+                target.setBrandCode(cursor.getString(cursor.getColumnIndex("SBrandCode")));
+                target.setBrandName(cursor.getString(cursor.getColumnIndex("SBrandName")));
+                target.setTargetAmt(Double.parseDouble(cursor.getString(cursor.getColumnIndex("0.0"))));
+                target.setAchieveAmt(Double.parseDouble(cursor.getString(cursor.getColumnIndex("Achievement"))));
+                target.setPrecentage(Double.parseDouble(cursor.getString(cursor.getColumnIndex("0.0"))));
 
                 list.add(target);
 

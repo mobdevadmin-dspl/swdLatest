@@ -22,6 +22,7 @@ import com.datamation.swdsfa.view.dashboard.OrderDetailsFragment;
 import com.datamation.swdsfa.view.dashboard.ReportFragment;
 import com.datamation.swdsfa.view.dashboard.PaymentDetailsFragment;
 import com.datamation.swdsfa.view.dashboard.PromotionDetailsFragment;
+import com.datamation.swdsfa.view.dashboard.ReportFragmentNew;
 import com.datamation.swdsfa.view.dashboard.TransactionDetailsFragment;
 
 
@@ -35,7 +36,8 @@ public class FragmentHome extends Fragment {
     private OrderDetailsFragment orderDetailsFragment;
     private TransactionDetailsFragment transactionDetailsFragment;
     private PromotionDetailsFragment promoDetailsFragment;
-    private ReportFragment otherDetailsFragment;
+    private ReportFragmentNew otherDetailsFragment;
+    //private ReportFragment otherDetailsFragment;
 
 
     private ViewPager viewPager;
@@ -200,7 +202,7 @@ public class FragmentHome extends Fragment {
 //                    if(paymentDetailsFragment == null) paymentDetailsFragment = new PaymentDetailsFragment();
 //                    return paymentDetailsFragment;
                 case 4:
-                    if(otherDetailsFragment == null) otherDetailsFragment = new ReportFragment();
+                    if(otherDetailsFragment == null) otherDetailsFragment = new ReportFragmentNew();
                     return otherDetailsFragment;
 //
 //                case 4:

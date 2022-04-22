@@ -20,6 +20,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
 
 import com.datamation.swdsfa.R;
 import com.datamation.swdsfa.controller.DayExpDetController;
@@ -40,6 +41,7 @@ import com.datamation.swdsfa.reports.ExpenseReportAdapter;
 import com.datamation.swdsfa.reports.NonProductiveDaySummaryAdapter;
 import com.datamation.swdsfa.reports.PreSalesReportAdapter;
 import com.datamation.swdsfa.reports.TargetVsAchievementAdapter;
+import com.datamation.swdsfa.reports.TargetVsAchievementAdapterNew;
 import com.wdullaer.materialdatetimepicker.date.DatePickerDialog;
 
 import java.text.NumberFormat;
@@ -63,6 +65,7 @@ public class ReportFragmentNew extends Fragment{
     RelativeLayout filterParams;
     RelativeLayout targetReportHeaders;
     RelativeLayout expenseHeaders;
+    RelativeLayout targetFilter,transationFilter,categoryFilter;
     Button searchBtn;
     public Calendar Report_Calender;
     public DatePickerDialog datePickerDialogfrom,datePickerDialogTo;
@@ -84,7 +87,7 @@ public class ReportFragmentNew extends Fragment{
     List<DayExpHed> listDEDataHeader;
     HashMap<DayExpHed, List<DayExpDet>> listDEDataChild;
 
-    TargetVsAchievementAdapter targetVsActualAdapter;
+    TargetVsAchievementAdapterNew targetVsActualAdapter;
     ArrayList<Target> targetVsActuals;
 
     ExpenseReportAdapter expenseReportAdapter;
@@ -130,6 +133,12 @@ public class ReportFragmentNew extends Fragment{
         radioGroup2 = (RadioGroup) view.findViewById(R.id.groupRadio2);
         radioGroup3 = (RadioGroup) view.findViewById(R.id.groupRadio3);
 
+        targetFilter = (RelativeLayout) view.findViewById(R.id.fragment_target_details_rl_filter_params);
+        transationFilter = (RelativeLayout) view.findViewById(R.id.fragment_order_details_rl_filter_params);
+        categoryFilter = (RelativeLayout) view.findViewById(R.id.fragment_category_details_rl_filter_params);
+
+
+
         //noDataLayout = (LinearLayout)view.findViewById(R.id.no_item_layout);
 
         ArrayList<String> otherList = new ArrayList<String>();
@@ -158,10 +167,8 @@ public class ReportFragmentNew extends Fragment{
         // ------------------- Target or Non Target Products -----------------------------------------------
         if(rdTargetProducts.isChecked()){
             productType = "Target";
-            pref.setProductType("Target");
         }else if(rdBoth.isChecked()){
             productType = "Both";
-            pref.setProductType("Both");
         }
 
         radioGroup1.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
@@ -169,10 +176,8 @@ public class ReportFragmentNew extends Fragment{
             public void onCheckedChanged(RadioGroup group, int checkedId) {
                 if(rdTargetProducts.isChecked()){
                     productType = "Target";
-                    pref.setProductType("Target");
                 }else if(rdBoth.isChecked()){
                     productType = "Both";
-                    pref.setProductType("Both");
                 }
             }
         });
@@ -180,10 +185,8 @@ public class ReportFragmentNew extends Fragment{
         // ------------------- Sales Order / Invoice -----------------------------------------------
         if(rdSales.isChecked()){
             type = "Order";
-            pref.setType("Order");
         }else if(rdInvoice.isChecked()){
             type = "Invoice";
-            pref.setType("Invoice");
         }
 
         radioGroup2.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
@@ -191,10 +194,8 @@ public class ReportFragmentNew extends Fragment{
             public void onCheckedChanged(RadioGroup group, int checkedId) {
                 if(rdSales.isChecked()){
                     type = "Order";
-                    pref.setType("Order");
                 }else if(rdInvoice.isChecked()){
                     type = "Invoice";
-                    pref.setType("Invoice");
                 }
             }
         });
@@ -203,16 +204,12 @@ public class ReportFragmentNew extends Fragment{
         //---------------------- Cases / Pieces / Tonnage / Value ------------------------------
         if(rdCase.isChecked()){
             category = "Case";
-            pref.setCategory("Case");
         }else if(rdPiece.isChecked()){
             category = "Piece";
-            pref.setCategory("Piece");
         }else if(rdTonnage.isChecked()){
             category = "Tonnage";
-            pref.setCategory("Tonnage");
         }else if(rdValue.isChecked()){
             category = "Value";
-            pref.setCategory("Value");
         }
 
         radioGroup3.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
@@ -220,16 +217,12 @@ public class ReportFragmentNew extends Fragment{
             public void onCheckedChanged(RadioGroup group, int checkedId) {
                 if(rdCase.isChecked()){
                     category = "Case";
-                    pref.setCategory("Case");
                 }else if(rdPiece.isChecked()){
                     category = "Piece";
-                    pref.setCategory("Piece");
                 }else if(rdTonnage.isChecked()){
                     category = "Tonnage";
-                    pref.setCategory("Tonnage");
                 }else if(rdValue.isChecked()){
                     category = "Value";
-                    pref.setCategory("Value");
                 }
             }
         });
@@ -354,6 +347,9 @@ public class ReportFragmentNew extends Fragment{
                     expenseHeaders.setVisibility(View.GONE);
                     exNpHeaders.setVisibility(View.VISIBLE);
                     expandListView.setVisibility(View.VISIBLE);
+                    targetFilter.setVisibility(View.GONE);
+                    transationFilter.setVisibility(View.GONE);
+                    categoryFilter.setVisibility(View.GONE);
                     expandListView.clearTextFilter();
                     prepareNonProductiveData();
                 }
@@ -367,6 +363,9 @@ public class ReportFragmentNew extends Fragment{
                     expenseHeaders.setVisibility(View.VISIBLE);
                     filterParams.setVisibility(View.VISIBLE);
                     reportDataListview.setVisibility(View.VISIBLE);
+                    targetFilter.setVisibility(View.GONE);
+                    transationFilter.setVisibility(View.GONE);
+                    categoryFilter.setVisibility(View.GONE);
                 }else if(position==1){
                     reportDataListview.setAdapter(null);
                     exNpHeaders.setVisibility(View.GONE);
@@ -376,6 +375,9 @@ public class ReportFragmentNew extends Fragment{
                     presaleHeaders.setVisibility(View.VISIBLE);
                     filterParams.setVisibility(View.VISIBLE);
                     reportDataListview.setVisibility(View.VISIBLE);
+                    targetFilter.setVisibility(View.GONE);
+                    transationFilter.setVisibility(View.GONE);
+                    categoryFilter.setVisibility(View.GONE);
                 }else if(position==0){//position ==0
                     reportDataListview.setAdapter(null);
                     exNpHeaders.setVisibility(View.GONE);
@@ -384,6 +386,9 @@ public class ReportFragmentNew extends Fragment{
                     expenseHeaders.setVisibility(View.GONE);
                     filterParams.setVisibility(View.VISIBLE);
                     targetReportHeaders.setVisibility(View.VISIBLE);
+                    targetFilter.setVisibility(View.VISIBLE);
+                    transationFilter.setVisibility(View.VISIBLE);
+                    categoryFilter.setVisibility(View.VISIBLE);
                     reportDataListview.setVisibility(View.VISIBLE);
                 }else{
                     Log.d("Cannot be happen","errrrr");
@@ -473,7 +478,7 @@ public class ReportFragmentNew extends Fragment{
                 if(category.equals("Tonnage")){
 
                 }else{
-                    targetVsActuals = new ReportControllerNew(getActivity()).getTargetVsActualsOrder(category,from,to);
+                    targetVsActuals = new ReportControllerNew(getActivity()).getTargetVsActualsInvoice(category,from,to);
                 }
             }
         }else if(productType.equals("Both")){
@@ -481,21 +486,25 @@ public class ReportFragmentNew extends Fragment{
                 if(category.equals("Tonnage")){
 
                 }else{
-
+                    ArrayList<Target> list2 = new ArrayList<>();
+                    targetVsActuals = new ReportControllerNew(getActivity()).getTargetVsActualsOrder(category,from,to);
+                    list2 = new ReportControllerNew(getActivity()).getTargetVsActualsOrderForBoth(category,from,to);
+                    targetVsActuals.addAll(list2);
                 }
             }else if(type.equals("Invoice")){
                 if(category.equals("Tonnage")){
 
                 }else{
-
+                    targetVsActuals = new ReportControllerNew(getActivity()).getTargetVsActualsInvoice(category,from,to);
+                    targetVsActuals = new ReportControllerNew(getActivity()).getTargetVsActualsInvoiceForBoth(category,from,to);
                 }
             }
         }
 
-
+        reportDataListview.setAdapter(null);
        // targetVsActuals = new ReportController(getActivity()).getTargetVsActuals(from,to);
         if(targetVsActuals.size()>0){
-            targetVsActualAdapter = new TargetVsAchievementAdapter(getActivity(),targetVsActuals);
+            targetVsActualAdapter = new TargetVsAchievementAdapterNew(getActivity(),targetVsActuals);
             reportDataListview.setAdapter(targetVsActualAdapter);
         }else{
             Toast.makeText(getActivity(), "No data to display", Toast.LENGTH_LONG).show();

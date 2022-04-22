@@ -10,6 +10,7 @@ import android.widget.TextView;
 import com.datamation.swdsfa.R;
 import com.datamation.swdsfa.model.Target;
 
+import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.ArrayList;
 
@@ -45,7 +46,7 @@ public class TargetVsAchievementAdapterNew extends BaseAdapter {
 
         View rowView = view;
         if (rowView==null) {
-            rowView = layoutInflater.inflate(R.layout.target_vs_actual_row_responsive_layout, null, true);
+            rowView = layoutInflater.inflate(R.layout.target_vs_actual_row, null, true);
         }
         //link views
 
@@ -57,12 +58,12 @@ public class TargetVsAchievementAdapterNew extends BaseAdapter {
 
         targetModel = targetData.get(position);
 
-
+        DecimalFormat f = new DecimalFormat("##.00");
         brandCode.setText(targetModel.getBrandCode());
-        brandName.setText("" + numberFormat.format(targetModel.getBrandName()));
-        target.setText("" + numberFormat.format(targetModel.getTargetAmt()));
-        achievement.setText("" + numberFormat.format(targetModel.getAchieveAmt()));
-        precentage.setText("" + numberFormat.format(targetModel.getPrecentage()));
+        brandName.setText(targetModel.getBrandName());
+        target.setText("" + f.format(targetModel.getTargetAmt()));
+        achievement.setText("" + f.format(targetModel.getAchieveAmt()));
+        precentage.setText("" + f.format(targetModel.getPrecentage()));
 
         return rowView;
     }
