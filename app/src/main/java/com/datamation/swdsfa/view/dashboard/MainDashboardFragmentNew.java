@@ -98,7 +98,7 @@ public class MainDashboardFragmentNew extends Fragment {
 
     private ArrayList<Double> targetValues;
     private List<Double> achievementValues;
-    String type,category,itemcode = "";
+    String type,category,tranType,itemcode = "";
     int cases,pieces;
     SharedPref pref;
     PieChart pieChart;
@@ -110,8 +110,8 @@ public class MainDashboardFragmentNew extends Fragment {
     ImageView menu;
     ArrayList<String> targetItemList;
     CheckBox chCategoryView;
-    RadioGroup radioGroup;
-    RadioButton rdCase,rdPiece,rdTonnage,rdValue,rdSales,rdInvoice;;
+    RadioGroup radioGroup,radioGroupCat;
+    RadioButton rdCase,rdPiece,rdTonnage,rdValue,rdSales,rdInvoice,rdOrderGp,rdInvoiceGp;
     public DatePickerDialog datePickerDialogfrom,datePickerDialogTo;
     DecimalFormat df = new DecimalFormat("####0.00");
     TextView fromDate,toDate,itemName;
@@ -119,6 +119,7 @@ public class MainDashboardFragmentNew extends Fragment {
     SearchableSpinner spTargetItem;
     ImageView btnFromDate ,btnToDate;
     LinearLayout row_categorySelection;
+    LinearLayout row_transactionSelection;
 
 
 
@@ -171,20 +172,26 @@ public class MainDashboardFragmentNew extends Fragment {
         groupBarChart = rootView.findViewById(R.id.groupBarChart);
         chCategoryView = rootView.findViewById(R.id.chCategoryWise);
         radioGroup = rootView.findViewById(R.id.groupradio);
+        radioGroupCat = rootView.findViewById(R.id.catGroupRadio);
         rdCase = rootView.findViewById(R.id.rdCase);
         rdPiece = rootView.findViewById(R.id.rdPieces);
         rdTonnage = rootView.findViewById(R.id.rdTonnage);
         rdValue = rootView.findViewById(R.id.rdValue);
+        rdOrderGp = rootView.findViewById(R.id.rdOrder);
+        rdInvoiceGp = rootView.findViewById(R.id.rdInvoice);
         row_categorySelection = rootView.findViewById(R.id.row_categorySelection);
+        row_transactionSelection = rootView.findViewById(R.id.row_transactionSelection);
 
         if(chCategoryView.isChecked()){
             groupBarChart.setVisibility(View.VISIBLE);
             chart.setVisibility(View.GONE);
             row_categorySelection.setVisibility(View.VISIBLE);
+            row_transactionSelection.setVisibility(View.VISIBLE);
         }else{
             chart.setVisibility(View.VISIBLE);
             groupBarChart.setVisibility(View.GONE);
             row_categorySelection.setVisibility(View.INVISIBLE);
+            row_transactionSelection.setVisibility(View.GONE);
         }
 
         chCategoryView.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
@@ -194,36 +201,74 @@ public class MainDashboardFragmentNew extends Fragment {
                     groupBarChart.setVisibility(View.VISIBLE);
                     chart.setVisibility(View.GONE);
                     row_categorySelection.setVisibility(View.VISIBLE);
+                    row_transactionSelection.setVisibility(View.VISIBLE);
                 }else{
                     chart.setVisibility(View.VISIBLE);
                     groupBarChart.setVisibility(View.GONE);
                     row_categorySelection.setVisibility(View.INVISIBLE);
+                    row_transactionSelection.setVisibility(View.GONE);
 
                 }
             }
         });
 
+        if(rdOrderGp.isChecked()){
+            tranType = "Order";
+        }else if(rdInvoiceGp.isChecked()){
+            tranType = "Invoice";
+        }
+
+        radioGroupCat.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+                if(rdOrderGp.isChecked()){
+                    tranType = "Order";
+                    if(rdCase.isChecked()){
+                        getMonthAchievement(new DashboardController(getActivity()).getTargetCategories(),"Case",tranType);
+                    }else if(rdPiece.isChecked()){
+                        getMonthAchievement(new DashboardController(getActivity()).getTargetCategories(),"Piece",tranType);
+                    }else if(rdTonnage.isChecked()){
+                        getMonthAchievement(new DashboardController(getActivity()).getTargetCategories(),"Tonnage",tranType);
+                    }else if(rdValue.isChecked()){
+                        getMonthAchievement(new DashboardController(getActivity()).getTargetCategories(),"Value",tranType);
+                    }
+                }else if(rdInvoiceGp.isChecked()){
+                    tranType = "Invoice";
+                    if(rdCase.isChecked()){
+                        getMonthAchievement(new DashboardController(getActivity()).getTargetCategories(),"Case",tranType);
+                    }else if(rdPiece.isChecked()){
+                        getMonthAchievement(new DashboardController(getActivity()).getTargetCategories(),"Piece",tranType);
+                    }else if(rdTonnage.isChecked()){
+                        getMonthAchievement(new DashboardController(getActivity()).getTargetCategories(),"Tonnage",tranType);
+                    }else if(rdValue.isChecked()){
+                        getMonthAchievement(new DashboardController(getActivity()).getTargetCategories(),"Value",tranType);
+                    }
+                }
+            }
+        });
+
+
         if(rdCase.isChecked()){
-            getMonthAchievement(new DashboardController(getActivity()).getTargetCategories(),"Case");
+            getMonthAchievement(new DashboardController(getActivity()).getTargetCategories(),"Case",tranType);
         }else if(rdPiece.isChecked()){
-            getMonthAchievement(new DashboardController(getActivity()).getTargetCategories(),"Piece");
+            getMonthAchievement(new DashboardController(getActivity()).getTargetCategories(),"Piece",tranType);
         }else if(rdTonnage.isChecked()){
-            getMonthAchievement(new DashboardController(getActivity()).getTargetCategories(),"Tonnage");
+            getMonthAchievement(new DashboardController(getActivity()).getTargetCategories(),"Tonnage",tranType);
         }else if(rdValue.isChecked()){
-            getMonthAchievement(new DashboardController(getActivity()).getTargetCategories(),"Value");
+            getMonthAchievement(new DashboardController(getActivity()).getTargetCategories(),"Value",tranType);
         }
 
         radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup group, int checkedId) {
                 if(rdCase.isChecked()){
-                    getMonthAchievement(new DashboardController(getActivity()).getTargetCategories(),"Case");
+                    getMonthAchievement(new DashboardController(getActivity()).getTargetCategories(),"Case",tranType);
                 }else if(rdPiece.isChecked()){
-                    getMonthAchievement(new DashboardController(getActivity()).getTargetCategories(),"Piece");
+                    getMonthAchievement(new DashboardController(getActivity()).getTargetCategories(),"Piece",tranType);
                 }else if(rdTonnage.isChecked()){
-                    getMonthAchievement(new DashboardController(getActivity()).getTargetCategories(),"Tonnage");
+                    getMonthAchievement(new DashboardController(getActivity()).getTargetCategories(),"Tonnage",tranType);
                 }else if(rdValue.isChecked()){
-                    getMonthAchievement(new DashboardController(getActivity()).getTargetCategories(),"Value");
+                    getMonthAchievement(new DashboardController(getActivity()).getTargetCategories(),"Value",tranType);
                 }
             }
         });
@@ -1163,12 +1208,12 @@ public class MainDashboardFragmentNew extends Fragment {
 
     }
 
-    public double getMonthlyTonnage(String catcode) {
+    public double getMonthlyTonnage(String catcode,String transactionType) {
         double tonnage = 0.0;
         String unitsPerCase = "";
         DashboardController dashboardController = new DashboardController(getActivity());
         ArrayList<Item> itemTonnageList = new ArrayList<>();
-        itemTonnageList = dashboardController.getMonthlyTonnage(catcode);//get ItemCode ItemWeight Qty as list
+        itemTonnageList = dashboardController.getMonthlyTonnage(catcode,transactionType);//get ItemCode ItemWeight Qty as list
         for (Item item : itemTonnageList) {// filter item list
             String weight = item.getFITEM_UNITCODE().split("\\*")[0].trim(); // filter only weight part
             if (item.getFITEM_UNITCODE().split("\\*").length > 1) //check split array size
@@ -1201,27 +1246,44 @@ public class MainDashboardFragmentNew extends Fragment {
 
     }
 
-
     //---------------------------------------------- Group Chart -------------------------------------------------------------------------
 
-    public void getMonthAchievement( ArrayList<TargetCat> categories,String type) {
+    public void getMonthAchievement( ArrayList<TargetCat> categories,String type,String tranType) {
 
         barAchieveEntries = new ArrayList<>();
         barTargetEntries = new ArrayList<>();
 
-        double monthlyCatAchieve, monthlyCatTarget =0.00;
+        double monthlyCatAchieve, monthlyCatTarget = 0.00;
 
-        if(type.equals("Tonnage")){
-            for(TargetCat cat : categories){
-                monthlyCatAchieve = getMonthlyTonnage(cat.getTarCatCode().trim());
-                barAchieveEntries.add(new BarEntry(cat.getId(), (float) monthlyCatAchieve));
+        if(tranType.equals("Order")){
+
+            if(type.equals("Tonnage")){
+                for(TargetCat cat : categories){
+                    monthlyCatAchieve = getMonthlyTonnage(cat.getTarCatCode().trim(),tranType);
+                    barAchieveEntries.add(new BarEntry(cat.getId(), (float) monthlyCatAchieve));
+                }
+            }else{
+                for(TargetCat cat : categories){
+                    monthlyCatAchieve = new DashboardController(getActivity()).getMonthlyOrderAchievement(cat.getTarCatCode().trim(),type);
+                    barAchieveEntries.add(new BarEntry(cat.getId(), (float) monthlyCatAchieve));
+                }
             }
-        }else{
-            for(TargetCat cat : categories){
-                monthlyCatAchieve = new DashboardController(getActivity()).getMonthlyAchievement(cat.getTarCatCode().trim(),type);
-                barAchieveEntries.add(new BarEntry(cat.getId(), (float) monthlyCatAchieve));
+
+        }else if(tranType.equals("Invoice")){
+
+            if(type.equals("Tonnage")){
+                for(TargetCat cat : categories){
+                    monthlyCatAchieve = getMonthlyTonnage(cat.getTarCatCode().trim(),tranType);
+                    barAchieveEntries.add(new BarEntry(cat.getId(), (float) monthlyCatAchieve));
+                }
+            }else{
+                for(TargetCat cat : categories){
+                    monthlyCatAchieve = new DashboardController(getActivity()).getMonthlyInvoiceAchievement(cat.getTarCatCode().trim(),type);
+                    barAchieveEntries.add(new BarEntry(cat.getId(), (float) monthlyCatAchieve));
+                }
             }
         }
+
 
         for(TargetCat cat : categories){
             monthlyCatTarget = new DashboardController(getActivity()).getMonthlyTarget(cat.getTarCatCode().trim(),type);

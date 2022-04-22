@@ -1704,7 +1704,7 @@ public class DashboardController {
 
         return list;
     }
-    public Double getMonthlyAchievement(String catcode,String type) {
+    public Double getMonthlyOrderAchievement(String catcode,String type) {
         //  public Double getCaseAchievement() {
 
         if (dB == null) {
@@ -1730,7 +1730,7 @@ public class DashboardController {
                         " FROM (SELECT Sum(a.Qty) as Qty, itm.NOUCase, Sum(a.Qty)/itm.NOUCase as CS from FOrddet as a, fTargetCat as b,\n" +
                         " fItem itm, fSubBrand as s where  itm.TarCatCode =  b.TarCatCode AND b.TarCatCode = '" + catcode + "' AND s.SBrandCode = itm.SBrandCode AND " +
                         " itm.itemcode in (Select itemcode from FOrddet) AND itm.itemcode = a.itemcode AND a.Types = 'SA' AND  a.txndate LIKE '" + curYear + "-" + String.format("%02d", curMonth) + "-_%' "  +
-                        " GROUP by itm.TarCatCode) x";
+                        " GROUP by itm.TarCatCode,itm.SBrandCode,itm.itemcode,itm.NOUCase) x";
 
 //                selectQuery = " SELECT ifnull((sum(a.CaseQty)),0)  as Achieve from FOrddet as a, fTargetCat as b,\n" +
 //                        "  fItem itm, fSubBrand as s where  itm.TarCatCode =  b.TarCatCode AND b.TarCatCode = '" + catcode + "' AND s.SBrandCode = itm.SBrandCode AND\n" +
@@ -1744,7 +1744,7 @@ public class DashboardController {
                         " FROM (SELECT Sum(a.Qty) as Qty, itm.NOUCase, Sum(a.Qty) % itm.NOUCase as CS from FOrddet as a, fTargetCat as b,\n" +
                         " fItem itm, fSubBrand as s where  itm.TarCatCode =  b.TarCatCode AND b.TarCatCode = '" + catcode + "' AND s.SBrandCode = itm.SBrandCode AND " +
                         " itm.itemcode in (Select itemcode from FOrddet) AND itm.itemcode = a.itemcode AND a.Types = 'SA' AND  a.txndate LIKE '" + curYear + "-" + String.format("%02d", curMonth) + "-_%' "  +
-                        " GROUP by itm.TarCatCode) x";
+                        " GROUP by itm.TarCatCode,itm.SBrandCode,itm.itemcode,itm.NOUCase) x";
 
 //                selectQuery = "SELECT ifnull((sum(a.PiceQty)),0)  as Achieve from FOrddet as a, fTargetCat as b,\n" +
 //                        "fItem itm, fSubBrand as s where  itm.TarCatCode =  b.TarCatCode AND b.TarCatCode = '" + catcode + "' AND s.SBrandCode = itm.SBrandCode AND \n" +
@@ -1756,7 +1756,90 @@ public class DashboardController {
                 selectQuery = "SELECT ifnull((sum(a.Amt)),0)  as Achieve from FOrddet as a, fTargetCat as b,\n" +
                         " fItem itm, fSubBrand as s where  itm.TarCatCode =  b.TarCatCode AND b.TarCatCode = '" + catcode + "' AND s.SBrandCode = itm.SBrandCode AND \n" +
                         " itm.itemcode in (Select itemcode from FOrddet) AND itm.itemcode = a.itemcode AND a.Types = 'SA' AND a.txndate LIKE '" + curYear + "-" + String.format("%02d", curMonth) + "-_%' " +
-                        " GROUP by itm.TarCatCode ";
+                        " GROUP by itm.TarCatCode,itm.SBrandCode,itm.itemcode,itm.NOUCase ";
+
+//                selectQuery = "SELECT ifnull((sum(a.Amt)),0)  as Achieve from FOrddet as a, fTargetCat as b," +
+//                        " fItem itm where  itm.TarCatCode =  b.TarCatCode AND b.TarCatCode = '" + catcode + "' AND " +
+//                        " itm.itemcode in (Select itemcode from FOrddet)  AND a.txndate LIKE '" + curYear + "-" + String.format("%02d", curMonth) + "-_%' " +
+//                        "GROUP by itm.TarCatCode ";
+
+            }
+
+
+            cursor = dB.rawQuery(selectQuery, null);
+
+            while (cursor.moveToNext()) {
+                monthAchieve = Double.parseDouble(cursor.getString(cursor.getColumnIndex("Achieve")));
+            }
+
+        } catch (Exception e) {
+
+            Log.v(TAG + " Excep getMonthAchieve", e.toString());
+
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+            dB.close();
+        }
+
+        return monthAchieve;
+
+    }
+
+    public Double getMonthlyInvoiceAchievement(String catcode,String type) {
+        //  public Double getCaseAchievement() {
+
+        if (dB == null) {
+            open();
+        } else if (!dB.isOpen()) {
+            open();
+        }
+
+        String selectQuery = "";
+        ArrayList<String[]> list = new ArrayList<String[]>();
+
+        int curYear = Integer.parseInt(new SimpleDateFormat("yyyy").format(new Date()));
+        int curMonth = Integer.parseInt(new SimpleDateFormat("MM").format(new Date()));
+        int curDate = Integer.parseInt(new SimpleDateFormat("dd").format(new Date()));
+        double monthAchieve = 0.0;
+        Cursor cursor = null;
+        try {
+
+
+            if(type.equals("Case")){
+
+                selectQuery = "SELECT Sum(x.CS ) as Achieve\n" +
+                        " FROM (SELECT Sum(a.Qty) as Qty, itm.NOUCase, Sum(a.Qty)/itm.NOUCase as CS from FinvDetL3 as a, fTargetCat as b,\n" +
+                        " fItem itm, fSubBrand as s where  itm.TarCatCode =  b.TarCatCode AND b.TarCatCode = '" + catcode + "' AND s.SBrandCode = itm.SBrandCode AND " +
+                        " itm.itemcode in (Select itemcode from FinvDetL3) AND itm.itemcode = a.itemcode AND a.Types = 'SA' AND  a.txndate LIKE '" + curYear + "-" + String.format("%02d", curMonth) + "-_%' "  +
+                        " GROUP by itm.TarCatCode,itm.SBrandCode,itm.itemcode,itm.NOUCase) x";
+
+//                selectQuery = " SELECT ifnull((sum(a.CaseQty)),0)  as Achieve from FOrddet as a, fTargetCat as b,\n" +
+//                        "  fItem itm, fSubBrand as s where  itm.TarCatCode =  b.TarCatCode AND b.TarCatCode = '" + catcode + "' AND s.SBrandCode = itm.SBrandCode AND\n" +
+//                        "  itm.itemcode in (Select itemcode from FOrddet) AND itm.itemcode = a.itemcode AND a.Types = 'SA' AND  a.txndate LIKE '" + curYear + "-" + String.format("%02d", curMonth) + "-_%' "  +
+//                        "  GROUP by itm.TarCatCode";
+
+
+            }else if(type.equals("Piece")){
+
+                selectQuery = "SELECT Sum(x.CS ) as Achieve\n" +
+                        " FROM (SELECT Sum(a.Qty) as Qty, itm.NOUCase, Sum(a.Qty) % itm.NOUCase as CS from FinvDetL3 as a, fTargetCat as b,\n" +
+                        " fItem itm, fSubBrand as s where  itm.TarCatCode =  b.TarCatCode AND b.TarCatCode = '" + catcode + "' AND s.SBrandCode = itm.SBrandCode AND " +
+                        " itm.itemcode in (Select itemcode from FinvDetL3) AND itm.itemcode = a.itemcode AND a.Types = 'SA' AND  a.txndate LIKE '" + curYear + "-" + String.format("%02d", curMonth) + "-_%' "  +
+                        " GROUP by itm.TarCatCode,itm.SBrandCode,itm.itemcode,itm.NOUCase) x";
+
+//                selectQuery = "SELECT ifnull((sum(a.PiceQty)),0)  as Achieve from FOrddet as a, fTargetCat as b,\n" +
+//                        "fItem itm, fSubBrand as s where  itm.TarCatCode =  b.TarCatCode AND b.TarCatCode = '" + catcode + "' AND s.SBrandCode = itm.SBrandCode AND \n" +
+//                        "itm.itemcode in (Select itemcode from FOrddet) AND itm.itemcode = a.itemcode AND a.txndate LIKE '" + curYear + "-" + String.format("%02d", curMonth) + "-_%' " +
+//                        "GROUP by itm.TarCatCode";
+
+            } else if(type.equals("Value")){
+
+                selectQuery = "SELECT ifnull((sum(a.Amt)),0)  as Achieve from FinvDetL3 as a, fTargetCat as b,\n" +
+                        " fItem itm, fSubBrand as s where  itm.TarCatCode =  b.TarCatCode AND b.TarCatCode = '" + catcode + "' AND s.SBrandCode = itm.SBrandCode AND \n" +
+                        " itm.itemcode in (Select itemcode from FinvDetL3) AND itm.itemcode = a.itemcode AND a.Types = 'SA' AND a.txndate LIKE '" + curYear + "-" + String.format("%02d", curMonth) + "-_%' " +
+                        " GROUP by itm.TarCatCode,itm.SBrandCode,itm.itemcode,itm.NOUCase ";
 
 //                selectQuery = "SELECT ifnull((sum(a.Amt)),0)  as Achieve from FOrddet as a, fTargetCat as b," +
 //                        " fItem itm where  itm.TarCatCode =  b.TarCatCode AND b.TarCatCode = '" + catcode + "' AND " +
@@ -1882,7 +1965,66 @@ public class DashboardController {
         return list;
     }
 
-    public ArrayList<Item> getMonthlyTonnage(String catcode) {
+    public ArrayList<Item> getMonthlyTonnage(String catcode,String tranType) {
+        if (dB == null) {
+            open();
+        } else if (!dB.isOpen()) {
+            open();
+        }
+        int curYear = Integer.parseInt(new SimpleDateFormat("yyyy").format(new Date()));
+        int curMonth = Integer.parseInt(new SimpleDateFormat("MM").format(new Date()));
+        int curDate = Integer.parseInt(new SimpleDateFormat("dd").format(new Date()));
+
+        ArrayList<Item> list = new ArrayList<Item>();
+        String selectQuery = "";
+
+        if(tranType.equals("Order")){
+
+            selectQuery="select i.ItemCode,ifnull((sum(a.Qty)),0) as Qty,a.Types ,i.UnitCode as ItemWeight from fItem as i, Forddet as a ,\n" +
+                    "  fTargetCat as h , fSubBrand as s \n" +
+                    "  where i.ItemCode in (select ItemCode from Forddet where a.Txndate LIKE  '" + curYear + "-" + String.format("%02d", curMonth) + "-_%' ) \n" +
+                    "  and i.ItemCode = a.ItemCode  and a.Types ='SA' and i.SBrandCode = s.SBrandCode \n" +
+                    "  and h.TarCatCode = i.TarCatCode and h.TarCatCode = '" + catcode + "'" +
+                    "  group by a.ItemCode";
+
+        }else if(tranType.equals("Invoice")){
+
+            selectQuery="select i.ItemCode,ifnull((sum(a.Qty)),0) as Qty,a.Types ,i.UnitCode as ItemWeight from fItem as i, Forddet as a ,\n" +
+                    "  fTargetCat as h , fSubBrand as s \n" +
+                    "  where i.ItemCode in (select ItemCode from Forddet where a.Txndate LIKE  '" + curYear + "-" + String.format("%02d", curMonth) + "-_%' ) \n" +
+                    "  and i.ItemCode = a.ItemCode  and a.Types ='SA' and i.SBrandCode = s.SBrandCode \n" +
+                    "  and h.TarCatCode = i.TarCatCode and h.TarCatCode = '" + catcode + "'" +
+                    "  group by a.ItemCode";
+        }
+
+        Cursor cursor = dB.rawQuery(selectQuery, null);
+
+        Log.d("##", "getMonthlyTonnage cursor: "+cursor);
+
+        try {
+            while(cursor.moveToNext()) {
+                Item items = new Item();
+                items.setFITEM_ITEM_CODE(cursor.getString(cursor.getColumnIndex("ItemCode")));
+                items.setFITEM_UNITCODE(cursor.getString(cursor.getColumnIndex("ItemWeight")));
+                items.setFITEM_QOH(cursor.getString(cursor.getColumnIndex("Qty")));
+                list.add(items);
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+            dB.close();
+        }
+
+
+        return list;
+    }
+
+    public ArrayList<Item> getMonthlyTonnageForInvoice(String catcode) {
         if (dB == null) {
             open();
         } else if (!dB.isOpen()) {
