@@ -59,6 +59,7 @@ import com.datamation.swdsfa.controller.ReceiptDetController;
 import com.datamation.swdsfa.controller.ReferenceSettingController;
 import com.datamation.swdsfa.controller.RouteController;
 import com.datamation.swdsfa.controller.RouteDetController;
+import com.datamation.swdsfa.controller.SBrandInvAchController;
 import com.datamation.swdsfa.controller.SalRepController;
 import com.datamation.swdsfa.controller.SalesReturnController;
 import com.datamation.swdsfa.controller.SalesReturnDetController;
@@ -185,6 +186,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         arg0.execSQL(DayTargetDController.CREATE_FDAY_TARGETD_TABLE);
         arg0.execSQL(TargetCatController.CREATE_FTARGET_CAT_TABLE);
         arg0.execSQL(SubBrandController.CREATE_FSUB_BRAND_TABLE);
+        arg0.execSQL(SBrandInvAchController.CREATE_FSBRAND_INV_ACH_TABLE);
 
     }
     // --------------------------------------------------------------------------------------------------------------
@@ -283,6 +285,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             arg0.execSQL(DayTargetDController.CREATE_FDAY_TARGETD_TABLE);
             arg0.execSQL(TargetCatController.CREATE_FTARGET_CAT_TABLE);
             arg0.execSQL(SubBrandController.CREATE_FSUB_BRAND_TABLE);
+            arg0.execSQL(SBrandInvAchController.CREATE_FSBRAND_INV_ACH_TABLE);
         } catch (SQLiteException e) {
         }
 

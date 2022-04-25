@@ -83,6 +83,7 @@ import com.datamation.swdsfa.controller.ReferenceDetailDownloader;
 import com.datamation.swdsfa.controller.ReferenceSettingController;
 import com.datamation.swdsfa.controller.RouteController;
 import com.datamation.swdsfa.controller.RouteDetController;
+import com.datamation.swdsfa.controller.SBrandInvAchController;
 import com.datamation.swdsfa.controller.SalRepController;
 import com.datamation.swdsfa.controller.SubBrandController;
 import com.datamation.swdsfa.controller.TargetCatController;
@@ -135,6 +136,7 @@ import com.datamation.swdsfa.model.PictureList;
 import com.datamation.swdsfa.model.Reason;
 import com.datamation.swdsfa.model.Route;
 import com.datamation.swdsfa.model.RouteDet;
+import com.datamation.swdsfa.model.SBrandInvAch;
 import com.datamation.swdsfa.model.SalRep;
 import com.datamation.swdsfa.model.SubBrand;
 import com.datamation.swdsfa.model.TargetCat;
@@ -2806,6 +2808,51 @@ public class FragmentTools extends Fragment implements View.OnClickListener, Upl
                     } catch (JSONException | NumberFormatException e) {
 
                         errors.add("TargetCat not downloaded "+e.toString());
+                        throw e;
+                    }
+
+                    /*****************SubBrandInvAchieve - 25/04/2022 **********************************************************************/
+
+                    getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            pdialog.setMessage("Downloading SubBrandInvAchieve...");
+                        }
+                    });
+
+
+                    String subBrandInvAch = "";
+                    try {
+                        targetCat = networkFunctions.getSubBrandInvAchieve();
+                    } catch (IOException e) {
+                        errors.add("Error getting SubBrandInvAchieve "+e.toString());
+                        throw e;
+                    }
+
+                    getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            pdialog.setMessage("Processing downloaded data (SubBrandInvAchieve)...");
+                        }
+                    });
+
+                    // Processing SubBrandInvAchieve
+                    try {
+                        JSONObject subBrandInvAchJSON = new JSONObject(targetCat);
+                        JSONArray subBrandInvAchJSONArray = subBrandInvAchJSON.getJSONArray("fSubBrandInvAchResult");
+                        ArrayList<SBrandInvAch> sBrandInvAchList = new ArrayList<SBrandInvAch>();
+                        SBrandInvAchController sBrandInvAchController = new SBrandInvAchController(getActivity());
+                        sBrandInvAchController.deleteAll();
+                        for (int i = 0; i < subBrandInvAchJSONArray.length(); i++) {
+                            sBrandInvAchList.add(SBrandInvAch.parseInvAchieve(subBrandInvAchJSONArray.getJSONObject(i)));
+                        }
+
+                        sBrandInvAchController.createOrUpdateSBrandInvAchieve(sBrandInvAchList);
+                        Log.d("SubBrandInvAchieve", "succes");
+
+                    } catch (JSONException | NumberFormatException e) {
+
+                        errors.add("SubBrandInvAchieve not downloaded "+e.toString());
                         throw e;
                     }
 

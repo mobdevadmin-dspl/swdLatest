@@ -138,6 +138,17 @@ public class NetworkFunctions {
 
     }
 
+    // ----------------------------------- kaveesha - 25/04/2022 --------------------------------------------
+    public String getSubBrandInvAchieve() throws IOException {
+
+        List<CustomNameValuePair> params = new ArrayList<>();
+
+        Log.d(LOG_TAG, "Getting fSubBrandInvAch : " + baseURL + "fSubBrandInvAch" + restOfURL + params);
+
+        return getFromServer(baseURL + "fSubBrandInvAch" + restOfURL , params);
+
+    }
+
     // ----------------------------------- kaveesha - 18/03/2022 --------------------------------------------
     public String getSalRep(String userId, String pw) throws IOException {
 
