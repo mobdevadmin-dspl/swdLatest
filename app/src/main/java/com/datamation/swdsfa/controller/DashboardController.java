@@ -1395,6 +1395,42 @@ public class DashboardController {
 
     }
 
+    public Double getTargetForAll(String from, String to) {
+        if (dB == null) {
+            open();
+        } else if (!dB.isOpen()) {
+            open();
+        }
+
+        double targetPrecent = 0.00;
+
+
+        String selectQuery = "Select Sum(x.SBTar) as ToTalTarget FROM\n" +
+                " (SELECT  (a.Volume*SUM(b.TargetPercen))/100  as SBTar \n" +
+                " FROM fItemTarDet a, FdayTargetD b WHERE  a.SBrandCode=B.SBrandCode AND b.day BETWEEN '" + from + "' and '" + to + "' " +
+                " GROUP BY a.SBrandCode) x";
+
+        Cursor cursor = dB.rawQuery(selectQuery, null);
+        try {
+
+            while (cursor.moveToNext()) {
+                targetPrecent = Double.parseDouble(cursor.getString(cursor.getColumnIndex("ToTalTarget")));
+            }
+
+        } catch (Exception e) {
+
+            Log.v(TAG + " Excep getTarget", e.toString());
+
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+            dB.close();
+        }
+        return targetPrecent;
+
+    }
+
 
     // Get Achievement
     public Double getOrderAchievement(String category,String subBrand,String from, String to) {
@@ -1789,6 +1825,64 @@ public class DashboardController {
                     "GROUP BY x.SBrandCode";
 
         }
+
+        Cursor cursor = dB.rawQuery(selectQuery, null);
+
+        try {
+            if (cursor.getCount()>0)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+
+        } catch (Exception e) {
+
+            Log.v(TAG + " Exception", e.toString());
+
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+            dB.close();
+        }
+
+        return false;
+    }
+
+    public boolean isAnyOrderForAll(String category,String from, String to)
+    {
+        if (dB == null) {
+            open();
+        } else if (!dB.isOpen()) {
+            open();
+        }
+        String selectQuery = "";
+
+        if(category.equals("Case")){
+
+            selectQuery   = "SELECT Sum(x.CS ) as Achieve " +
+                    "FROM (SELECT a.itemcode,Sum(a.Qty) as Qty, b.NOUCase, Sum(a.Qty)/b.NOUCase as CS " +
+                    "FROM FOrddet a, fitem b WHERE a.txndate BETWEEN '" + from + "' AND '" + to + "' AND a.itemcode=b.itemcode AND " +
+                    " a.Types='SA' GROUP BY a.itemcode,b.NOUCase) x ";
+
+        }else if (category.equals("Piece")){
+
+            selectQuery   = "SELECT Sum(x.CS ) as Achieve " +
+                    "FROM (SELECT a.itemcode,Sum(a.Qty) as Qty, b.NOUCase, Sum(a.Qty)%b.NOUCase as CS " +
+                    "FROM FOrddet a, fitem b WHERE a.txndate BETWEEN '" + from + "' AND '" + to + "' AND a.itemcode=b.itemcode AND " +
+                    " a.Types='SA' GROUP BY a.itemcode,b.NOUCase) x ";
+
+        }else if(category.equals("Value")){
+
+            selectQuery   = "SELECT Sum(x.CS ) as Achieve " +
+                    "FROM (SELECT a.itemcode,Sum(a.Amt) as CS, " +
+                    "FROM FOrddet a, fitem b WHERE a.txndate BETWEEN '" + from + "' AND '" + to + "' AND a.itemcode=b.itemcode AND " +
+                    " a.Types='SA' GROUP BY a.itemcode) x ";
+        }
+
 
         Cursor cursor = dB.rawQuery(selectQuery, null);
 

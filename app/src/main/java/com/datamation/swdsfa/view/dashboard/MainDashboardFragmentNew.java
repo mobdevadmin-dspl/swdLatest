@@ -1096,51 +1096,52 @@ public class MainDashboardFragmentNew extends Fragment {
                     achievement = 0.00;
                     TotalTonnage = 0.00;
 
-//                    if (itemcode.equals("0000")) {
-//
-//                        target = new DashboardController(context).getTargetBySubCode(fromDate.getText().toString(), toDate.getText().toString(), itemcode);
-//
-//                        if (type.equals("Order")) {
-//
-//                            if (category.equals("Tonnage")) {
-//
-//                            } else {
-//                                if (new DashboardController(context).isAnyOrder(category, itemcode, fromDate.getText().toString(), toDate.getText().toString())) {
-//                                    achievement = new DashboardController(context).getAllOrderAchievement(category, fromDate.getText().toString(), toDate.getText().toString());
-//                                } else {
-//                                    Toast.makeText(context, "No data for display", Toast.LENGTH_LONG).show();
-//                                    achievement = 0.00;
-//                                }
-//
-//                                create_pie_Chart(achievement, target);
-//                                pref.setAchievement("" + achievement);
-//                                pref.setTarget("" + target);
-//                            }
-//
-//                        } else if (type.equals("Invoice")) {
-//
-//                            if (category.equals("Tonnage")) {
-//
-//                            } else {
-//
-//                                if (new DashboardController(context).isAnyInvoiceForAll(category, fromDate.getText().toString(), toDate.getText().toString())) {
-//                                    achievement = new DashboardController(context).getAllInvoiceAchievement(category, fromDate.getText().toString(), toDate.getText().toString());
-//                                } else {
-//                                    Toast.makeText(context, "No data for display", Toast.LENGTH_LONG).show();
-//                                    achievement = 0.00;
-//                                }
-//
-//                                create_pie_Chart(achievement, target);
-//                                pref.setAchievement("" + achievement);
-//                                pref.setTarget("" + target);
-//                            }
-//                        }
-//                    } else {
+                    if (itemcode.equals("0000")) {// For All Sub Brands
+
+                        target = new DashboardController(context).getTargetForAll(fromDate.getText().toString(), toDate.getText().toString());
+
+                        if (type.equals("Order")) {// To Get Order Achievement
+
+                            if (category.equals("Tonnage")) {
+
+                            } else {
+                                if (new DashboardController(context).isAnyOrderForAll(category, fromDate.getText().toString(), toDate.getText().toString())) {
+                                    achievement = new DashboardController(context).getAllOrderAchievement(category, fromDate.getText().toString(), toDate.getText().toString());
+                                } else {
+                                    Toast.makeText(context, "No data for display", Toast.LENGTH_LONG).show();
+                                    achievement = 0.00;
+                                }
+
+                                create_pie_Chart(achievement, target);
+                                pref.setAchievement("" + achievement);
+                                pref.setTarget("" + target);
+                            }
+
+                        } else if (type.equals("Invoice")) {//To Get Invoice Achievement
+
+                            if (category.equals("Tonnage")) {
+
+                            } else {
+
+                                if (new DashboardController(context).isAnyInvoiceForAll(category, fromDate.getText().toString(), toDate.getText().toString())) {
+                                    achievement = new DashboardController(context).getAllInvoiceAchievement(category, fromDate.getText().toString(), toDate.getText().toString());
+                                } else {
+                                    Toast.makeText(context, "No data for display", Toast.LENGTH_LONG).show();
+                                    achievement = 0.00;
+                                }
+
+                                create_pie_Chart(achievement, target);
+                                pref.setAchievement("" + achievement);
+                                pref.setTarget("" + target);
+                            }
+                        }
+                    } else { // For Selected Sub Brand
+
                     ArrayList<Item> list = new DashboardController(context).getItemsBySbrand(itemcode);
 
                     target = new DashboardController(context).getTargetBySubCode(fromDate.getText().toString(), toDate.getText().toString(), itemcode);
 
-                    if (type.equals("Order")) {
+                    if (type.equals("Order")) {// To Get Order Achievement
 
                         if (category.equals("Tonnage")) {
 
@@ -1167,18 +1168,18 @@ public class MainDashboardFragmentNew extends Fragment {
                             pref.setTarget("" + target);
                         }
 
-                    } else if (type.equals("Invoice")) {
+                    } else if (type.equals("Invoice")) {//To Get Invoice Achievement
 
                         if (category.equals("Tonnage")) {
 
-                            for (Item item : list) {
-                                tonnage = getTonnage("Order", item.getFITEM_ITEM_CODE());
-                                TotalTonnage = TotalTonnage + tonnage;
-                            }
+//                            for (Item item : list) {
+//                                tonnage = getTonnage("Order", item.getFITEM_ITEM_CODE());
+//                                TotalTonnage = TotalTonnage + tonnage;
+//                            }
 
-                            create_pie_Chart(TotalTonnage, target);
-                            pref.setAchievement("" + TotalTonnage);
-                            pref.setTarget("" + target);
+//                            create_pie_Chart(TotalTonnage, target);
+//                            pref.setAchievement("" + TotalTonnage);
+//                            pref.setTarget("" + target);
 
                         } else {
 
@@ -1194,7 +1195,7 @@ public class MainDashboardFragmentNew extends Fragment {
                             pref.setTarget("" + target);
                         }
                     }
-                //}
+                }
                     targetDetDialog.dismiss();
                 }else{
                     targetDetDialog.dismiss();
