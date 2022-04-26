@@ -1276,7 +1276,7 @@ public class ItemController {
         ArrayList<String> list = new ArrayList<String>();
         Cursor cursor = null;
         try {
-            String selectQuery = "Select * from fSubBrand";
+            String selectQuery = "Select * from fSubBrand Order by SBrandCode";
             //String selectQuery = "Select itm.ItemCode ,itm.ItemName from fItem as itm, fSubBrand as s where itm.SBrandCode = s.SBrandCode";
             //String selectQuery = "select itm.ItemCode ,itm.ItemName from fItem as itm, fItemTarDet as itd where itm.ItemCode = itd.Itemcode";
 

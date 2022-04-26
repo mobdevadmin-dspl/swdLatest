@@ -1455,6 +1455,73 @@ public class DashboardController {
 
     }
 
+    public Double getAllOrderAchievement(String category,String from, String to) {
+        if (dB == null) {
+            open();
+        } else if (!dB.isOpen()) {
+            open();
+        }
+
+        String selectQuery = "";
+        double Achieve = 0.00;
+
+        if(category.equals("Case")){
+
+            selectQuery   = "SELECT Sum(x.CS ) as Achieve " +
+                    "FROM (SELECT a.itemcode,Sum(a.Qty) as Qty, b.NOUCase, Sum(a.Qty)/b.NOUCase as CS " +
+                    "FROM FOrddet a, fitem b WHERE a.txndate BETWEEN '" + from + "' AND '" + to + "' AND a.itemcode=b.itemcode AND " +
+                    " a.Types='SA' GROUP BY a.itemcode,b.NOUCase) x ";
+
+        }else if (category.equals("Piece")){
+
+            selectQuery   = "SELECT Sum(x.CS ) as Achieve " +
+                    "FROM (SELECT a.itemcode,Sum(a.Qty) as Qty, b.NOUCase, Sum(a.Qty)%b.NOUCase as CS " +
+                    "FROM FOrddet a, fitem b WHERE a.txndate BETWEEN '" + from + "' AND '" + to + "' AND a.itemcode=b.itemcode AND " +
+                    " a.Types='SA' GROUP BY a.itemcode,b.NOUCase) x ";
+
+//            selectQuery   = "SELECT Sum(x.CS ) as Achieve \n" +
+//                    " FROM (SELECT b.SBrandCode,a.itemcode,Sum(a.Qty) as Qty, b.NOUCase, Sum(a.Qty) % b.NOUCase as CS \n" +
+//                    "FROM FOrddet a, fitem b WHERE a.txndate BETWEEN '" + from + "' AND '" + to + "' AND a.itemcode=b.itemcode AND " +
+//                    " b.SBrandCode = '" + subBrand + "' AND a.Types='SA' GROUP BY b.SBrandCode,a.itemcode,b.NOUCase) x\n" +
+//                    "GROUP BY x.SBrandCode";
+
+        }else if(category.equals("Value")){
+
+            selectQuery   = "SELECT Sum(x.CS ) as Achieve " +
+                    "FROM (SELECT a.itemcode,Sum(a.Amt) as CS, " +
+                    "FROM FOrddet a, fitem b WHERE a.txndate BETWEEN '" + from + "' AND '" + to + "' AND a.itemcode=b.itemcode AND " +
+                    " a.Types='SA' GROUP BY a.itemcode) x ";
+
+//            selectQuery   = " SELECT Sum(x.CS ) as Achieve \n" +
+//                    " FROM (SELECT b.SBrandCode,a.itemcode,Sum(a.Amt) as CS \n" +
+//                    "FROM FOrddet a, fitem b WHERE a.txndate BETWEEN '" + from + "' AND '" + to + "' AND a.itemcode=b.itemcode AND" +
+//                    " b.SBrandCode = '" + subBrand + "' AND a.Types='SA' GROUP BY b.SBrandCode,a.itemcode,b.NOUCase) x\n" +
+//                    "GROUP BY x.SBrandCode";
+
+        }
+
+
+        Cursor cursor = dB.rawQuery(selectQuery, null);
+        try {
+
+            while (cursor.moveToNext()) {
+                Achieve = Double.parseDouble(cursor.getString(cursor.getColumnIndex("Achieve")));
+            }
+
+        } catch (Exception e) {
+
+            Log.v(TAG + " Excep getAchieve", e.toString());
+
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+            dB.close();
+        }
+        return Achieve;
+
+    }
+
     public Double getInvoiceAchievement(String category,String subBrand,String from, String to) {
         if (dB == null) {
             open();
@@ -1510,6 +1577,61 @@ public class DashboardController {
 
     }
 
+    public Double getAllInvoiceAchievement(String category,String from, String to) {
+        if (dB == null) {
+            open();
+        } else if (!dB.isOpen()) {
+            open();
+        }
+
+        String selectQuery = "";
+        double Achieve = 0.00;
+
+        if(category.equals("Case")){
+
+            selectQuery   = "Select Sum(a.Achievement) as TotAchieve FROM fSBrandInvAch as a WHERE a.txndate" +
+                    " BETWEEN '" + from + "' AND '" + to + "'";
+
+        }else if (category.equals("Piece")){
+
+//            selectQuery   = "SELECT Sum(x.CS ) as Achieve \n" +
+//                    " FROM (SELECT b.SBrandCode,a.itemcode,Sum(a.Qty) as Qty, b.NOUCase, Sum(a.Qty) % b.NOUCase as CS \n" +
+//                    "FROM FinvDetL3 a, fitem b WHERE a.txndate BETWEEN '" + from + "' AND '" + to + "' AND a.itemcode=b.itemcode AND " +
+//                    " b.SBrandCode = '" + subBrand + "' GROUP BY b.SBrandCode,a.itemcode,b.NOUCase) x\n" +
+//                    "GROUP BY x.SBrandCode";
+
+        }else if(category.equals("Value")){
+
+//            selectQuery   = " SELECT Sum(x.CS ) as Achieve \n" +
+//                    " FROM (SELECT b.SBrandCode,a.itemcode,Sum(a.Amt) as CS \n" +
+//                    "FROM FinvDetL3 a, fitem b WHERE a.txndate BETWEEN '" + from + "' AND '" + to + "' AND a.itemcode=b.itemcode AND" +
+//                    " b.SBrandCode = '" + subBrand + "' GROUP BY b.SBrandCode,a.itemcode,b.NOUCase) x\n" +
+//                    "GROUP BY x.SBrandCode";
+
+        }
+
+
+        Cursor cursor = dB.rawQuery(selectQuery, null);
+        try {
+
+            while (cursor.moveToNext()) {
+                Achieve = Double.parseDouble(cursor.getString(cursor.getColumnIndex("TotAchieve")));
+            }
+
+        } catch (Exception e) {
+
+            Log.v(TAG + " Excep getAchieve", e.toString());
+
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+            dB.close();
+        }
+        return Achieve;
+
+    }
+
     public boolean isAnyInvoice(String category,String subBrand,String from, String to)
     {
         if (dB == null) {
@@ -1521,27 +1643,88 @@ public class DashboardController {
 
         if(category.equals("Case")){
 
-            selectQuery   = "SELECT Sum(x.CS ) as Achieve \n" +
-                    " FROM (SELECT b.SBrandCode,a.itemcode,Sum(a.Qty) as Qty, b.NOUCase, Sum(a.Qty)/b.NOUCase as CS \n" +
-                    "FROM FinvDetL3 a, fitem b WHERE a.txndate BETWEEN '" + from + "' AND '" + to + "' AND a.itemcode=b.itemcode AND " +
-                    " b.SBrandCode = '" + subBrand + "' GROUP BY b.SBrandCode,a.itemcode,b.NOUCase) x\n" +
-                    "GROUP BY x.SBrandCode";
+            selectQuery   = "Select Sum(a.Achievement) as TotAchieve FROM fSBrandInvAch as a WHERE a.SBrandCode = '" + subBrand + "' " +
+                    " AND a.txndate BETWEEN '" + from + "' AND '" + to + "' ";
 
         }else if (category.equals("Piece")){
 
-            selectQuery   = "SELECT Sum(x.CS ) as Achieve \n" +
-                    " FROM (SELECT b.SBrandCode,a.itemcode,Sum(a.Qty) as Qty, b.NOUCase, Sum(a.Qty) % b.NOUCase as CS \n" +
-                    "FROM FinvDetL3 a, fitem b WHERE a.txndate BETWEEN '" + from + "' AND '" + to + "' AND a.itemcode=b.itemcode AND " +
-                    " b.SBrandCode = '" + subBrand + "' GROUP BY b.SBrandCode,a.itemcode,b.NOUCase) x\n" +
-                    "GROUP BY x.SBrandCode";
+//            selectQuery   = "Select Sum(a.Achievement) as TotAchieve FROM fSBrandInvAch as a WHERE a.SBrandCode = '" + subBrand + "' " +
+//                    " AND a.txndate BETWEEN '" + from + "' AND '" + to + "' ";
 
         }else if(category.equals("Value")){
 
-            selectQuery   = " SELECT Sum(x.CS ) as Achieve \n" +
-                    " FROM (SELECT b.SBrandCode,a.itemcode,Sum(a.Amt) as CS \n" +
-                    "FROM FinvDetL3 a, fitem b WHERE a.txndate BETWEEN '" + from + "' AND '" + to + "' AND a.itemcode=b.itemcode AND" +
-                    " b.SBrandCode = '" + subBrand + "' GROUP BY b.SBrandCode,a.itemcode,b.NOUCase) x\n" +
-                    "GROUP BY x.SBrandCode";
+//            selectQuery   = "Select Sum(a.Achievement) as TotAchieve FROM fSBrandInvAch as a WHERE a.SBrandCode = '" + subBrand + "' " +
+//                    " AND a.txndate BETWEEN '" + from + "' AND '" + to + "' ";
+
+//            selectQuery   = " SELECT Sum(x.CS ) as Achieve \n" +
+//                    " FROM (SELECT b.SBrandCode,a.itemcode,Sum(a.Amt) as CS \n" +
+//                    "FROM FinvDetL3 a, fitem b WHERE a.txndate BETWEEN '" + from + "' AND '" + to + "' AND a.itemcode=b.itemcode AND" +
+//                    " b.SBrandCode = '" + subBrand + "' GROUP BY b.SBrandCode,a.itemcode,b.NOUCase) x\n" +
+//                    "GROUP BY x.SBrandCode";
+
+        }
+
+        Cursor cursor = dB.rawQuery(selectQuery, null);
+
+        try {
+            if (cursor.getCount()>0)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+
+        } catch (Exception e) {
+
+            Log.v(TAG + " Exception", e.toString());
+
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+            dB.close();
+        }
+
+        return false;
+    }
+
+    public boolean isAnyInvoiceForAll(String category,String from, String to)
+    {
+        if (dB == null) {
+            open();
+        } else if (!dB.isOpen()) {
+            open();
+        }
+        String selectQuery = "";
+
+        if(category.equals("Case")){
+
+            selectQuery   = "Select Sum(a.Achievement) as TotAchieve FROM fSBrandInvAch as a WHERE a.txndate" +
+                    " BETWEEN '" + from + "' AND '" + to + "'";
+
+//            selectQuery   = "SELECT Sum(x.CS ) as Achieve \n" +
+//                    " FROM (SELECT b.SBrandCode,a.itemcode,Sum(a.Qty) as Qty, b.NOUCase, Sum(a.Qty)/b.NOUCase as CS \n" +
+//                    "FROM FinvDetL3 a, fitem b WHERE a.txndate BETWEEN '" + from + "' AND '" + to + "' AND a.itemcode=b.itemcode AND " +
+//                    " b.SBrandCode = '" + subBrand + "' GROUP BY b.SBrandCode,a.itemcode,b.NOUCase) x\n" +
+//                    "GROUP BY x.SBrandCode";
+
+        }else if (category.equals("Piece")){
+
+//            selectQuery   = "SELECT Sum(x.CS ) as Achieve \n" +
+//                    " FROM (SELECT b.SBrandCode,a.itemcode,Sum(a.Qty) as Qty, b.NOUCase, Sum(a.Qty) % b.NOUCase as CS \n" +
+//                    "FROM FinvDetL3 a, fitem b WHERE a.txndate BETWEEN '" + from + "' AND '" + to + "' AND a.itemcode=b.itemcode AND " +
+//                    " b.SBrandCode = '" + subBrand + "' GROUP BY b.SBrandCode,a.itemcode,b.NOUCase) x\n" +
+//                    "GROUP BY x.SBrandCode";
+
+        }else if(category.equals("Value")){
+
+//            selectQuery   = " SELECT Sum(x.CS ) as Achieve \n" +
+//                    " FROM (SELECT b.SBrandCode,a.itemcode,Sum(a.Amt) as CS \n" +
+//                    "FROM FinvDetL3 a, fitem b WHERE a.txndate BETWEEN '" + from + "' AND '" + to + "' AND a.itemcode=b.itemcode AND" +
+//                    " b.SBrandCode = '" + subBrand + "' GROUP BY b.SBrandCode,a.itemcode,b.NOUCase) x\n" +
+//                    "GROUP BY x.SBrandCode";
 
         }
 
@@ -1918,9 +2101,9 @@ public class DashboardController {
 
         }else if(type.equals("Invoice")){
 
-            selectQuery="select i.ItemCode,ifnull((sum(a.Qty)),0)  as Qty,i.UnitCode as ItemWeight from fItem as i, FinvDetL3 as a " +
-                    " where i.ItemCode in (select ItemCode from FinvDetL3 where a.Txndate BETWEEN  '" + fromDate + "' and '" + toDate + "') " +
-                    " and i.ItemCode = a.ItemCode and a.ItemCode = '" + itemcode + "' group by a.ItemCode";
+//            selectQuery="select i.ItemCode,ifnull((sum(a.Qty)),0)  as Qty,i.UnitCode as ItemWeight from fItem as i, FinvDetL3 as a " +
+//                    " where i.ItemCode in (select ItemCode from FinvDetL3 where a.Txndate BETWEEN  '" + fromDate + "' and '" + toDate + "') " +
+//                    " and i.ItemCode = a.ItemCode and a.ItemCode = '" + itemcode + "' group by a.ItemCode";
 
         }
 

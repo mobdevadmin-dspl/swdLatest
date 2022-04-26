@@ -139,13 +139,13 @@ public class NetworkFunctions {
     }
 
     // ----------------------------------- kaveesha - 25/04/2022 --------------------------------------------
-    public String getSubBrandInvAchieve() throws IOException {
+    public String getSubBrandInvAchieve(String repCode) throws IOException {
 
         List<CustomNameValuePair> params = new ArrayList<>();
 
-        Log.d(LOG_TAG, "Getting fSubBrandInvAch : " + baseURL + "fSubBrandInvAch" + restOfURL + params);
+        Log.d(LOG_TAG, "Getting fSubBrandInvAch : " + baseURL + "fSubBrandInvAch" + restOfURL + "/" + repCode + params);
 
-        return getFromServer(baseURL + "fSubBrandInvAch" + restOfURL , params);
+        return getFromServer(baseURL + "fSubBrandInvAch" + restOfURL + "/" + repCode, params);
 
     }
 

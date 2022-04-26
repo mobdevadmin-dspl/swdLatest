@@ -2823,7 +2823,7 @@ public class FragmentTools extends Fragment implements View.OnClickListener, Upl
 
                     String subBrandInvAch = "";
                     try {
-                        targetCat = networkFunctions.getSubBrandInvAchieve();
+                        targetCat = networkFunctions.getSubBrandInvAchieve(repcode);
                     } catch (IOException e) {
                         errors.add("Error getting SubBrandInvAchieve "+e.toString());
                         throw e;
