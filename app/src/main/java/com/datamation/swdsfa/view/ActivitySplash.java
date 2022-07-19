@@ -447,6 +447,7 @@ public class ActivitySplash extends AppCompatActivity{
             ArrayList<DbNames> DBArrayList = null;
             try {
                 URL json = new URL(params[0] + getResources().getString(R.string.connection_string) +"/GetdatabaseNames/mobile123");
+                Log.d(">>URL",">>URL"+new URL(params[0] + getResources().getString(R.string.connection_string) +"/GetdatabaseNames/mobile123"));
                 URLConnection jc = json.openConnection();
 
                 BufferedReader readerfdblist = new BufferedReader(new InputStreamReader(jc.getInputStream()));

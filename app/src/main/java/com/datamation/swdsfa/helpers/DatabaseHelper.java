@@ -13,6 +13,9 @@ import com.datamation.swdsfa.controller.DayNPrdDetController;
 import com.datamation.swdsfa.controller.DayNPrdHedController;
 import com.datamation.swdsfa.controller.DayTargetDController;
 import com.datamation.swdsfa.controller.DebItemPriController;
+import com.datamation.swdsfa.controller.DiscValDebController;
+import com.datamation.swdsfa.controller.DiscValDetController;
+import com.datamation.swdsfa.controller.DiscValHedController;
 import com.datamation.swdsfa.controller.DiscdebController;
 import com.datamation.swdsfa.controller.DiscdetController;
 import com.datamation.swdsfa.controller.DischedController;
@@ -187,6 +190,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         arg0.execSQL(TargetCatController.CREATE_FTARGET_CAT_TABLE);
         arg0.execSQL(SubBrandController.CREATE_FSUB_BRAND_TABLE);
         arg0.execSQL(SBrandInvAchController.CREATE_FSBRAND_INV_ACH_TABLE);
+        arg0.execSQL(DiscValHedController.CREATE_FDISCVALHED_TABLE);
+        arg0.execSQL(DiscValDetController.CREATE_FDISCVALDET_TABLE);
+        arg0.execSQL(DiscValDebController.CREATE_FDISCVALDEB_TABLE);
 
     }
     // --------------------------------------------------------------------------------------------------------------
@@ -286,6 +292,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             arg0.execSQL(TargetCatController.CREATE_FTARGET_CAT_TABLE);
             arg0.execSQL(SubBrandController.CREATE_FSUB_BRAND_TABLE);
             arg0.execSQL(SBrandInvAchController.CREATE_FSBRAND_INV_ACH_TABLE);
+            arg0.execSQL(DiscValHedController.CREATE_FDISCVALHED_TABLE);
+            arg0.execSQL(DiscValDetController.CREATE_FDISCVALDET_TABLE);
+            arg0.execSQL(DiscValDebController.CREATE_FDISCVALDEB_TABLE);
         } catch (SQLiteException e) {
         }
 

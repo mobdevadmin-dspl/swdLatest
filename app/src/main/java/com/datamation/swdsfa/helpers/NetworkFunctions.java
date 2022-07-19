@@ -149,6 +149,40 @@ public class NetworkFunctions {
 
     }
 
+    // ----------------------------------- kaveesha - 19/07/2022 --------------------------------------------
+    public String getDisValHed(String repCode) throws IOException {
+
+        List<CustomNameValuePair> params = new ArrayList<>();
+
+        Log.d(LOG_TAG, "Getting FDiscValHed : " + baseURL + "FDiscValHed" + restOfURL + "/" + repCode + params);
+
+        return getFromServer(baseURL + "FDiscValHed" + restOfURL + "/" + repCode, params);
+
+    }
+
+    // ----------------------------------- kaveesha - 19/07/2022 --------------------------------------------
+    public String getDisValDet(String repCode) throws IOException {
+
+        List<CustomNameValuePair> params = new ArrayList<>();
+
+        Log.d(LOG_TAG, "Getting FDiscValDet : " + baseURL + "FDiscValDet" + restOfURL + "/" + repCode + params);
+
+        return getFromServer(baseURL + "FDiscValDet" + restOfURL + "/" + repCode, params);
+
+    }
+
+    // ----------------------------------- kaveesha - 19/07/2022 --------------------------------------------
+    public String getDisValDeb(String repCode) throws IOException {
+
+        List<CustomNameValuePair> params = new ArrayList<>();
+
+        Log.d(LOG_TAG, "Getting DiscValDeb : " + baseURL + "FDiscValDeb" + restOfURL + "/" + repCode + params);
+
+        return getFromServer(baseURL + "FDiscValDeb" + restOfURL + "/" + repCode, params);
+
+    }
+
+
     // ----------------------------------- kaveesha - 18/03/2022 --------------------------------------------
     public String getSalRep(String userId, String pw) throws IOException {
 

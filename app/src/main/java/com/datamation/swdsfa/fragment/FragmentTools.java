@@ -50,6 +50,9 @@ import com.datamation.swdsfa.controller.CustomerController;
 import com.datamation.swdsfa.controller.DayExpHedController;
 import com.datamation.swdsfa.controller.DayNPrdHedController;
 import com.datamation.swdsfa.controller.DayTargetDController;
+import com.datamation.swdsfa.controller.DiscValDebController;
+import com.datamation.swdsfa.controller.DiscValDetController;
+import com.datamation.swdsfa.controller.DiscValHedController;
 import com.datamation.swdsfa.controller.DiscdebController;
 import com.datamation.swdsfa.controller.DiscdetController;
 import com.datamation.swdsfa.controller.DischedController;
@@ -106,6 +109,9 @@ import com.datamation.swdsfa.model.DayNPrdDet;
 import com.datamation.swdsfa.model.DayNPrdHed;
 import com.datamation.swdsfa.model.DayTargetD;
 import com.datamation.swdsfa.model.Debtor;
+import com.datamation.swdsfa.model.DiscValDeb;
+import com.datamation.swdsfa.model.DiscValDet;
+import com.datamation.swdsfa.model.DiscValHed;
 import com.datamation.swdsfa.model.Discdeb;
 import com.datamation.swdsfa.model.Discdet;
 import com.datamation.swdsfa.model.Disched;
@@ -2631,6 +2637,143 @@ public class FragmentTools extends Fragment implements View.OnClickListener, Upl
 //                        ErrorUtil.logException("LoginActivity -> Authenticate -> doInBackground() # Process Routes and Outlets",
 //                                e, routes, BugReport.SEVERITY_HIGH);
                     }
+
+                    /***************** DisValHed - 19-07-2022 **********************************************************************/
+
+                    getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            pdialog.setMessage("Downloading DisValHed...");
+                        }
+                    });
+
+
+                    String discValHed = "";
+                    try {
+                        discValHed = networkFunctions.getDisValHed(repcode);
+                    } catch (IOException e) {
+                        errors.add("Error getting DiscValHed "+e.toString());
+                        throw e;
+                    }
+
+                    getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            pdialog.setMessage("Processing downloaded data (DiscValHed)...");
+                        }
+                    });
+
+                    // Processing DiscValHed
+                    try {
+                        JSONObject discValHedJSON = new JSONObject(discValHed);
+                        JSONArray discValHedJSONArray = discValHedJSON.getJSONArray("FDiscValHedResult");
+                        ArrayList<DiscValHed> discValHedList = new ArrayList<DiscValHed>();
+                        DiscValHedController discValHedController = new DiscValHedController(getActivity());
+                        discValHedController.deleteAll();
+                        for (int i = 0; i < discValHedJSONArray.length(); i++) {
+                            discValHedList.add(DiscValHed.parseDiscValHed(discValHedJSONArray.getJSONObject(i)));
+                        }
+
+                        discValHedController.createOrUpdateDiscValHed(discValHedList);
+                        Log.d("DiscValHed", "succes");
+
+                    } catch (JSONException | NumberFormatException e) {
+
+                        errors.add("DiscValHed not downloaded "+e.toString());
+                        throw e;
+                    }
+
+                    /***************** FDiscValDet - 19-07-2022 **********************************************************************/
+
+                    getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            pdialog.setMessage("Downloading FDiscValDet...");
+                        }
+                    });
+
+
+                    String discValDet = "";
+                    try {
+                        discValDet = networkFunctions.getDisValDet(repcode);
+                    } catch (IOException e) {
+                        errors.add("Error getting DiscValDet "+e.toString());
+                        throw e;
+                    }
+
+                    getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            pdialog.setMessage("Processing downloaded data (DiscValDet)...");
+                        }
+                    });
+
+                    // Processing DiscValDet
+                    try {
+                        JSONObject discValDetJSON = new JSONObject(discValDet);
+                        JSONArray discValDetJSONArray = discValDetJSON.getJSONArray("FdiscValDetResult");
+                        ArrayList<DiscValDet> discValDetList = new ArrayList<DiscValDet>();
+                        DiscValDetController discValDetController = new DiscValDetController(getActivity());
+                        discValDetController.deleteAll();
+                        for (int i = 0; i < discValDetJSONArray.length(); i++) {
+                            discValDetList.add(DiscValDet.parseDiscValDet(discValDetJSONArray.getJSONObject(i)));
+                        }
+
+                        discValDetController.createOrUpdateDiscValDet(discValDetList);
+                        Log.d("DiscValDet", "succes");
+
+                    } catch (JSONException | NumberFormatException e) {
+
+                        errors.add("DiscValDet not downloaded "+e.toString());
+                        throw e;
+                    }
+
+
+                    /***************** FDiscValDeb - 19-07-2022 **********************************************************************/
+
+                    getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            pdialog.setMessage("Downloading FDiscValDeb...");
+                        }
+                    });
+
+
+                    String discValDeb = "";
+                    try {
+                        discValDeb = networkFunctions.getDisValDeb(repcode);
+                    } catch (IOException e) {
+                        errors.add("Error getting DiscValDeb "+e.toString());
+                        throw e;
+                    }
+
+                    getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            pdialog.setMessage("Processing downloaded data (DiscValDeb)...");
+                        }
+                    });
+
+                    // Processing DiscValDeb
+                    try {
+                        JSONObject discValDebJSON = new JSONObject(discValDeb);
+                        JSONArray discValDebJSONArray = discValDebJSON.getJSONArray("FdiscValDebResult");
+                        ArrayList<DiscValDeb> discValDebList = new ArrayList<DiscValDeb>();
+                        DiscValDebController discValDebController = new DiscValDebController(getActivity());
+                        discValDebController.deleteAll();
+                        for (int i = 0; i < discValDebJSONArray.length(); i++) {
+                            discValDebList.add(DiscValDeb.parseDiscValDeb(discValDebJSONArray.getJSONObject(i)));
+                        }
+
+                        discValDebController.createOrUpdateDiscValDeb(discValDebList);
+                        Log.d("DiscValDeb", "succes");
+
+                    } catch (JSONException | NumberFormatException e) {
+
+                        errors.add("DiscValDeb not downloaded "+e.toString());
+                        throw e;
+                    }
+
                         /*****************ItemTarHed - 16/03/2022 **********************************************************************/
 
                         getActivity().runOnUiThread(new Runnable() {
