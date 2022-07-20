@@ -197,6 +197,7 @@ public class DischedController {
 
         return DiscHed;
     }
+
     //rashmi changed format for getting discounts
     public String getRefoByItemCodeNew(String itemCode) {
         if (dB == null) {
@@ -317,6 +318,39 @@ public class DischedController {
 
         return discDebList;
     }
+    public ArrayList<Discdeb> getDiscountDebtors(String debcode) {
 
+        if (dB == null) {
+            open();
+        } else if (!dB.isOpen()) {
+            open();
+        }
+
+        String selectQuery = "SELECT * FROM fDisValDeb WHERE DebCode ='" + debcode + "'";
+
+        ArrayList<Discdeb> discDebList = new ArrayList<Discdeb>();
+
+        Cursor cursor = dB.rawQuery(selectQuery, null);
+
+        try {
+            while (cursor.moveToNext()) {
+                Discdeb discDeb = new Discdeb();
+                discDeb.setFDISCDEB_REF_NO(cursor.getString(cursor.getColumnIndex(dbHelper.REFNO)));
+                discDeb.setFDISCDEB_DEB_CODE(cursor.getString(cursor.getColumnIndex(dbHelper.DEBCODE)));
+                discDebList.add(discDeb);
+            }
+        } catch (Exception e) {
+
+            Log.v(TAG + " Exception", e.toString());
+
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+            dB.close();
+        }
+
+        return discDebList;
+    }
 
 }

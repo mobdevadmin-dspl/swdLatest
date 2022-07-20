@@ -47,6 +47,7 @@ import com.datamation.swdsfa.controller.PreProductController;
 import com.datamation.swdsfa.controller.PreSaleTaxDTController;
 import com.datamation.swdsfa.controller.PreSaleTaxRGController;
 import com.datamation.swdsfa.controller.SalRepController;
+import com.datamation.swdsfa.discount.Discount;
 import com.datamation.swdsfa.helpers.PreSalesResponseListener;
 import com.datamation.swdsfa.helpers.SharedPref;
 import com.datamation.swdsfa.model.Customer;
@@ -330,9 +331,12 @@ public class OrderSummaryFragment extends Fragment implements GoogleApiClient.Co
 
         Double gross = 0.0;
         Double net = 0.0;
+        Discount discount = new Discount(getActivity());
+        double discountValue = discount.totalDiscount(ftotAmt,SharedPref.getInstance(getActivity()).getSelectedDebCode());
 
         gross = ftotAmt + fTotSchDisc;
-        net = gross + totalReturn - fTotSchDisc;
+        net = gross + totalReturn - fTotSchDisc-discountValue;
+
 
         iTotFreeQty = fTotFree;
         lblQty.setText(String.valueOf(ftotQty + fTotFree));
@@ -347,11 +351,8 @@ public class OrderSummaryFragment extends Fragment implements GoogleApiClient.Co
         lblGross.setText(String.format("%.2f", gross)); // SA type total amt + discount
         lblReturn.setText(String.format("%.2f", totalReturn)); // MR/UR type total amt
         lblNetVal.setText(String.format("%.2f", net)); // total - discount - return
-
         lblReturnQty.setText(String.valueOf(returnQty));
-        lblReplacements.setText(String.format("%.2f" , fTotSchDisc));
-
-
+        lblReplacements.setText(String.format("%.2f" , fTotSchDisc+discountValue));
 
     }
 

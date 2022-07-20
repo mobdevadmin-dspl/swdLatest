@@ -10,8 +10,11 @@ import android.util.Log;
 import com.datamation.swdsfa.helpers.DatabaseHelper;
 import com.datamation.swdsfa.model.Bank;
 import com.datamation.swdsfa.model.DiscValHed;
+import com.datamation.swdsfa.model.Disched;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 
 public class DiscValHedController {
 
@@ -98,7 +101,53 @@ public class DiscValHedController {
         return count;
 
     }
+    public ArrayList<Disched> getDiscountSchemes(String DebCode) {
+        if (dB == null) {
+            open();
+        } else if (!dB.isOpen()) {
+            open();
+        }
 
+        int curYear = Integer.parseInt(new SimpleDateFormat("yyyy").format(new Date()));
+        int curMonth = Integer.parseInt(new SimpleDateFormat("MM").format(new Date()));
+        int curDate = Integer.parseInt(new SimpleDateFormat("dd").format(new Date()));
+
+        //String curdate = curYear+"/"+ String.format("%02d", curMonth) + "/" + String.format("%02d", curDate);
+        // Old Rashmi 08-07-2020 String curdate = String.format("%02d", curMonth)+"-"+ String.format("%02d", curDate) + "-" + curYear;
+        String curdate = curYear + "-" +  String.format("%02d", curMonth)+"-"+ String.format("%02d", curDate) ;
+
+        // commented due to date format issue and M:D:Y format is available in DB
+        //String selectQuery = "select * from fdisched where refno in (select refno from fdiscdet where itemcode='" + itemCode + "') and date('now') between vdatef and vdatet";
+        String selectQuery = "select * from fDisValHed where RefNo in (select refno from fDisValDeb where DebCode = '"+DebCode+"' ) and '"+curdate+"' between Vdatef And Vdatet";
+
+
+        Cursor cursor = dB.rawQuery(selectQuery, null);
+        ArrayList<Disched> refNoList = new ArrayList<>();
+        try {
+            while (cursor.moveToNext()) {
+                Disched discHed = new Disched();
+                discHed.setFDISCHED_REF_NO(cursor.getString(cursor.getColumnIndex(FDISCVALHED_REFNO)));
+                discHed.setFDISCHED_TXN_DATE(cursor.getString(cursor.getColumnIndex(FDISCVALHED_TXNDATE)));
+                discHed.setFDISCHED_DIS_TYPE(cursor.getString(cursor.getColumnIndex(FDISCVALHED_DISC_TYPE)));
+                discHed.setFDISCHED_DISC_DESC(cursor.getString(cursor.getColumnIndex(FDISCVALHED_DISC_DESC)));
+                discHed.setFDISCHED_V_DATE_F(cursor.getString(cursor.getColumnIndex(FDISCVALHED_VDATEF)));
+                discHed.setFDISCHED_V_DATE_T(cursor.getString(cursor.getColumnIndex(FDISCVALHED_VDATET)));
+                refNoList.add(discHed);
+
+            }
+        } catch (Exception e) {
+
+            Log.v(TAG + " Exception", e.toString());
+
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+            dB.close();
+        }
+
+        return refNoList;
+    }
 	/*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*/
 
     public int deleteAll() {

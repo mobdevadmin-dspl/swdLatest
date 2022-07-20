@@ -10,6 +10,7 @@ import android.util.Log;
 import com.datamation.swdsfa.helpers.DatabaseHelper;
 import com.datamation.swdsfa.model.DiscValDet;
 import com.datamation.swdsfa.model.DiscValHed;
+import com.datamation.swdsfa.model.Discslab;
 
 import java.util.ArrayList;
 
@@ -92,7 +93,41 @@ public class DiscValDetController {
         return count;
 
     }
+    public DiscValDet getDiscountInfo(String refno, double amt) {
 
+        if (dB == null) {
+            open();
+        } else if (!dB.isOpen()) {
+            open();
+        }
+
+        DiscValDet discValDet = new DiscValDet();
+
+        String selectQuery = "select * from fDisValDet where refno='" + refno + "' and " + amt + " between CAST(Vdatef as double) and CAST(Vdatet as double)";
+
+        Cursor cursor = dB.rawQuery(selectQuery, null);
+        try {
+            while (cursor.moveToNext()) {
+                discValDet.setFDISCVALDET_REFNO(cursor.getString(cursor.getColumnIndex(FDISCVALDET_REFNO)));
+                discValDet.setFDISCVALDET_DIS_PER(cursor.getString(cursor.getColumnIndex(FDISCVALDET_DIS_PER)));
+                discValDet.setFDISCVALDET_DIS_AMT(cursor.getString(cursor.getColumnIndex(FDISCVALDET_DIS_AMT)));
+                discValDet.setFDISCVALDET_SEQNO(cursor.getString(cursor.getColumnIndex(FDISCVALDET_SEQNO)));
+                discValDet.setFDISCVALDET_VDATEF(cursor.getString(cursor.getColumnIndex(FDISCVALDET_VDATEF)));
+                discValDet.setFDISCVALDET_VDATET(cursor.getString(cursor.getColumnIndex(FDISCVALDET_VDATET)));
+
+
+            }
+        } catch (Exception e) {
+            Log.v(TAG + " Exception", e.toString());
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+            dB.close();
+        }
+
+        return discValDet;
+    }
 	/*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*/
 
     public int deleteAll() {

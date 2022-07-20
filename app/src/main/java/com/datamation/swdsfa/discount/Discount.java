@@ -2,7 +2,10 @@ package com.datamation.swdsfa.discount;
 
 import android.content.Context;
 import android.util.Log;
+import android.widget.Toast;
 
+import com.datamation.swdsfa.controller.DiscValDetController;
+import com.datamation.swdsfa.controller.DiscValHedController;
 import com.datamation.swdsfa.controller.DiscdetController;
 import com.datamation.swdsfa.controller.DischedController;
 import com.datamation.swdsfa.controller.DiscslabController;
@@ -10,6 +13,7 @@ import com.datamation.swdsfa.controller.InvDetController;
 import com.datamation.swdsfa.controller.OrderController;
 import com.datamation.swdsfa.controller.OrderDetailController;
 import com.datamation.swdsfa.controller.TaxDetController;
+import com.datamation.swdsfa.model.DiscValDet;
 import com.datamation.swdsfa.model.Discdeb;
 import com.datamation.swdsfa.model.Disched;
 import com.datamation.swdsfa.model.Discslab;
@@ -385,73 +389,73 @@ public class Discount {
                         /* Get debtor code from order header by order ref no */ //nuwan
 
                         /* Going through the list for a match */
-                      //  if (discDebList.contains(OrdHedDebCode)){
-                            for (Discdeb discDeb : discDebList) {
-                                /* If match found */
-                                // if (discDeb.getFDISCDEB_REF_NO().equals(OrdHedRefNo)) { commented by rashmi 2019-11-14 because not matching
-                                if (discDeb.getFDISCDEB_DEB_CODE().equals(OrdHedDebCode)) {
+                        //  if (discDebList.contains(OrdHedDebCode)){
+                        for (Discdeb discDeb : discDebList) {
+                            /* If match found */
+                            // if (discDeb.getFDISCDEB_REF_NO().equals(OrdHedRefNo)) { commented by rashmi 2019-11-14 because not matching
+                            if (discDeb.getFDISCDEB_DEB_CODE().equals(OrdHedDebCode)) {
 
-                                    /* Discount type: value based */
-                                    if (discHed.getFDISCHED_DIS_TYPE().equals("V")) {
-                                        /* If assorted exist */
+                                /* Discount type: value based */
+                                if (discHed.getFDISCHED_DIS_TYPE().equals("V")) {
+                                    /* If assorted exist */
 
-                                        double TotalValue = 0;
-                                        int totalQTY = 0;
-                                        if (ordArrList.size() > 1) {
-                                            /*
-                                             * If assorted then, get total qty and
-                                             * total value of assorted list
-                                             */
-                                            for (OrderDetail iTranSODet : ordArrList) {
-                                                TotalValue = TotalValue + (Double.parseDouble(iTranSODet.getFORDERDET_AMT()) + Double.parseDouble(iTranSODet.getFORDERDET_SCHDISC()));
-                                                totalQTY = totalQTY + Integer.parseInt(iTranSODet.getFORDERDET_QTY());
-                                            }
+                                    double TotalValue = 0;
+                                    int totalQTY = 0;
+                                    if (ordArrList.size() > 1) {
+                                        /*
+                                         * If assorted then, get total qty and
+                                         * total value of assorted list
+                                         */
+                                        for (OrderDetail iTranSODet : ordArrList) {
+                                            TotalValue = TotalValue + (Double.parseDouble(iTranSODet.getFORDERDET_AMT()) + Double.parseDouble(iTranSODet.getFORDERDET_SCHDISC()));
+                                            totalQTY = totalQTY + Integer.parseInt(iTranSODet.getFORDERDET_QTY());
+                                        }
 
-                                            Discslab discSlab = new DiscslabController(context).getDiscountSlabInfo(discHed.getFDISCHED_REF_NO(), totalQTY);
+                                        Discslab discSlab = new DiscslabController(context).getDiscountSlabInfo(discHed.getFDISCHED_REF_NO(), totalQTY);
 
-                                            /* if any discount slabs exist */
-                                            if (discSlab.getFDISCSLAB_DIS_AMUT() != null) {
+                                        /* if any discount slabs exist */
+                                        if (discSlab.getFDISCSLAB_DIS_AMUT() != null) {
 
-                                                double discValue = Double.parseDouble(discSlab.getFDISCSLAB_DIS_AMUT());
-                                                mTranSODet.setFORDERDET_BAMT(String.valueOf(discValue));
-                                                mTranSODet.setFORDERDET_DISC_REF(discSlab.getFDISCSLAB_REF_NO());
-                                                mTranSODet.setFORDERDET_SCHDISPER("0.00");
-                                                mTranSODet.setFORDERDET_DISCTYPE("V");
-                                                newMetaList.add(ordArrList);
-                                                Log.v("DISCOUNT", mTranSODet.getFORDERDET_ITEMCODE() + " * " + (TotalValue - discValue));
-                                                break;
-                                            }
+                                            double discValue = Double.parseDouble(discSlab.getFDISCSLAB_DIS_AMUT());
+                                            mTranSODet.setFORDERDET_BAMT(String.valueOf(discValue));
+                                            mTranSODet.setFORDERDET_DISC_REF(discSlab.getFDISCSLAB_REF_NO());
+                                            mTranSODet.setFORDERDET_SCHDISPER("0.00");
+                                            mTranSODet.setFORDERDET_DISCTYPE("V");
+                                            newMetaList.add(ordArrList);
+                                            Log.v("DISCOUNT", mTranSODet.getFORDERDET_ITEMCODE() + " * " + (TotalValue - discValue));
+                                            break;
+                                        }
 
-                                            /* If not assorted */
-                                        } else {
-                                            totalQTY = Integer.parseInt(mTranSODet.getFORDERDET_QTY());
-                                            TotalValue = TotalValue + (Double.parseDouble(mTranSODet.getFORDERDET_AMT()) + Double.parseDouble(mTranSODet.getFORDERDET_SCHDISC()));
+                                        /* If not assorted */
+                                    } else {
+                                        totalQTY = Integer.parseInt(mTranSODet.getFORDERDET_QTY());
+                                        TotalValue = TotalValue + (Double.parseDouble(mTranSODet.getFORDERDET_AMT()) + Double.parseDouble(mTranSODet.getFORDERDET_SCHDISC()));
 
-                                            Discslab discSlab = new DiscslabController(context).getDiscountSlabInfo(discHed.getFDISCHED_REF_NO(), totalQTY);
+                                        Discslab discSlab = new DiscslabController(context).getDiscountSlabInfo(discHed.getFDISCHED_REF_NO(), totalQTY);
 
-                                            if (discSlab.getFDISCSLAB_DIS_AMUT() != null) {
+                                        if (discSlab.getFDISCSLAB_DIS_AMUT() != null) {
 
-                                                double discValue = Double.parseDouble(discSlab.getFDISCSLAB_DIS_AMUT());
-                                                mTranSODet.setFORDERDET_DISC_REF(discSlab.getFDISCSLAB_REF_NO());
-                                                mTranSODet.setFORDERDET_DISAMT(String.valueOf(discValue));
-                                                mTranSODet.setFORDERDET_SCHDISPER("0.00");
-                                                new OrderDetailController(context).updateDiscount(mTranSODet, discValue, "V");
-                                                Log.v("DISCOUNT", mTranSODet.getFORDERDET_ITEMCODE() + " * " + (TotalValue - discValue));
-                                            }
-
+                                            double discValue = Double.parseDouble(discSlab.getFDISCSLAB_DIS_AMUT());
+                                            mTranSODet.setFORDERDET_DISC_REF(discSlab.getFDISCSLAB_REF_NO());
+                                            mTranSODet.setFORDERDET_DISAMT(String.valueOf(discValue));
+                                            mTranSODet.setFORDERDET_SCHDISPER("0.00");
+                                            new OrderDetailController(context).updateDiscount(mTranSODet, discValue, "V");
+                                            Log.v("DISCOUNT", mTranSODet.getFORDERDET_ITEMCODE() + " * " + (TotalValue - discValue));
                                         }
 
                                     }
-                                    /* if percentage based discount */
-                                    else if (discHed.getFDISCHED_DIS_TYPE().equals("P")) {
-                                        int totalQTY = 0;
-                                        double TotalValue = 0;
 
-                                        if (ordArrList.size() > 1) {
+                                }
+                                /* if percentage based discount */
+                                else if (discHed.getFDISCHED_DIS_TYPE().equals("P")) {
+                                    int totalQTY = 0;
+                                    double TotalValue = 0;
 
-                                          //  1111111 for (OrderDetail iTranSODet : ordArrList) {//rashmi-2020-02-10
-                                                totalQTY = totalQTY + Integer.parseInt(mTranSODet.getFORDERDET_QTY());
-                                                TotalValue = TotalValue + (Double.parseDouble(mTranSODet.getFORDERDET_AMT()) + Double.parseDouble(mTranSODet.getFORDERDET_SCHDISC()));
+                                    if (ordArrList.size() > 1) {
+
+                                        //  1111111 for (OrderDetail iTranSODet : ordArrList) {//rashmi-2020-02-10
+                                        totalQTY = totalQTY + Integer.parseInt(mTranSODet.getFORDERDET_QTY());
+                                        TotalValue = TotalValue + (Double.parseDouble(mTranSODet.getFORDERDET_AMT()) + Double.parseDouble(mTranSODet.getFORDERDET_SCHDISC()));
 
 //                                            if (iTranSODet.getFORDERDET_SCHDISC()== null || iTranSODet.getFORDERDET_SCHDISPER()== null) // null check for schdisc
 //                                            {
@@ -463,68 +467,68 @@ public class Discount {
 //                                            }
 
 
-                                                Discslab discSlab = new DiscslabController(context).getDiscountSlabInfo(discHed.getFDISCHED_REF_NO(), totalQTY);
-                                                /* if any discount slabs exist */
-                                                if (discSlab.getFDISCSLAB_DIS_PER() != null) {
-                                                    /*
-                                                     * Get discount value & pass it to
-                                                     * first instance and add it to meta
-                                                     * list
-                                                     */
-                                                    double discValue = (((Double.parseDouble(mTranSODet.getFORDERDET_AMT()) + Double.parseDouble(mTranSODet.getFORDERDET_SCHDISC())) / 100) * (Double.parseDouble(discSlab.getFDISCSLAB_DIS_PER())));
-                                                    //                                            mTranSODet.setFORDERDET_BAMT(String.valueOf(discValue));
-                                                    //                                            mTranSODet.setFORDERDET_DISC_REF(discSlab.getFDISCSLAB_REF_NO());
-                                                    //                                            mTranSODet.setFORDERDET_SCHDISPER(discSlab.getFDISCSLAB_DIS_PER());
-                                                    //                                            mTranSODet.setFORDERDET_DISCTYPE("P");
-                                                    //                                            newMetaList.add(ordArrList);
-                                                    //                                            Log.v("DISCOUNT", mTranSODet.getFORDERDET_ITEMCODE() + " * " + (TotalValue - discValue));
+                                        Discslab discSlab = new DiscslabController(context).getDiscountSlabInfo(discHed.getFDISCHED_REF_NO(), totalQTY);
+                                        /* if any discount slabs exist */
+                                        if (discSlab.getFDISCSLAB_DIS_PER() != null) {
+                                            /*
+                                             * Get discount value & pass it to
+                                             * first instance and add it to meta
+                                             * list
+                                             */
+                                            double discValue = (((Double.parseDouble(mTranSODet.getFORDERDET_AMT()) + Double.parseDouble(mTranSODet.getFORDERDET_SCHDISC())) / 100) * (Double.parseDouble(discSlab.getFDISCSLAB_DIS_PER())));
+                                            //                                            mTranSODet.setFORDERDET_BAMT(String.valueOf(discValue));
+                                            //                                            mTranSODet.setFORDERDET_DISC_REF(discSlab.getFDISCSLAB_REF_NO());
+                                            //                                            mTranSODet.setFORDERDET_SCHDISPER(discSlab.getFDISCSLAB_DIS_PER());
+                                            //                                            mTranSODet.setFORDERDET_DISCTYPE("P");
+                                            //                                            newMetaList.add(ordArrList);
+                                            //                                            Log.v("DISCOUNT", mTranSODet.getFORDERDET_ITEMCODE() + " * " + (TotalValue - discValue));
 
-                                                    // newly updated due to two itemscodes has same discount scheme disord not inserted records
+                                            // newly updated due to two itemscodes has same discount scheme disord not inserted records
 
-                                                    //                                            if(!mTranSODet.getFORDERDET_SCHDISC().equals("")) {
-                                                    //                                                TotalValue = Double.parseDouble(mTranSODet.getFORDERDET_AMT()) + Double.parseDouble(mTranSODet.getFORDERDET_SCHDISC());
-                                                    //                                            }else{
-                                                    //                                                TotalValue = Double.parseDouble(mTranSODet.getFORDERDET_AMT());
-                                                    //                                            }
+                                            //                                            if(!mTranSODet.getFORDERDET_SCHDISC().equals("")) {
+                                            //                                                TotalValue = Double.parseDouble(mTranSODet.getFORDERDET_AMT()) + Double.parseDouble(mTranSODet.getFORDERDET_SCHDISC());
+                                            //                                            }else{
+                                            //                                                TotalValue = Double.parseDouble(mTranSODet.getFORDERDET_AMT());
+                                            //                                            }
 
-                                                    //                                            if (discSlab.getFDISCSLAB_DIS_PER() != null) {
-                                                    /* Update table directly cuz it's not assorted */
+                                            //                                            if (discSlab.getFDISCSLAB_DIS_PER() != null) {
+                                            /* Update table directly cuz it's not assorted */
 
-                                                    mTranSODet.setFORDERDET_DISC_REF(discSlab.getFDISCSLAB_REF_NO());
-                                                    mTranSODet.setFORDERDET_SCHDISPER(discSlab.getFDISCSLAB_DIS_PER());
-                                                    mTranSODet.setFORDERDET_DISAMT(String.valueOf(((TotalValue / 100) * Double.parseDouble(discSlab.getFDISCSLAB_DIS_PER()))));
-                                                    new OrderDetailController(context).updateDiscount(mTranSODet, discValue, "P");
-                                                    Log.v("DISCOUNT", mTranSODet.getFORDERDET_ITEMCODE() + " * " + (TotalValue - discValue));
-                                                    //                                            }
+                                            mTranSODet.setFORDERDET_DISC_REF(discSlab.getFDISCSLAB_REF_NO());
+                                            mTranSODet.setFORDERDET_SCHDISPER(discSlab.getFDISCSLAB_DIS_PER());
+                                            mTranSODet.setFORDERDET_DISAMT(String.valueOf(((TotalValue / 100) * Double.parseDouble(discSlab.getFDISCSLAB_DIS_PER()))));
+                                            new OrderDetailController(context).updateDiscount(mTranSODet, discValue, "P");
+                                            Log.v("DISCOUNT", mTranSODet.getFORDERDET_ITEMCODE() + " * " + (TotalValue - discValue));
+                                            //                                            }
 
-                                                    // ------------------------------ Nuwan 10.12.2019 ----------------------------------
-                                                }
-                                           // }//1111111commented by rashmi 2020-02-10
+                                            // ------------------------------ Nuwan 10.12.2019 ----------------------------------
+                                        }
+                                        // }//1111111commented by rashmi 2020-02-10
 
+                                    } else {
+                                        /* If just 1 item, just calculate the discount according to percentage */
+                                        totalQTY = Integer.parseInt(mTranSODet.getFORDERDET_QTY());
+                                        //rashmi-2019-11-14 check null of schdisc, because cannot parse null to double
+                                        if (!mTranSODet.getFORDERDET_SCHDISC().equals(null)) {
+                                            TotalValue = Double.parseDouble(mTranSODet.getFORDERDET_AMT()) + Double.parseDouble(mTranSODet.getFORDERDET_SCHDISC());
                                         } else {
-                                            /* If just 1 item, just calculate the discount according to percentage */
-                                            totalQTY = Integer.parseInt(mTranSODet.getFORDERDET_QTY());
-                                            //rashmi-2019-11-14 check null of schdisc, because cannot parse null to double
-                                            if (!mTranSODet.getFORDERDET_SCHDISC().equals(null)) {
-                                                TotalValue = Double.parseDouble(mTranSODet.getFORDERDET_AMT()) + Double.parseDouble(mTranSODet.getFORDERDET_SCHDISC());
-                                            } else {
-                                                TotalValue = Double.parseDouble(mTranSODet.getFORDERDET_AMT());
-                                            }
-                                            Discslab discSlab = new DiscslabController(context).getDiscountSlabInfo(discHed.getFDISCHED_REF_NO(), totalQTY);
+                                            TotalValue = Double.parseDouble(mTranSODet.getFORDERDET_AMT());
+                                        }
+                                        Discslab discSlab = new DiscslabController(context).getDiscountSlabInfo(discHed.getFDISCHED_REF_NO(), totalQTY);
 
-                                            if (discSlab.getFDISCSLAB_DIS_PER() != null) {
-                                                /* Update table directly cuz it's not assorted */
-                                                double discValue = ((TotalValue / 100) * (Double.parseDouble(discSlab.getFDISCSLAB_DIS_PER())));
-                                                mTranSODet.setFORDERDET_DISC_REF(discSlab.getFDISCSLAB_REF_NO());
-                                                mTranSODet.setFORDERDET_SCHDISPER(discSlab.getFDISCSLAB_DIS_PER());
-                                                mTranSODet.setFORDERDET_DISAMT(String.valueOf(((TotalValue / 100) * Double.parseDouble(discSlab.getFDISCSLAB_DIS_PER()))));
-                                                new OrderDetailController(context).updateDiscount(mTranSODet, discValue, "P");
-                                                Log.v("DISCOUNT", mTranSODet.getFORDERDET_ITEMCODE() + " * " + (TotalValue - discValue));
-                                            }
+                                        if (discSlab.getFDISCSLAB_DIS_PER() != null) {
+                                            /* Update table directly cuz it's not assorted */
+                                            double discValue = ((TotalValue / 100) * (Double.parseDouble(discSlab.getFDISCSLAB_DIS_PER())));
+                                            mTranSODet.setFORDERDET_DISC_REF(discSlab.getFDISCSLAB_REF_NO());
+                                            mTranSODet.setFORDERDET_SCHDISPER(discSlab.getFDISCSLAB_DIS_PER());
+                                            mTranSODet.setFORDERDET_DISAMT(String.valueOf(((TotalValue / 100) * Double.parseDouble(discSlab.getFDISCSLAB_DIS_PER()))));
+                                            new OrderDetailController(context).updateDiscount(mTranSODet, discValue, "P");
+                                            Log.v("DISCOUNT", mTranSODet.getFORDERDET_ITEMCODE() + " * " + (TotalValue - discValue));
                                         }
                                     }
                                 }
                             }
+                        }
 //                    }else {
 //                        Log.d("discDebListNotcontains","order debtor has no discounts");
 //                    }
@@ -590,26 +594,21 @@ public class Discount {
 
                         }
                         /* if percentage based discount */
-                        else if (discHed.getFDISCHED_DIS_TYPE().equals("P"))
-                        {
+                        else if (discHed.getFDISCHED_DIS_TYPE().equals("P")) {
                             int totalQTY = 0;
                             double TotalValue = 0;
                             String itemPrice;
 
-                            if (ordArrList.size() > 1)
-                            {
-                                for (OrderDetail iTranSODet : ordArrList)
-                                {
+                            if (ordArrList.size() > 1) {
+                                for (OrderDetail iTranSODet : ordArrList) {
                                     totalQTY = totalQTY + Integer.parseInt(iTranSODet.getFORDERDET_QTY());
                                     //TotalValue = TotalValue + ((Double.parseDouble(iTranSODet.getFORDERDET_AMT()) + Double.parseDouble(iTranSODet.getFORDERDET_SCHDISC())));
 
-                                    if (iTranSODet.getFORDERDET_SCHDISC()== null || iTranSODet.getFORDERDET_SCHDISPER()== null) // null check for schdisc
+                                    if (iTranSODet.getFORDERDET_SCHDISC() == null || iTranSODet.getFORDERDET_SCHDISPER() == null) // null check for schdisc
                                     {
                                         TotalValue = (Double.parseDouble(iTranSODet.getFORDERDET_AMT()));
-                                    }
-                                    else
-                                    {
-                                        TotalValue = ((Double.parseDouble(iTranSODet.getFORDERDET_AMT()) + (Double.parseDouble(iTranSODet.getFORDERDET_AMT())*(Double.parseDouble(iTranSODet.getFORDERDET_SCHDISPER())/100))));
+                                    } else {
+                                        TotalValue = ((Double.parseDouble(iTranSODet.getFORDERDET_AMT()) + (Double.parseDouble(iTranSODet.getFORDERDET_AMT()) * (Double.parseDouble(iTranSODet.getFORDERDET_SCHDISPER()) / 100))));
                                     }
 
                                     Discslab discSlab = new DiscslabController(context).getDiscountSlabInfo(discHed.getFDISCHED_REF_NO(), totalQTY);
@@ -665,29 +664,27 @@ public class Discount {
                              */
                                 totalQTY = Integer.parseInt(mTranSODet.getFORDERDET_QTY());
 
-                                if (mTranSODet.getFORDERDET_SCHDISC()== null && mTranSODet.getFORDERDET_SCHDISPER()== null) // null check for schdisc
+                                if (mTranSODet.getFORDERDET_SCHDISC() == null && mTranSODet.getFORDERDET_SCHDISPER() == null) // null check for schdisc
                                 {
                                     TotalValue = (Double.parseDouble(mTranSODet.getFORDERDET_AMT()));
-                                }
-                                else
-                                {
-                                    TotalValue = ((Double.parseDouble(mTranSODet.getFORDERDET_AMT()) + (Double.parseDouble(mTranSODet.getFORDERDET_AMT())*(Double.parseDouble(mTranSODet.getFORDERDET_SCHDISPER())/100))));
+                                } else {
+                                    TotalValue = ((Double.parseDouble(mTranSODet.getFORDERDET_AMT()) + (Double.parseDouble(mTranSODet.getFORDERDET_AMT()) * (Double.parseDouble(mTranSODet.getFORDERDET_SCHDISPER()) / 100))));
                                 }
                                 // commented due to null value for schdisc
                                 //TotalValue = Double.parseDouble(mTranSODet.getFORDERDET_AMT()) + Double.parseDouble(mTranSODet.getFORDERDET_SCHDISC());
 
                                 // ----------------------------------------- Nuwan --------------------------14/09/2018 ----------------Due to reverse tax for discount--------------------------
-                                itemPrice = String.valueOf(Double.parseDouble(mTranSODet.getFORDERDET_AMT())/(double)totalQTY);
+                                itemPrice = String.valueOf(Double.parseDouble(mTranSODet.getFORDERDET_AMT()) / (double) totalQTY);
                                 //String oneItemTaxReversePrice = new TaxDetDS(context).calculateReverseTaxFromDebTax(debCode,mTranSODet.getFTRANSODET_ITEMCODE(), new BigDecimal(itemPrice));
-                                String oneItemTaxReversePrice[] = new TaxDetController(context).calculateTaxForwardFromDebTax(debCode,mTranSODet.getFORDERDET_ITEMCODE(), Double.parseDouble(itemPrice));
+                                String oneItemTaxReversePrice[] = new TaxDetController(context).calculateTaxForwardFromDebTax(debCode, mTranSODet.getFORDERDET_ITEMCODE(), Double.parseDouble(itemPrice));
 
                                 Discslab discSlab = new DiscslabController(context).getDiscountSlabInfo(discHed.getFDISCHED_REF_NO(), totalQTY);
 
                                 if (discSlab.getFDISCSLAB_DIS_PER() != null) {
 
                                     /*Update table directly as it's not assorted*/
-                                    double reverseItemDiscValue = ((Double.parseDouble(oneItemTaxReversePrice[0]))/100 * (Double.parseDouble(discSlab.getFDISCSLAB_DIS_PER())));
-                                    double totalReverseDiscValue = reverseItemDiscValue * (double)totalQTY;
+                                    double reverseItemDiscValue = ((Double.parseDouble(oneItemTaxReversePrice[0])) / 100 * (Double.parseDouble(discSlab.getFDISCSLAB_DIS_PER())));
+                                    double totalReverseDiscValue = reverseItemDiscValue * (double) totalQTY;
                                     //double discValue = ((TotalValue / 100) * (Double.parseDouble(discSlab.getFDISCSLAB_DIS_PER())));
                                     mTranSODet.setFORDERDET_DISC_REF(discSlab.getFDISCSLAB_REF_NO());
                                     mTranSODet.setFORDERDET_SCHDISPER(discSlab.getFDISCSLAB_DIS_PER());
@@ -705,8 +702,8 @@ public class Discount {
 
                     }
 
-                }else{
-                    Log.d("**DISTYPE()!=nul elsPrt","Discount scheme not exist");
+                } else {
+                    Log.d("**DISTYPE()!=nul elsPrt", "Discount scheme not exist");
                 }
 
             }
@@ -907,16 +904,13 @@ public class Discount {
 
                         }
                         /* if percentage based discount */
-                        else if (discHed.getFDISCHED_DIS_TYPE().equals("P"))
-                        {
+                        else if (discHed.getFDISCHED_DIS_TYPE().equals("P")) {
                             int totalQTY = 0;
                             double TotalValue = 0;
                             String itemPrice;
 
-                            if (ordArrList.size() > 1)
-                            {
-                                for (InvDet iTranSODet : ordArrList)
-                                {
+                            if (ordArrList.size() > 1) {
+                                for (InvDet iTranSODet : ordArrList) {
                                     totalQTY = totalQTY + Integer.parseInt(iTranSODet.getFINVDET_QTY());
                                     TotalValue = TotalValue + ((Double.parseDouble(iTranSODet.getFINVDET_AMT()) + Double.parseDouble(iTranSODet.getFINVDET_DIS_AMT())));
 
@@ -983,17 +977,17 @@ public class Discount {
                                 TotalValue = Double.parseDouble(mTranSODet.getFINVDET_AMT()) + Double.parseDouble(mTranSODet.getFINVDET_DIS_AMT());
 
                                 // ----------------------------------------- Nuwan --------------------------14/09/2018 ----------------Due to reverse tax for discount--------------------------
-                                itemPrice = String.valueOf(Double.parseDouble(mTranSODet.getFINVDET_AMT())/(double)totalQTY);
+                                itemPrice = String.valueOf(Double.parseDouble(mTranSODet.getFINVDET_AMT()) / (double) totalQTY);
                                 //String oneItemTaxReversePrice = new TaxDetDS(context).calculateReverseTaxFromDebTax(debCode,mTranSODet.getFTRANSODET_ITEMCODE(), new BigDecimal(itemPrice));
-                                String oneItemTaxReversePrice[] = new TaxDetController(context).calculateTaxForwardFromDebTax(debCode,mTranSODet.getFINVDET_ITEM_CODE(), Double.parseDouble(itemPrice));
+                                String oneItemTaxReversePrice[] = new TaxDetController(context).calculateTaxForwardFromDebTax(debCode, mTranSODet.getFINVDET_ITEM_CODE(), Double.parseDouble(itemPrice));
 
                                 Discslab discSlab = new DiscslabController(context).getDiscountSlabInfo(discHed.getFDISCHED_REF_NO(), totalQTY);
 
                                 if (discSlab.getFDISCSLAB_DIS_PER() != null) {
 
                                     /*Update table directly as it's not assorted*/
-                                    double reverseItemDiscValue = ((Double.parseDouble(oneItemTaxReversePrice[0]))/100 * (Double.parseDouble(discSlab.getFDISCSLAB_DIS_PER())));
-                                    double totalReverseDiscValue = reverseItemDiscValue * (double)totalQTY;
+                                    double reverseItemDiscValue = ((Double.parseDouble(oneItemTaxReversePrice[0])) / 100 * (Double.parseDouble(discSlab.getFDISCSLAB_DIS_PER())));
+                                    double totalReverseDiscValue = reverseItemDiscValue * (double) totalQTY;
                                     //double discValue = ((TotalValue / 100) * (Double.parseDouble(discSlab.getFDISCSLAB_DIS_PER())));
                                     mTranSODet.setFINVDET_DISC_REF(discSlab.getFDISCSLAB_REF_NO());
                                     mTranSODet.setFINVDET_SCHDISPER(discSlab.getFDISCSLAB_DIS_PER());
@@ -1035,7 +1029,7 @@ public class Discount {
             if (!OrderList.get(x).isFLAG()) {
                 mTranSODet.add(OrderList.get(x));
                 /* Get assort item list for a item code */
-               // AssortList = discDetDS.getAssortByItemCode(OrderList.get(x).getFINVDET_ITEM_CODE());
+                // AssortList = discDetDS.getAssortByItemCode(OrderList.get(x).getFINVDET_ITEM_CODE());
                 AssortList = discDetDS.getAssortByRefno(discHedDS.getRefoByItemCode(OrderList.get(x).getFINVDET_ITEM_CODE()));
 
                 if (AssortList.size() > 0) {
@@ -1121,6 +1115,46 @@ public class Discount {
         }
 
         return nodeList;
+
+    }
+
+    public double totalDiscount(double totAmt, String debCode) {
+
+        DischedController discHeadDS = new DischedController(context);
+        DiscValHedController discValHeadDS = new DiscValHedController(context);
+        double discount = 0.0;
+
+        ArrayList<Disched> discHedList = discValHeadDS.getDiscountSchemes(debCode);
+        /* If discount scheme exists */
+        if (discHedList.size() >= 1) {
+            /* Found debtors */
+            for (Disched discHed : discHedList) {
+                DiscValDet discValDet = new DiscValDetController(context).getDiscountInfo(discHed.getFDISCHED_REF_NO(), totAmt);
+
+                /* if percentage based discount */
+                if (discHed.getFDISCHED_DIS_TYPE().equals("Percentage")) {
+                    double disAmt = 0.0;
+                    disAmt = totAmt * Double.parseDouble(discValDet.getFDISCVALDET_DIS_PER()) / 100;
+                    discount = discount + disAmt;
+                }
+                /* if value based discount */
+                else if (discHed.getFDISCHED_DIS_TYPE().equals("Value")) {
+                    double disAmt = 0.0;
+                    disAmt = Double.parseDouble(discValDet.getFDISCVALDET_DIS_AMT());
+                    discount = discount + disAmt;
+                }
+            }
+//                    else {/* No debtors found */
+//
+//                        Log.d(">>>Discount",">>>No debtors found");
+//
+//                    }
+        } else {
+            Log.d(">>>Discount", ">>>no scheme or debtor found");
+        }
+
+
+        return discount;
 
     }
 }
