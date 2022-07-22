@@ -95,9 +95,35 @@ public class Order {
     private String ORDER_TOTALMKRAMT;
   //  @SerializedName("ORDER_FEEDBACK")
     private String ORDER_FEEDBACK;
+    private String ORDER_TOTAL_VALUE_DISCOUNT;
+    private String ORDER_VALUE_DISCOUNT_REF;
+    private String ORDER_VALUE_DISCOUNT_PER;
   //  @SerializedName("DistDB")
     private String DistDB ;
 
+    public String getORDER_TOTAL_VALUE_DISCOUNT() {
+        return ORDER_TOTAL_VALUE_DISCOUNT;
+    }
+
+    public void setORDER_TOTAL_VALUE_DISCOUNT(String ORDER_TOTAL_VALUE_DISCOUNT) {
+        this.ORDER_TOTAL_VALUE_DISCOUNT = ORDER_TOTAL_VALUE_DISCOUNT;
+    }
+
+    public String getORDER_VALUE_DISCOUNT_REF() {
+        return ORDER_VALUE_DISCOUNT_REF;
+    }
+
+    public void setORDER_VALUE_DISCOUNT_REF(String ORDER_VALUE_DISCOUNT_REF) {
+        this.ORDER_VALUE_DISCOUNT_REF = ORDER_VALUE_DISCOUNT_REF;
+    }
+
+    public String getORDER_VALUE_DISCOUNT_PER() {
+        return ORDER_VALUE_DISCOUNT_PER;
+    }
+
+    public void setORDER_VALUE_DISCOUNT_PER(String ORDER_VALUE_DISCOUNT_PER) {
+        this.ORDER_VALUE_DISCOUNT_PER = ORDER_VALUE_DISCOUNT_PER;
+    }
 
     public String getORDER_DEBNAME() {
         return ORDER_DEBNAME;

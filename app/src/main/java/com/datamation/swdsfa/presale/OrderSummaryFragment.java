@@ -248,6 +248,9 @@ public class OrderSummaryFragment extends Fragment implements GoogleApiClient.Co
                             new OrderDetailController(getActivity()).restData(RefNo);
                             new PreProductController(getActivity()).mClearTables();
                             mSharedPref.setDiscountClicked("0");
+                            mSharedPref.setTotalValueDiscount("0");
+                            mSharedPref.setValueDiscountPer("0");
+                            mSharedPref.setValueDiscountRef("");
 
                         }
 
@@ -461,7 +464,9 @@ public class OrderSummaryFragment extends Fragment implements GoogleApiClient.Co
                     ordHed.setORDER_SETTING_CODE(presale.getORDER_SETTING_CODE());
                     ordHed.setORDER_DEALCODE(presale.getORDER_DEALCODE());
                     ordHed.setORDER_TOTALMKRAMT(String.format("%.2f", totalMKReturn) + "");
-
+                    ordHed.setORDER_TOTAL_VALUE_DISCOUNT(mSharedPref.getTotalValueDiscount());
+                    ordHed.setORDER_VALUE_DISCOUNT_PER(mSharedPref.getValueDiscountPer());
+                    ordHed.setORDER_VALUE_DISCOUNT_REF(mSharedPref.getValueDiscountRef());
                     ordHedList.add(ordHed);
 
                     if (new OrderController(getActivity()).createOrUpdateOrdHed(ordHedList) > 0) {
@@ -479,6 +484,9 @@ public class OrderSummaryFragment extends Fragment implements GoogleApiClient.Co
                         activity.selectedReturnHed = null;
                         activity.selectedPreHed = null;
                         mSharedPref.setDiscountClicked("0");
+                        mSharedPref.setTotalValueDiscount("0");
+                        mSharedPref.setValueDiscountPer("0");
+                        mSharedPref.setValueDiscountRef("");
                         UtilityContainer.ClearReturnSharedPref(getActivity());
                         outlet = new CustomerController(getActivity()).getSelectedCustomerByCode(mSharedPref.getSelectedDebCode());
                         Intent intnt = new Intent(getActivity(), DebtorDetailsActivity.class);

@@ -140,6 +140,9 @@ public class OrderDetailFragment extends Fragment{
         qohSttsList.add("VIEW ALL");
 
         mSharedPref.setDiscountClicked("0");
+        mSharedPref.setTotalValueDiscount("0");
+        mSharedPref.setValueDiscountPer("0");
+        mSharedPref.setValueDiscountRef("");
         clickCount = 0;
 
         Log.d("order_detail", "clicked_count" + clickCount);
@@ -261,6 +264,9 @@ spnQOH.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
                 mSharedPref.setDiscountClicked("0");
+                mSharedPref.setTotalValueDiscount("0");
+                mSharedPref.setValueDiscountPer("0");
+                mSharedPref.setValueDiscountRef("");
                 clickCount = 0;
                 mSharedPref.setGlobalVal("preKeyIsFreeClicked", "0");
                 new OrderDetailController(getActivity()).restFreeIssueData(RefNo);

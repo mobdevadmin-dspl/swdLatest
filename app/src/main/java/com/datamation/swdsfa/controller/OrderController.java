@@ -98,10 +98,16 @@ public class OrderController {
     public static final String FORDHED_UPLOAD_TIME = "UploadTime";
     public static final String FORDHED_FEEDBACK = "Feedback";
     public static final String FORDHED_DEBNAME = "DebName";
+    public static final String FORDHED_TOTALVALUEDISCOUNT = "TotalValueDiscount";
+    public static final String FORDHED_VALUEDISCOUNTREF   = "ValueDiscountRef";
+    public static final String FORDHED_VALUEDISCOUNTPER   = "ValueDiscountPer";
     // create String
     public static final String CREATE_FORDHED_TABLE = "CREATE TABLE IF NOT EXISTS " + TABLE_FORDHED + " (" + FORDHED_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
             + FORDHED_ADD_MACH + " TEXT, " +
             FORDHED_ADD_DATE + " TEXT," +
+            FORDHED_TOTALVALUEDISCOUNT + " TEXT," +
+            FORDHED_VALUEDISCOUNTREF + " TEXT," +
+            FORDHED_VALUEDISCOUNTPER + " TEXT," +
             FORDHED_ADD_USER + " TEXT, "  + DEALCODE + " TEXT, " + FORDHED_AREA_CODE + " TEXT, " +
             FORDHED_APP_DATE + " TEXT, " + FORDHED_ADDRESS + " TEXT, " + FORDHED_APPSTS + " TEXT, " + FORDHED_APP_USER +
             " TEXT, " + FORDHED_BP_TOTAL_DIS + " TEXT, " + FORDHED_B_TOTAL_AMT + " TEXT, " +
@@ -194,6 +200,9 @@ public class OrderController {
                 values.put(FORDHED_LOC_CODE, ordHed.getORDER_LOCCODE());
                 values.put(FORDHED_AREA_CODE, ordHed.getORDER_AREACODE());
                 values.put(DEALCODE, ordHed.getORDER_DEALCODE());
+                values.put(FORDHED_TOTALVALUEDISCOUNT, ordHed.getORDER_TOTAL_VALUE_DISCOUNT());
+                values.put(FORDHED_VALUEDISCOUNTREF  , ordHed.getORDER_VALUE_DISCOUNT_REF());
+                values.put(FORDHED_VALUEDISCOUNTPER  , ordHed.getORDER_VALUE_DISCOUNT_PER());
 
 
                 int cn = cursor.getCount();
@@ -600,6 +609,9 @@ public class OrderController {
             order.setORDER_ADDRESS(cursor.getString(cursor.getColumnIndex(FORDHED_ADDRESS)));
             order.setORDER_FEEDBACK(cursor.getString(cursor.getColumnIndex(FORDHED_FEEDBACK)));
             order.setORDER_TOTALDIS(cursor.getString(cursor.getColumnIndex(FORDHED_TOTALDIS)));
+            order.setORDER_TOTAL_VALUE_DISCOUNT(cursor.getString(cursor.getColumnIndex(FORDHED_TOTALVALUEDISCOUNT)));
+            order.setORDER_VALUE_DISCOUNT_REF(cursor.getString(cursor.getColumnIndex(FORDHED_VALUEDISCOUNTREF)));
+            order.setORDER_VALUE_DISCOUNT_PER(cursor.getString(cursor.getColumnIndex(FORDHED_VALUEDISCOUNTPER)));
 
             order.setOrdDet(detDS.getAllUnSync(cursor.getString(cursor.getColumnIndex(REFNO))));
 ////            preSalesMapper.setIssuList(

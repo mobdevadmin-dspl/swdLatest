@@ -621,7 +621,30 @@ public class SharedPref {
         SharedPreferences.Editor editor = sharedPref.edit();
         editor.putString("paymode", payMode).commit();
     }
+    public String getTotalValueDiscount() {
+        return sharedPref.getString("TotalValueDiscount", "0");
+    }
 
+    public void setTotalValueDiscount(String discount) {
+        SharedPreferences.Editor editor = sharedPref.edit();
+        editor.putString("TotalValueDiscount", discount).commit();
+    }
+    public String getValueDiscountRef() {
+        return sharedPref.getString("ValueDiscountRef", "");
+    }
+
+    public void setValueDiscountRef(String discount) {
+        SharedPreferences.Editor editor = sharedPref.edit();
+        editor.putString("ValueDiscountRef", discount).commit();
+    }
+    public String getValueDiscountPer() {
+        return sharedPref.getString("ValueDiscountPer", "0");
+    }
+
+    public void setValueDiscountPer(String discount) {
+        SharedPreferences.Editor editor = sharedPref.edit();
+        editor.putString("ValueDiscountPer", discount).commit();
+    }
     public String getVersionName() {
         return sharedPref.getString("app_version_name", "0.0.0");
     }

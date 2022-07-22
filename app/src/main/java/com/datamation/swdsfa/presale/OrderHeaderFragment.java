@@ -440,6 +440,9 @@ public class OrderHeaderFragment extends Fragment implements DatePickerDialog.On
             }
             hed.setORDER_ADDRESS(address);
             hed.setORDER_ADDUSER(new SalRepController(getActivity()).getCurrentRepCode().trim());
+            hed.setORDER_TOTAL_VALUE_DISCOUNT(pref.getTotalValueDiscount());
+            hed.setORDER_VALUE_DISCOUNT_PER(pref.getValueDiscountPer());
+            hed.setORDER_VALUE_DISCOUNT_REF(pref.getValueDiscountRef());
 
             activity.selectedPreHed = hed;
 

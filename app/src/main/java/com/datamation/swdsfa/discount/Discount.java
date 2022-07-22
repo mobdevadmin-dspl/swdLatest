@@ -13,6 +13,7 @@ import com.datamation.swdsfa.controller.InvDetController;
 import com.datamation.swdsfa.controller.OrderController;
 import com.datamation.swdsfa.controller.OrderDetailController;
 import com.datamation.swdsfa.controller.TaxDetController;
+import com.datamation.swdsfa.helpers.SharedPref;
 import com.datamation.swdsfa.model.DiscValDet;
 import com.datamation.swdsfa.model.Discdeb;
 import com.datamation.swdsfa.model.Disched;
@@ -1117,31 +1118,40 @@ public class Discount {
         return nodeList;
 
     }
-
+//2022-07-19 rashmi
     public double totalDiscount(double totAmt, String debCode) {
-
-        DischedController discHeadDS = new DischedController(context);
         DiscValHedController discValHeadDS = new DiscValHedController(context);
         double discount = 0.0;
 
-        ArrayList<Disched> discHedList = discValHeadDS.getDiscountSchemes(debCode);
+        ArrayList<Disched> allDiscHedList = discValHeadDS.getDiscountSchemes(debCode);
         /* If discount scheme exists */
-        if (discHedList.size() >= 1) {
+        if (allDiscHedList.size() > 1) {
+            ArrayList<Disched> discHedList = discValHeadDS.getDiscountSchemesByPriority(debCode);
+         //   Log.d(">>>DISVAL",">>>discHedList.size()"+discHedList.size());
             /* Found debtors */
             for (Disched discHed : discHedList) {
                 DiscValDet discValDet = new DiscValDetController(context).getDiscountInfo(discHed.getFDISCHED_REF_NO(), totAmt);
-
+                new SharedPref(context).setValueDiscountRef(discHed.getFDISCHED_REF_NO());
                 /* if percentage based discount */
                 if (discHed.getFDISCHED_DIS_TYPE().equals("Percentage")) {
+                    new SharedPref(context).setValueDiscountPer(discValDet.getFDISCVALDET_DIS_PER());
+                 //   Log.d(">>>DISVAL",">>>discHed.getFDISCHED_DIS_TYPE()"+discHed.getFDISCHED_DIS_TYPE());
                     double disAmt = 0.0;
                     disAmt = totAmt * Double.parseDouble(discValDet.getFDISCVALDET_DIS_PER()) / 100;
+                  //  Log.d(">>>DISVAL",">>> P->disAmt="+disAmt);
                     discount = discount + disAmt;
+                 //   Log.d(">>>DISVAL",">>>P->discount = discount + disAmt="+discount);
                 }
                 /* if value based discount */
                 else if (discHed.getFDISCHED_DIS_TYPE().equals("Value")) {
+                 //   Log.d(">>>DISVAL",">>>discHed.getFDISCHED_DIS_TYPE()"+discHed.getFDISCHED_DIS_TYPE());
+
                     double disAmt = 0.0;
                     disAmt = Double.parseDouble(discValDet.getFDISCVALDET_DIS_AMT());
+                  //  Log.d(">>>DISVAL",">>>V-> disAmt="+disAmt);
                     discount = discount + disAmt;
+                 //   Log.d(">>>DISVAL",">>>V->discount = discount + disAmt="+discount);
+
                 }
             }
 //                    else {/* No debtors found */
@@ -1149,9 +1159,39 @@ public class Discount {
 //                        Log.d(">>>Discount",">>>No debtors found");
 //
 //                    }
-        } else {
+        } else if(allDiscHedList.size() == 1){
+           // ArrayList<Disched> discHedList = discValHeadDS.getDiscountSchemes(debCode);
+            Log.d(">>>DISVAL",">>>allDiscHedList.size()"+allDiscHedList.size());
+            /* Found debtors */
+            for (Disched discHed : allDiscHedList) {
+                DiscValDet discValDet = new DiscValDetController(context).getDiscountInfo(discHed.getFDISCHED_REF_NO(), totAmt);
+                new SharedPref(context).setValueDiscountRef(discHed.getFDISCHED_REF_NO());
+                /* if percentage based discount */
+                if (discHed.getFDISCHED_DIS_TYPE().equals("Percentage")) {
+                    new SharedPref(context).setValueDiscountPer(discValDet.getFDISCVALDET_DIS_PER());
+                    Log.d(">>>DISVAL", ">>>discHed.getFDISCHED_DIS_TYPE()" + discHed.getFDISCHED_DIS_TYPE());
+                    double disAmt = 0.0;
+                    disAmt = totAmt * Double.parseDouble(discValDet.getFDISCVALDET_DIS_PER()) / 100;
+                    Log.d(">>>DISVAL", ">>> P->disAmt=" + disAmt);
+                    discount = discount + disAmt;
+                    Log.d(">>>DISVAL", ">>>P->discount = discount + disAmt=" + discount);
+                }
+                /* if value based discount */
+                else if (discHed.getFDISCHED_DIS_TYPE().equals("Value")) {
+                    Log.d(">>>DISVAL", ">>>discHed.getFDISCHED_DIS_TYPE()" + discHed.getFDISCHED_DIS_TYPE());
+
+                    double disAmt = 0.0;
+                    disAmt = Double.parseDouble(discValDet.getFDISCVALDET_DIS_AMT());
+                    Log.d(">>>DISVAL", ">>>V-> disAmt=" + disAmt);
+                    discount = discount + disAmt;
+                    Log.d(">>>DISVAL", ">>>V->discount = discount + disAmt=" + discount);
+
+                }
+            }
+        }else{
             Log.d(">>>Discount", ">>>no scheme or debtor found");
         }
+        new SharedPref(context).setTotalValueDiscount(""+discount);
 
 
         return discount;
