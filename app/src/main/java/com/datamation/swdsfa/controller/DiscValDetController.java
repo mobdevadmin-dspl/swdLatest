@@ -108,6 +108,7 @@ public class DiscValDetController {
         Cursor cursor = dB.rawQuery(selectQuery, null);
         try {
             while (cursor.moveToNext()) {
+                discValDet = new DiscValDet();
                 discValDet.setFDISCVALDET_REFNO(cursor.getString(cursor.getColumnIndex(FDISCVALDET_REFNO)));
                 discValDet.setFDISCVALDET_DIS_PER(cursor.getString(cursor.getColumnIndex(FDISCVALDET_DIS_PER)));
                 discValDet.setFDISCVALDET_DIS_AMT(cursor.getString(cursor.getColumnIndex(FDISCVALDET_DIS_AMT)));
