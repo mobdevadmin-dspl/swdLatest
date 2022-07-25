@@ -101,7 +101,7 @@ public class DiscValDetController {
             open();
         }
 
-        DiscValDet discValDet = new DiscValDet();
+        DiscValDet discValDet = null;
 
         String selectQuery = "select * from fDisValDet where refno='" + refno + "' and " + amt + " between CAST(Vdatef as double) and CAST(Vdatet as double)";
 
