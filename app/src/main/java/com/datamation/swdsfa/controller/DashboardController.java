@@ -1504,7 +1504,7 @@ public class DashboardController {
         if(category.equals("Case")){
 
             selectQuery   = "SELECT Sum(x.CS ) as Achieve " +
-                    "FROM (SELECT a.itemcode,Sum(a.Qty) as Qty, b.NOUCase, Sum(a.Qty)/b.NOUCase as CS " +
+                    "FROM (SELECT a.itemcode,Sum(a.Qty) as Qty, b.NOUCase, Sum(Round(a.Qty,2))/b.NOUCase as CS " +
                     "FROM FOrddet a, fitem b WHERE a.txndate BETWEEN '" + from + "' AND '" + to + "' AND a.itemcode=b.itemcode AND " +
                     " a.Types='SA' GROUP BY a.itemcode,b.NOUCase) x ";
 

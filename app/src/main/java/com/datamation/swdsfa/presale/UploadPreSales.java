@@ -88,6 +88,7 @@ public class UploadPreSales extends AsyncTask<ArrayList<Order>, Integer, ArrayLi
                 JsonObject objectFromString = jsonParser.parse(orderJson).getAsJsonObject();
                 JsonArray jsonArray = new JsonArray();
                 jsonArray.add(objectFromString);
+                Log.d(">>>order json", ">>>json " + jsonArray.toString());
                 Call<String> resultCall = apiInterface.uploadOrder(jsonArray, content_type);
                 resultCall.enqueue(new Callback<String>() {
                     @Override
