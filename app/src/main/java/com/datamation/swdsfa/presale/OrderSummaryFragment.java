@@ -4,6 +4,7 @@ import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.app.ProgressDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -23,11 +24,16 @@ import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 import androidx.core.content.ContextCompat;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
+
+import android.os.Environment;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
+import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -38,6 +44,8 @@ import com.datamation.swdsfa.R;
 import com.datamation.swdsfa.adapter.OrderDetailsAdapter;
 import com.datamation.swdsfa.adapter.OrderFreeIssueDetailAdapter;
 import com.datamation.swdsfa.adapter.OrderReturnItemAdapter;
+import com.datamation.swdsfa.api.ApiCllient;
+import com.datamation.swdsfa.api.ApiInterface;
 import com.datamation.swdsfa.controller.CustomerController;
 import com.datamation.swdsfa.controller.ItemLocController;
 import com.datamation.swdsfa.controller.OrderController;
@@ -55,6 +63,7 @@ import com.datamation.swdsfa.model.Order;
 import com.datamation.swdsfa.model.OrderDetail;
 import com.datamation.swdsfa.model.OrderDisc;
 import com.datamation.swdsfa.settings.ReferenceNum;
+import com.datamation.swdsfa.utils.NetworkUtil;
 import com.datamation.swdsfa.utils.UtilityContainer;
 import com.datamation.swdsfa.view.DebtorDetailsActivity;
 import com.datamation.swdsfa.view.PreSalesActivity;
@@ -65,11 +74,21 @@ import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
+import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 
+import java.io.FileWriter;
 import java.util.ArrayList;
+import java.util.List;
 
 import static android.Manifest.permission.ACCESS_COARSE_LOCATION;
 import static android.Manifest.permission.ACCESS_FINE_LOCATION;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 
 public class OrderSummaryFragment extends Fragment implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener
@@ -84,7 +103,7 @@ public class OrderSummaryFragment extends Fragment implements GoogleApiClient.Co
     ArrayList<OrderDetail> list;
     ArrayList<OrderDisc> discList;
     String locCode;
-    FloatingActionButton fabPause, fabDiscard, fabSave;
+    FloatingActionButton fabPause, fabDiscard, fabSave,fabSaveAndUpload;
     FloatingActionMenu fam;
     MyReceiver r;
     int iTotFreeQty = 0;
@@ -96,6 +115,8 @@ public class OrderSummaryFragment extends Fragment implements GoogleApiClient.Co
     private double currentLatitude, currentLongitude;
     private Customer customer;
     Location mLocation;
+    ProgressDialog dialog;
+    List<String> resultListOrder;
     GoogleApiClient mGoogleApiClient;
     private static final int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
 
@@ -120,6 +141,7 @@ public class OrderSummaryFragment extends Fragment implements GoogleApiClient.Co
         fabPause = (FloatingActionButton) view.findViewById(R.id.fab2);
         fabDiscard = (FloatingActionButton) view.findViewById(R.id.fab3);
         fabSave = (FloatingActionButton) view.findViewById(R.id.fab1);
+        fabSaveAndUpload = (FloatingActionButton) view.findViewById(R.id.fab4);
         fam = (FloatingActionMenu) view.findViewById(R.id.fab_menu);
 
         lblNetVal = (TextView) view.findViewById(R.id.lblNetVal_Inv);
@@ -208,6 +230,51 @@ public class OrderSummaryFragment extends Fragment implements GoogleApiClient.Co
                 //
                // if (distance <= 50) {
                     popupFeedBack(getActivity());
+//                } else {
+//                    Toast.makeText(getActivity(), "You are out of customer location.Please go to customer's location to continue..", Toast.LENGTH_SHORT).show();
+//                }
+
+            }
+        });
+
+        fabSaveAndUpload.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                customer = new CustomerController(getActivity()).getCustomerGPS(SharedPref.getInstance(getActivity()).getSelectedDebCode());
+                if (!SharedPref.getInstance(getActivity()).getGlobalVal("Latitude").equals(""))
+                    currentLatitude = Double.parseDouble(SharedPref.getInstance(getActivity()).getGlobalVal("Latitude"));
+                else
+                    currentLatitude = 0.0;
+                if (!SharedPref.getInstance(getActivity()).getGlobalVal("Longitude").equals(""))
+                    currentLongitude = Double.parseDouble(SharedPref.getInstance(getActivity()).getGlobalVal("Longitude"));
+                else
+                    currentLongitude = 0.0;
+
+                Location currentLocation = new Location("point Current");
+                currentLocation.setLatitude(currentLatitude);
+                currentLocation.setLongitude(currentLongitude);
+
+                Location customerLocation = new Location("point Customer");
+
+                if (!customer.getLatitude().equals("") && !customer.getLatitude().equals(null))
+                    customerLocation.setLatitude(Double.parseDouble(customer.getLatitude()));
+                else
+                    customerLocation.setLatitude(0.0);
+
+                if (!customer.getLongitude().equals("") && !customer.getLongitude().equals(null))
+                    customerLocation.setLongitude(Double.parseDouble(customer.getLongitude()));
+                else
+                    customerLocation.setLongitude(0.0);
+                float distance = currentLocation.distanceTo(customerLocation);
+                float distance1 = customerLocation.distanceTo(currentLocation);
+//                Log.d("<<<customer Longi<<<<", " " + customer.getLongitude());
+//                Log.d("<<<customer Lati<<<<", " " + customer.getLatitude());
+//                Log.d("<<<current Longi<<<<", " " + currentLongitude);
+//                Log.d("<<<current Lati<<<<", " " + currentLatitude);
+//                Log.d("<<<Distance<<<<", " " + distance);
+                //
+                // if (distance <= 50) {
+                popupFeedBack(getActivity());
 //                } else {
 //                    Toast.makeText(getActivity(), "You are out of customer location.Please go to customer's location to continue..", Toast.LENGTH_SHORT).show();
 //                }
@@ -514,6 +581,284 @@ public class OrderSummaryFragment extends Fragment implements GoogleApiClient.Co
 
 
     }
+
+    public void saveAndUploadSummaryDialog() {
+
+        if (new OrderDetailController(getActivity()).getItemCount(RefNo) > 0) {
+            LayoutInflater layoutInflater = LayoutInflater.from(getActivity());
+            View promptView = layoutInflater.inflate(R.layout.sales_management_van_sales_summary_dialog, null);
+            AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(getActivity());
+            alertDialogBuilder.setTitle("Do you want to save and upload the invoice ?");
+            alertDialogBuilder.setView(promptView);
+
+            final ListView lvProducts_Invoice = (ListView) promptView.findViewById(R.id.lvProducts_Summary_Dialog_Inv);
+            ViewGroup.LayoutParams invItmparams = lvProducts_Invoice.getLayoutParams();
+            ArrayList<OrderDetail> orderItemList = null;
+            orderItemList = new OrderDetailController(getActivity()).getAllItemsAddedInCurrentSale(RefNo, "SA","");
+            if(orderItemList.size()>0){
+                invItmparams.height = 200;
+            }else {
+                invItmparams.height = 0;
+            }
+            lvProducts_Invoice.setLayoutParams(invItmparams);
+
+            lvProducts_Invoice.setAdapter(new OrderDetailsAdapter(getActivity(), orderItemList, mSharedPref.getSelectedDebCode()));
+
+            //MMS - freeissues
+            ListView lvProducts_freeIssue = (ListView) promptView.findViewById(R.id.lvProducts_Summary_freeIssue);
+            ViewGroup.LayoutParams params = lvProducts_freeIssue.getLayoutParams();
+            ArrayList<OrderDetail> orderFreeIssueItemList = null;
+            orderFreeIssueItemList = new OrderDetailController(getActivity()).getAllItemsAddedInCurrentSale(RefNo, "FI","FD");
+            if(orderFreeIssueItemList.size()>0){
+                params.height = 200;
+            }else {
+                params.height = 0;
+            }
+
+            lvProducts_freeIssue.setLayoutParams(params);
+            lvProducts_freeIssue.setAdapter(new OrderFreeIssueDetailAdapter(getActivity(), orderFreeIssueItemList, mSharedPref.getSelectedDebCode()));
+
+            //MMS - return item
+            ListView lvProducts_return = (ListView) promptView.findViewById(R.id.lvProducts_Summary_Dialog_Ret);
+            ViewGroup.LayoutParams retItmparams = lvProducts_return.getLayoutParams();
+
+            ArrayList<OrderDetail> orderReturnItemList = null;
+            orderReturnItemList = new OrderDetailController(getActivity()).getAllItemsAddedInCurrentSale(RefNo, "UR","MR");
+            Log.d("**re", "saveSummaryDialog: "+orderReturnItemList.toString());
+            if(orderReturnItemList.size()>0){
+                retItmparams.height = 200;
+            }else {
+                retItmparams.height = 0;
+            }
+            lvProducts_return.setLayoutParams(retItmparams);
+
+            lvProducts_return.setAdapter(new OrderReturnItemAdapter(getActivity(), orderReturnItemList, mSharedPref.getSelectedDebCode()));
+
+            alertDialogBuilder.setCancelable(false).setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+
+                public void onClick(final DialogInterface dialog, int id) {
+
+                    Order ordHed = new Order();
+                    ArrayList<Order> ordHedList = new ArrayList<Order>();
+                    Order presale = new OrderController(getActivity()).getAllActiveOrdHed();
+                    ordHed.setORDER_REFNO(RefNo);
+                    ordHed.setORDER_DEBCODE(presale.getORDER_DEBCODE());
+                    ordHed.setORDER_DEBNAME(presale.getORDER_DEBNAME());
+                    ordHed.setORDER_ADDDATE(presale.getORDER_ADDDATE());
+                    ordHed.setORDER_MANUREF(presale.getORDER_MANUREF());
+                    ordHed.setORDER_REMARKS(presale.getORDER_REMARKS());
+                    ordHed.setORDER_ADDMACH(presale.getORDER_ADDMACH());
+                    ordHed.setORDER_ADDUSER(presale.getORDER_ADDUSER());
+                    ordHed.setORDER_CURCODE(presale.getORDER_CURCODE());
+                    ordHed.setORDER_CURRATE(presale.getORDER_CURRATE());
+                    ordHed.setORDER_LOCCODE(presale.getORDER_LOCCODE());
+                    ordHed.setORDER_CUSTELE(presale.getORDER_CUSTELE());
+                    ordHed.setORDER_START_TIMESO(presale.getORDER_START_TIMESO());
+                    ordHed.setORDER_CONTACT(presale.getORDER_CONTACT());
+                    ordHed.setORDER_CUSADD1(presale.getORDER_CUSADD1());
+                    ordHed.setORDER_CUSADD2(presale.getORDER_CUSADD2());
+                    ordHed.setORDER_CUSADD3(presale.getORDER_CUSADD3());
+                    ordHed.setORDER_TXNTYPE(presale.getORDER_TXNTYPE());
+                    ordHed.setORDER_IS_ACTIVE(presale.getORDER_IS_ACTIVE());
+                    ordHed.setORDER_IS_SYNCED(presale.getORDER_IS_SYNCED());
+                    ordHed.setORDER_LOCCODE(presale.getORDER_LOCCODE());
+                    ordHed.setORDER_AREACODE(presale.getORDER_AREACODE());
+                    ordHed.setORDER_ROUTECODE(presale.getORDER_ROUTECODE());
+                    ordHed.setORDER_COSTCODE(presale.getORDER_COSTCODE());
+                    ordHed.setORDER_TAXREG(presale.getORDER_TAXREG());
+                    ordHed.setORDER_TOURCODE(presale.getORDER_TOURCODE());
+                    ordHed.setORDER_DELIVERY_DATE(presale.getORDER_DELIVERY_DATE());
+                    ordHed.setORDER_PAYTYPE(presale.getORDER_PAYTYPE());
+                    ordHed.setORDER_LATITUDE(presale.getORDER_LATITUDE());
+                    ordHed.setORDER_LONGITUDE(presale.getORDER_LONGITUDE());
+                    ordHed.setORDER_BPTOTALDIS("0");
+                    ordHed.setORDER_BTOTALAMT("0");
+                    ordHed.setORDER_TOTALTAX("0");
+                    ordHed.setORDER_TOTALDIS(presale.getORDER_TOTALDIS());
+                    ordHed.setORDER_TOTALAMT(lblNetVal.getText().toString());
+                    ordHed.setORDER_TOTALDIS(lblReplacements.getText().toString());
+                    ordHed.setORDER_TXNDATE(presale.getORDER_TXNDATE());
+                    ordHed.setORDER_REPCODE(new SalRepController(getActivity()).getCurrentRepCode());
+                    ordHed.setORDER_REFNO1("");
+                    ordHed.setORDER_TOTQTY(lblQty.getText().toString());
+                    ordHed.setORDER_TOTFREEQTY(iTotFreeQty + "");
+                    ordHed.setORDER_SETTING_CODE(presale.getORDER_SETTING_CODE());
+                    ordHed.setORDER_DEALCODE(presale.getORDER_DEALCODE());
+                    ordHed.setORDER_TOTALMKRAMT(String.format("%.2f", totalMKReturn) + "");
+                    ordHed.setORDER_TOTAL_VALUE_DISCOUNT(mSharedPref.getTotalValueDiscount());
+                    ordHed.setORDER_VALUE_DISCOUNT_PER(mSharedPref.getValueDiscountPer());
+                    ordHed.setORDER_VALUE_DISCOUNT_REF(mSharedPref.getValueDiscountRef());
+                    ordHedList.add(ordHed);
+
+                    if (new OrderController(getActivity()).createOrUpdateOrdHed(ordHedList) > 0) {
+                        new PreProductController(getActivity()).mClearTables();
+                        new OrderController(getActivity()).InactiveStatusUpdate(RefNo);
+                        new OrderDetailController(getActivity()).InactiveStatusUpdate(RefNo);
+
+                        final PreSalesActivity activity = (PreSalesActivity) getActivity();
+                        /*-*-*-*-*-*-*-*-*-*-QOH update-*-*-*-*-*-*-*-*-*/
+
+                        new ReferenceNum(getActivity()).NumValueUpdate(getResources().getString(R.string.NumVal));
+                        UpdateTaxDetails(RefNo);
+                        new ItemLocController(getActivity()).UpdateOrderQOH(RefNo, "-", locCode);
+                        Toast.makeText(getActivity(), "Order saved successfully..!", Toast.LENGTH_SHORT).show();
+                        activity.selectedReturnHed = null;
+                        activity.selectedPreHed = null;
+                        mSharedPref.setDiscountClicked("0");
+                        mSharedPref.setTotalValueDiscount("0");
+                        mSharedPref.setValueDiscountPer("0");
+                        mSharedPref.setValueDiscountRef("");
+                        UtilityContainer.ClearReturnSharedPref(getActivity());
+                        outlet = new CustomerController(getActivity()).getSelectedCustomerByCode(mSharedPref.getSelectedDebCode());
+
+                        try {
+                            Upload(new OrderController(getActivity()).getAllUnSyncOrdHed());
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+
+//                        Intent intnt = new Intent(getActivity(), DebtorDetailsActivity.class);
+//                        intnt.putExtra("outlet", outlet);
+//                        startActivity(intnt);
+//                        getActivity().finish();
+                    } else {
+                        Toast.makeText(getActivity(), "Order Save Failed..", Toast.LENGTH_SHORT).show();
+                    }
+
+                }
+
+            }).setNegativeButton("No", new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int id) {
+                    dialog.cancel();
+                }
+            });
+
+            AlertDialog alertD = alertDialogBuilder.create();
+            alertD.show();
+
+
+        } else
+            Toast.makeText(getActivity(), "Add items before save ...!", Toast.LENGTH_SHORT).show();
+
+
+    }
+
+    public void Upload(final ArrayList<Order> orders) throws InterruptedException {
+
+        dialog = new ProgressDialog(getActivity());
+        dialog.setTitle("Uploading return records");
+        dialog.show();
+
+        if (NetworkUtil.isNetworkAvailable(getActivity())) {
+            if (orders.size() > 0) {
+
+                for (final Order c : orders) {
+                    try {
+                        String content_type = "application/json";
+                        ApiInterface apiInterface = ApiCllient.getClient(getActivity()).create(ApiInterface.class);
+                        final Handler mHandler = new Handler(Looper.getMainLooper());
+                        JsonParser jsonParser = new JsonParser();
+                        String orderJson = new Gson().toJson(c);
+                        JsonObject objectFromString = jsonParser.parse(orderJson).getAsJsonObject();
+                        JsonArray jsonArray = new JsonArray();
+                        jsonArray.add(objectFromString);
+
+                        try{
+
+                            FileWriter writer=new FileWriter(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS) +"/"+ "DBFSFA_OrderJson.txt");
+                            writer.write(jsonArray.toString());
+                            writer.close();
+                        }catch(Exception e){
+                            e.printStackTrace();
+                        }
+
+                        Call<String> resultCall = apiInterface.uploadOrder(jsonArray, content_type);
+                        resultCall.enqueue(new Callback<String>() {
+                            @Override
+                            public void onResponse(Call<String> call, Response<String> response) {
+                                int status = response.code();
+                                Log.d(">>>response code", ">>>res " + status);
+                                Log.d(">>>response message", ">>>res " + response.message());
+                                Log.d(">>>response body", ">>>res " + response.body().toString());
+                                int resLength = response.body().toString().trim().length();
+                                String resmsg = ""+response.body().toString();
+
+                                if (status == 200 && !resmsg.equals("") && !resmsg.equals(null)) {
+                                    mHandler.post(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            c.setORDER_IS_SYNCED("1");
+                                            addRefNoResults(c.getORDER_REFNO() +" --> Success\n",orders.size());
+                                            new OrderController(getActivity()).updateIsSynced(c.getORDER_REFNO(),"1");
+
+                                        }
+                                    });
+                                 } else {
+                                    Log.d( ">>response"+status,""+c.getORDER_REFNO() );
+                                    c.setORDER_IS_SYNCED("0");
+                                    new OrderController(getActivity()).updateIsSynced(c.getORDER_REFNO(),"0");
+                                    addRefNoResults(c.getORDER_REFNO() +" --> Failed\n",orders.size());
+                                }
+
+                            }
+
+                            @Override
+                            public void onFailure(Call<String> call, Throwable t) {
+                                Toast.makeText(getActivity(), "Error response "+t.toString(), Toast.LENGTH_SHORT).show();
+                                Intent intnt = new Intent(getActivity(), DebtorDetailsActivity.class);
+                                intnt.putExtra("outlet", outlet);
+                                startActivity(intnt);
+                                getActivity().finish();
+                            }
+                        });
+
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+
+            } else {
+                Toast.makeText(getActivity(), "No Records to upload !", android.widget.Toast.LENGTH_LONG).show();
+            }
+        } else
+            Toast.makeText(getActivity(), "No Internet Connection", Toast.LENGTH_LONG).show();
+
+    }
+
+    private void addRefNoResults(String ref, int count) {
+        dialog.dismiss();
+        resultListOrder.add(ref);
+        if (count == resultListOrder.size()) {
+            mUploadResult(resultListOrder);
+        }
+    }
+
+    public void mUploadResult(List<String> messages) {
+        String msg = "";
+        for (String s : messages) {
+            msg += s;
+        }
+        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(getActivity());
+        alertDialogBuilder.setMessage(msg);
+        alertDialogBuilder.setTitle("Upload Order Summary");
+
+        alertDialogBuilder.setCancelable(false).setPositiveButton("OK", new DialogInterface.OnClickListener() {
+
+            public void onClick(DialogInterface dialog, int id) {
+                dialog.cancel();
+                Intent intnt = new Intent(getActivity(), DebtorDetailsActivity.class);
+                intnt.putExtra("outlet", outlet);
+                startActivity(intnt);
+                getActivity().finish();
+            }
+        });
+        AlertDialog alertD = alertDialogBuilder.create();
+        alertD.show();
+        alertD.getWindow().setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.WRAP_CONTENT);
+    }
+
+
+
 
     /*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*--*-*-*--*-*-*-*-*-*-*-*-*-*-*-*/
 
