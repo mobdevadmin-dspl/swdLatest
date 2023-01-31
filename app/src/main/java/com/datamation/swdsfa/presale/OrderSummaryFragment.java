@@ -152,6 +152,8 @@ public class OrderSummaryFragment extends Fragment implements GoogleApiClient.Co
         lblGross = (TextView) view.findViewById(R.id.lblGross_Inv);
         lblQty = (TextView) view.findViewById(R.id.lblQty_Inv);
 
+        resultListOrder = new ArrayList<>();
+
         mactivity = getActivity();
         customerName = new CustomerController(getActivity()).getCusNameByCode(SharedPref.getInstance(getActivity()).getSelectedDebCode());
 
@@ -274,7 +276,7 @@ public class OrderSummaryFragment extends Fragment implements GoogleApiClient.Co
 //                Log.d("<<<Distance<<<<", " " + distance);
                 //
                 // if (distance <= 50) {
-                popupFeedBack(getActivity());
+                popupFeedBackforSaveAndUpload(getActivity());
 //                } else {
 //                    Toast.makeText(getActivity(), "You are out of customer location.Please go to customer's location to continue..", Toast.LENGTH_SHORT).show();
 //                }
@@ -746,7 +748,7 @@ public class OrderSummaryFragment extends Fragment implements GoogleApiClient.Co
     public void Upload(final ArrayList<Order> orders) throws InterruptedException {
 
         dialog = new ProgressDialog(getActivity());
-        dialog.setTitle("Uploading return records");
+        dialog.setTitle("Uploading order records");
         dialog.show();
 
         if (NetworkUtil.isNetworkAvailable(getActivity())) {
@@ -1017,6 +1019,106 @@ public class OrderSummaryFragment extends Fragment implements GoogleApiClient.Co
         repDialog.show();
     }
 
+    public void popupFeedBackforSaveAndUpload(final Context context) {
+        final Dialog repDialog = new Dialog(context);
+        repDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        repDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        repDialog.setCancelable(false);
+        repDialog.setCanceledOnTouchOutside(false);
+        repDialog.setContentView(R.layout.feedback_popup);
+
+        //initializations
+
+        final ImageView happy = (ImageView) repDialog.findViewById(R.id.emoji_happy);
+        final ImageView sad = (ImageView) repDialog.findViewById(R.id.emoji_bad);
+        final ImageView normal = (ImageView) repDialog.findViewById(R.id.emoji_neutral);
+        // final ImageView angry = (ImageView) repDialog.findViewById(R.id.emoji_angry);
+
+        final TextView happylbl = (TextView) repDialog.findViewById(R.id.lbl_emoji_happy) ;
+        final TextView sadlbl = (TextView) repDialog.findViewById(R.id.lbl_emoji_sad) ;
+        final TextView neutrallbl = (TextView) repDialog.findViewById(R.id.lbl_emoji_normal) ;
+        // final TextView angrylbl = (TextView) repDialog.findViewById(R.id.lbl_emoji_angry) ;
+
+        repDialog.findViewById(R.id.emoji_happy).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.d("<<<<HAPPY>>","<<HAPPY");
+                new OrderController(context).updateFeedback("1",RefNo);
+                happy.setImageDrawable(ContextCompat.getDrawable(getActivity(),R.drawable.smile));
+                sad.setImageDrawable(ContextCompat.getDrawable(getActivity(),R.drawable.sad_bw));
+                normal.setImageDrawable(ContextCompat.getDrawable(getActivity(), R.drawable.confused_bw));
+                // angry.setImageDrawable(ContextCompat.getDrawable(getActivity(),R.drawable.angry_bw));
+
+                happylbl.setTextColor(getActivity().getResources().getColor(R.color.achievecolor));
+                sadlbl.setTextColor(getActivity().getResources().getColor(R.color.half_black));
+                neutrallbl.setTextColor(getActivity().getResources().getColor(R.color.half_black));
+                // angrylbl.setTextColor(getActivity().getResources().getColor(R.color.half_black));
+            }
+        });
+        repDialog.findViewById(R.id.emoji_bad).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.d("<<<<SAD>>","<<SAD");
+                new OrderController(context).updateFeedback("2",RefNo);
+                happy.setImageDrawable(ContextCompat.getDrawable(getActivity(),R.drawable.happiness_bw));
+                sad.setImageDrawable(ContextCompat.getDrawable(getActivity(),R.drawable.sad));
+                normal.setImageDrawable(ContextCompat.getDrawable(getActivity(), R.drawable.confused_bw));
+                //angry.setImageDrawable(ContextCompat.getDrawable(getActivity(),R.drawable.angry_bw));
+
+                happylbl.setTextColor(getActivity().getResources().getColor(R.color.half_black));
+                sadlbl.setTextColor(getActivity().getResources().getColor(R.color.achievecolor));
+                neutrallbl.setTextColor(getActivity().getResources().getColor(R.color.half_black));
+                // angrylbl.setTextColor(getActivity().getResources().getColor(R.color.half_black));
+            }
+        });
+        repDialog.findViewById(R.id.emoji_neutral).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.d("<<<<NORMAL>>", "<<NORMAL");
+                new OrderController(context).updateFeedback("3",RefNo);
+                happy.setImageDrawable(ContextCompat.getDrawable(getActivity(),R.drawable.happiness_bw));
+                sad.setImageDrawable(ContextCompat.getDrawable(getActivity(),R.drawable.sad_bw));
+                normal.setImageDrawable(ContextCompat.getDrawable(getActivity(), R.drawable.confused));
+                //    angry.setImageDrawable(ContextCompat.getDrawable(getActivity(),R.drawable.angry_bw));
+
+                happylbl.setTextColor(getActivity().getResources().getColor(R.color.half_black));
+                sadlbl.setTextColor(getActivity().getResources().getColor(R.color.half_black));
+                neutrallbl.setTextColor(getActivity().getResources().getColor(R.color.achievecolor));
+                //  angrylbl.setTextColor(getActivity().getResources().getColor(R.color.half_black));
+            }
+        });
+
+//        repDialog.findViewById(R.id.emoji_angry).setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                Log.d("<<<<ANGRY>>","<<ANGRY");
+//                new OrderController(context).updateFeedback("4",RefNo);
+//                happy.setImageDrawable(ContextCompat.getDrawable(getActivity(),R.drawable.happiness_bw));
+//                sad.setImageDrawable(ContextCompat.getDrawable(getActivity(),R.drawable.sad_bw));
+//                normal.setImageDrawable(ContextCompat.getDrawable(getActivity(), R.drawable.confused_bw));
+//                angry.setImageDrawable(ContextCompat.getDrawable(getActivity(),R.drawable.angry));
+//
+//                happylbl.setTextColor(getActivity().getResources().getColor(R.color.half_black));
+//                sadlbl.setTextColor(getActivity().getResources().getColor(R.color.half_black));
+//                neutrallbl.setTextColor(getActivity().getResources().getColor(R.color.half_black));
+//                angrylbl.setTextColor(getActivity().getResources().getColor(R.color.achievecolor));
+//            }
+//        });
+
+        repDialog.findViewById(R.id.close).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                saveAndUploadSummaryDialog();
+
+                repDialog.dismiss();
+
+            }
+        });
+
+
+        repDialog.show();
+    }
 
     //-----------kaveesha ---27/11/2020---------------To get GPS location using google play service-------------------------
     private ArrayList findUnAskedPermissions(ArrayList wanted) {
