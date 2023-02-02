@@ -148,7 +148,7 @@ public class DiscValHedController {
 
         return refNoList;
     }
-    public ArrayList<Disched> getDiscountSchemesByPriority(String DebCode) {
+    public ArrayList<Disched> getDiscountSchemesByPriority(String DebCode,String payType) {
         if (dB == null) {
             open();
         } else if (!dB.isOpen()) {
@@ -165,8 +165,8 @@ public class DiscValHedController {
 
         // commented due to date format issue and M:D:Y format is available in DB
         //String selectQuery = "select * from fdisched where refno in (select refno from fdiscdet where itemcode='" + itemCode + "') and date('now') between vdatef and vdatet";
-        String selectQuery = "select * from fDisValHed where RefNo in (select refno from fDisValDeb where DebCode = '"+DebCode+"' ) and Priority = '1' and '"+curdate+"' between Vdatef And Vdatet";
-
+        String selectQuery = "select * from fDisValHed where RefNo in (select refno from fDisValDeb where DebCode = '"+DebCode+"' ) and PayType = '"+payType+"' and Priority = '1' and '"+curdate+"' between Vdatef And Vdatet";
+        Log.d(">>>DISVAL",">>>"+selectQuery);
 
         Cursor cursor = dB.rawQuery(selectQuery, null);
         ArrayList<Disched> refNoList = new ArrayList<>();

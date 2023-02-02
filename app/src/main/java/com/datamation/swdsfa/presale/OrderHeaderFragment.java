@@ -235,9 +235,9 @@ public class OrderHeaderFragment extends Fragment implements DatePickerDialog.On
         /*create payment Type*/
         List<String> listPayType  = new ArrayList<String>();
 
-        listPayType.add("CASH");
-        listPayType.add("CREDIT");
-        listPayType.add("OTHER");
+        listPayType.add("Cash");
+        listPayType.add("Credit");
+        listPayType.add("Other");
 
         ArrayAdapter<String> dataAdapter1 = new ArrayAdapter<String>(getActivity(),
                 android.R.layout.simple_spinner_item, listPayType);
