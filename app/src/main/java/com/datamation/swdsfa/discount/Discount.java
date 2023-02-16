@@ -1123,10 +1123,11 @@ public class Discount {
         DiscValHedController discValHeadDS = new DiscValHedController(context);
         double discount = 0.0;
 
-        ArrayList<Disched> allDiscHedList = discValHeadDS.getDiscountSchemes(debCode);
+        ArrayList<Disched> allDiscHedList = discValHeadDS.getDiscountSchemes(debCode,new SharedPref(context).getGlobalVal("KeyPayType").trim());
         /* If discount scheme exists */
+        ArrayList<Disched> discHedList = discValHeadDS.getDiscountSchemesByPriority(debCode,new SharedPref(context).getGlobalVal("KeyPayType").trim());
+
         if (allDiscHedList.size() > 1) {
-            ArrayList<Disched> discHedList = discValHeadDS.getDiscountSchemesByPriority(debCode,new SharedPref(context).getGlobalVal("KeyPayType").trim());
 
         //   Log.d(">>>DISVAL",">>>discHedList.size()"+discHedList.size());
             /* Found debtors */
@@ -1166,7 +1167,7 @@ public class Discount {
            // ArrayList<Disched> discHedList = discValHeadDS.getDiscountSchemes(debCode);
             Log.d(">>>DISVAL",">>>allDiscHedList.size()"+allDiscHedList.size());
             /* Found debtors */
-            for (Disched discHed : allDiscHedList) {
+            for (Disched discHed : discHedList) {
                 DiscValDet discValDet = new DiscValDetController(context).getDiscountInfo(discHed.getFDISCHED_REF_NO(), totAmt);
                 new SharedPref(context).setValueDiscountRef(discHed.getFDISCHED_REF_NO());
                 if(discValDet != null) {

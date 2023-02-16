@@ -320,6 +320,7 @@ public class OrderSummaryFragment extends Fragment implements GoogleApiClient.Co
                             mSharedPref.setTotalValueDiscount("0");
                             mSharedPref.setValueDiscountPer("0");
                             mSharedPref.setValueDiscountRef("");
+                            new SharedPref(getActivity()).setGlobalVal("KeyPayType" , "");
 
                         }
 
@@ -556,6 +557,7 @@ public class OrderSummaryFragment extends Fragment implements GoogleApiClient.Co
                         mSharedPref.setTotalValueDiscount("0");
                         mSharedPref.setValueDiscountPer("0");
                         mSharedPref.setValueDiscountRef("");
+                        new SharedPref(getActivity()).setGlobalVal("KeyPayType" , "");
                         UtilityContainer.ClearReturnSharedPref(getActivity());
                         outlet = new CustomerController(getActivity()).getSelectedCustomerByCode(mSharedPref.getSelectedDebCode());
                         Intent intnt = new Intent(getActivity(), DebtorDetailsActivity.class);
@@ -710,6 +712,7 @@ public class OrderSummaryFragment extends Fragment implements GoogleApiClient.Co
                         mSharedPref.setTotalValueDiscount("0");
                         mSharedPref.setValueDiscountPer("0");
                         mSharedPref.setValueDiscountRef("");
+                        new SharedPref(getActivity()).setGlobalVal("KeyPayType" , "");
                         UtilityContainer.ClearReturnSharedPref(getActivity());
                         outlet = new CustomerController(getActivity()).getSelectedCustomerByCode(mSharedPref.getSelectedDebCode());
 

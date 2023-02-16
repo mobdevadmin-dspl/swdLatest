@@ -50,6 +50,7 @@
         <activity
             android:name=".view.ActivitySplash"
             android:screenOrientation="portrait"
+            android:exported="true"
             android:windowSoftInputMode="stateHidden">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -109,7 +110,8 @@
         </service>
 
         <service
-            android:name=".Service.MyInstance">
+            android:name=".Service.MyInstance"
+            android:exported="true">
             <intent-filter>
                 <action android:name="com.google.firebase.INSTANCE_ID_EVENT" />
             </intent-filter>

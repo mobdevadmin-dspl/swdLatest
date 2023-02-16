@@ -101,7 +101,7 @@ public class DiscValHedController {
         return count;
 
     }
-    public ArrayList<Disched> getDiscountSchemes(String DebCode) {
+    public ArrayList<Disched> getDiscountSchemes(String DebCode,String payType) {
         if (dB == null) {
             open();
         } else if (!dB.isOpen()) {
