@@ -26,35 +26,15 @@ import java.util.List;
 
 
 /*created by rashmi-2019-09-10*/
-public class FreeIssueModified {
+public class FreeIssueModified2023 {
     Context context;
     private SQLiteDatabase dB;
     private DatabaseHelper dbHelper;
     private String TAG = "FreeIssueModified";
 
-    public FreeIssueModified(Context context) {
+    public FreeIssueModified2023(Context context) {
         this.context = context;
         dbHelper = new DatabaseHelper(context);
-    }
-
-    public static <T> ArrayList<T> removeDuplicates(ArrayList<T> list) {
-
-        // Create a new ArrayList
-        ArrayList<T> newList = new ArrayList<T>();
-
-        // Traverse through the first list
-        for (T element : list) {
-
-            // If this element is not present in newList
-            // then add it
-            if (!newList.contains(element)) {
-
-                newList.add(element);
-            }
-        }
-
-        // return the new list
-        return newList;
     }
 
     public void open() throws SQLException {

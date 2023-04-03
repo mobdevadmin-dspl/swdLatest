@@ -154,22 +154,22 @@ public class FreeHedController {
 //get fredetails by orderlist
 
     //filter free items from order details
-    public ArrayList<FreeHed>  filterFreeSchemesFromOrder(ArrayList<OrderDetail> OrderList) {
-        //rashmi for new swadeshi sfa - 2019-09-09
-        ArrayList<FreeHed> list = new ArrayList<FreeHed>();
-        for (OrderDetail det: OrderList) {
-            list = getFreeIssueItemDetailByItem(det.getFORDERDET_ITEMCODE());
-           // list = getFreeIssueItemDetailWithQty(det.getFORDERDET_ITEMCODE(),det.getFORDERDET_QTY());//rashmi 2019-09-17
-        }
-
-        for (FreeHed order : list) {
-
-            Log.d("Rashmi-filterschemes", order.getFFREEHED_REFNO()+"");
-
-        }
-        return list;
-
-    }
+//    public ArrayList<FreeHed>  filterFreeSchemesFromOrder(ArrayList<OrderDetail> OrderList) {
+//        //rashmi for new swadeshi sfa - 2019-09-09
+//        ArrayList<FreeHed> list = new ArrayList<FreeHed>();
+//        for (OrderDetail det: OrderList) {
+//            list = getFreeIssueItemDetailByItem(det.getFORDERDET_ITEMCODE());
+//           // list = getFreeIssueItemDetailWithQty(det.getFORDERDET_ITEMCODE(),det.getFORDERDET_QTY());//rashmi 2019-09-17
+//        }
+//
+//        for (FreeHed order : list) {
+//
+//            Log.d("Rashmi-filterschemes", order.getFFREEHED_REFNO()+"");
+//
+//        }
+//        return list;
+//
+//    }
 
     public static <T> ArrayList<T> getSchemeListWithQtySum(ArrayList<T> list)
     {
@@ -230,7 +230,7 @@ public class FreeHedController {
         }
         return freeHed;
     }
-    public ArrayList<FreeHed> getFreeIssueItemDetailByItem(String itemCode) {
+    public ArrayList<FreeHed> getFreeIssueItemDetailByItem(String itemCode,String debcode) {
         if (dB == null) {
             open();
         } else if (!dB.isOpen()) {
@@ -241,7 +241,9 @@ public class FreeHedController {
 
         // String selectQuery = "select * from ffreehed where refno in (select refno from ffreedet where itemcode='" + itemCode + "') AND costcode='" + costCode + "' AND date('now') between vdatef and vdatet";
         // inoshi--Mine**CostCode change//
-        String selectQuery = "select * from ffreehed where refno in (select refno from ffreedet where itemcode='" + itemCode + "')  AND date('now') between vdatef and vdatet order by Priority asc";
+        String selectQuery = "select * from ffreehed where refno in (select refno from ffreedet where itemcode='" + itemCode + "') AND date('now') between vdatef and vdatet order by Priority asc";
+        Log.d( ">>>free-getFreeIssueItemDetailByItem", ">>>selectQuery"+selectQuery);
+
         Cursor cursor = dB.rawQuery(selectQuery, null);
         try {
             while (cursor.moveToNext()) {
@@ -274,7 +276,7 @@ public class FreeHedController {
         return list;
     }
     //2019-09-17-rashmi
-    public ArrayList<FreeHed> getFreeIssueItemDetailByItem(ArrayList<OrderDetail> dets) {
+    public ArrayList<FreeHed> getFreeIssueItemDetailByItem(ArrayList<OrderDetail> dets,String debcode) {
 
 
         ArrayList<FreeHed> list = new ArrayList<FreeHed>();
@@ -366,7 +368,7 @@ public class FreeHedController {
         }
         return list;
     }
-    public ArrayList<FreeHed> getFreeIssueItemDetailByRefno(String itemCode, String costCode) {
+    public ArrayList<FreeHed> getFreeIssueItemDetailByRefno(String itemCode, String debcode) {
         if (dB == null) {
             open();
         } else if (!dB.isOpen()) {
@@ -637,8 +639,8 @@ public class FreeHedController {
 
         ArrayList<FreeHed> list = new ArrayList<FreeHed>();
 
-        String selectQuery = "select * from ffreehed where refno in (select refno from ffreedet where itemcode='" + itemCode + "') and date('now') between vdatef and vdatet";
-
+        String selectQuery = "select * from ffreehed where refno in (select refno from ffreedet where itemcode='" + itemCode + "') and ftype <> 'Flat' and date('now') between vdatef and vdatet";
+        Log.d( ">>>free-getRefoByItemCode", ">>>selectQuery"+selectQuery);
         String s = null;
         Cursor cursor = dB.rawQuery(selectQuery, null);
 

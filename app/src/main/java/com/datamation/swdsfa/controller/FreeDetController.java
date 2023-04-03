@@ -166,7 +166,7 @@ public class FreeDetController {
         List<String> AssortList = new ArrayList<String>();
 
         String selectQuery = "SELECT * FROM " + TABLE_FFREEDET + " WHERE " + dbHelper.REFNO + "='" + refno + "'";
-
+        Log.d( ">>>free-getAssortByRefno", ">>>selectQuery"+selectQuery);
         Cursor cursor = dB.rawQuery(selectQuery, null);
 
         try {

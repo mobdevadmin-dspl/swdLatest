@@ -48,6 +48,7 @@ import com.datamation.swdsfa.controller.SalRepController;
 import com.datamation.swdsfa.dialog.CustomProgressDialog;
 import com.datamation.swdsfa.discount.Discount;
 import com.datamation.swdsfa.freeissue.FreeIssueModified;
+import com.datamation.swdsfa.freeissue.FreeIssueModified2023;
 import com.datamation.swdsfa.helpers.PreSalesResponseListener;
 import com.datamation.swdsfa.helpers.SharedPref;
 import com.datamation.swdsfa.model.Customer;
@@ -736,10 +737,10 @@ spnQOH.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             /* Clear free issues in OrdFreeIss */
             new OrdFreeIssueController(getActivity()).ClearFreeIssuesForPreSale(RefNo);
             // // Menaka on 09-12-2019
-            FreeIssueModified freeIssue = new FreeIssueModified(getActivity());
+            FreeIssueModified2023 freeIssue = new FreeIssueModified2023(getActivity());
             // GET ARRAY OF FREE ITEMS BY PASSING IN ORDER DETAILS
             //ArrayList<FreeItemDetails> list = issue.getFreeItemsBySalesItem(dets);
-            ArrayList<FreeItemDetails> list = freeIssue.getFreeItemsBySalesItem(dets);
+            ArrayList<FreeItemDetails> list = freeIssue.getFreeItemsBySalesItem(dets,debcode);
             getActivity().runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
