@@ -167,13 +167,12 @@ public class FreeIssueModified {
         FreeHedController freeHedDS = new FreeHedController(context);
         FreeDetController freeDetDS = new FreeDetController(context);
         ArrayList<OrderDetail> dets = filterFreeItemsFromOrder(newOrderList);// rashmi -2019-09-09 :
-      //  ArrayList<FreeHed> freeSchemes = removeDuplicates(freeHedDS.getFreeIssueItemDetailByItem(dets,debcode));//// rashmi -2019-09-17-for get free schemes
+       // ArrayList<FreeHed> freeSchemes = removeDuplicates(freeHedDS.getFreeIssueItemDetailByItem(dets));//// rashmi -2019-09-17-for get free schemes
         ArrayList<OrderDetail> assortDets = sortAssortItems(dets);//for free calculate
-        //commented by rashmi 2023/04/03 wrong calculation for flat scheme by totalqty
-        ArrayList<FreeIssueDetail> freeIssueDetailsflat = new ArrayList<FreeIssueDetail>();
         ArrayList<FreeIssueDetail> freeIssueDetailsnotflat = new ArrayList<FreeIssueDetail>();
-        int count = 0;
-        for (OrderDetail det : dets) {
+        ArrayList<FreeIssueDetail> freeIssueDetailsflat = new ArrayList<FreeIssueDetail>();
+        for (OrderDetail det : assortDets) {
+            int count = 0;
             //flat calculation 2023-04-03
 //            Log.d( ">>>free-assortDets", ">>>assortDets"+assortDets.size());
 //            Log.d( ">>>free-assortDets", ">>>assortDets"+assortDets.toString());
@@ -199,10 +198,10 @@ public class FreeIssueModified {
             //flat calculation not flat 2023-04-03
 //            Log.d( ">>>free-assortDets", ">>>assortDets"+assortDets.size());
 //            Log.d( ">>>free-assortDets", ">>>assortDets"+assortDets.toString());
-            count++;
+ //          count++;
             ArrayList<FreeHed> filterSchemesNotFlat = freeHedDS.getFreeIssueItemDetailByItem(detAssort.getFORDERDET_ITEMCODE(),debcode);
             Log.d( ">>>free-filterSchemesnotflat", ">>>filterSchemesnotflat"+assortDets.size());
-            Log.d(">>>free-freeSchemesnotflat ","countnotflat"+count+"-"+ assortDets.toString());
+          //  Log.d(">>>free-freeSchemesnotflat ","countnotflat"+count+"-"+ assortDets.toString());
 
             for (FreeHed free : filterSchemesNotFlat) {
                 FreeIssueDetail freeIssueDetailNotFlat = new FreeIssueDetail();

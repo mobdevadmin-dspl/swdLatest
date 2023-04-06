@@ -241,7 +241,7 @@ public class FreeHedController {
 
         // String selectQuery = "select * from ffreehed where refno in (select refno from ffreedet where itemcode='" + itemCode + "') AND costcode='" + costCode + "' AND date('now') between vdatef and vdatet";
         // inoshi--Mine**CostCode change//
-        String selectQuery = "select * from ffreehed where refno in (select refno from ffreedet where itemcode='" + itemCode + "') AND date('now') between vdatef and vdatet order by Priority asc";
+        String selectQuery = "select * from ffreehed where refno in (select refno from ffreedeb where debcode='" + debcode + "') AND refno in (select refno from ffreedet where itemcode='" + itemCode + "') AND date('now') between vdatef and vdatet order by Priority asc";
         Log.d( ">>>free-getFreeIssueItemDetailByItem", ">>>selectQuery"+selectQuery);
 
         Cursor cursor = dB.rawQuery(selectQuery, null);
@@ -368,7 +368,50 @@ public class FreeHedController {
         }
         return list;
     }
-    public ArrayList<FreeHed> getFreeIssueItemDetailByRefno(String itemCode, String debcode) {
+    public ArrayList<FreeHed> getFreeIssueItemDetailByRefno(String itemCode,String debcode) {
+        if (dB == null) {
+            open();
+        } else if (!dB.isOpen()) {
+            open();
+        }
+
+        ArrayList<FreeHed> list = new ArrayList<FreeHed>();
+
+        // String selectQuery = "select * from ffreehed where refno in (select refno from ffreedet where itemcode='" + itemCode + "') AND costcode='" + costCode + "' AND date('now') between vdatef and vdatet";
+        // inoshi--Mine**CostCode change//
+        String selectQuery = "select * from ffreehed where refno in (select refno from ffreedet where itemcode='" + itemCode + "')  AND date('now') between vdatef and vdatet order by Priority asc";
+        Cursor cursor = dB.rawQuery(selectQuery, null);
+        try {
+            while (cursor.moveToNext()) {
+
+                FreeHed freeHed = new FreeHed();
+
+                freeHed.setFFREEHED_REFNO(cursor.getString(cursor.getColumnIndex(dbHelper.REFNO)));
+                freeHed.setFFREEHED_TXNDATE(cursor.getString(cursor.getColumnIndex(dbHelper.TXNDATE)));
+                freeHed.setFFREEHED_DISC_DESC(cursor.getString(cursor.getColumnIndex(FFREEHED_DISC_DESC)));
+                freeHed.setFFREEHED_PRIORITY(cursor.getString(cursor.getColumnIndex(FFREEHED_PRIORITY)));
+                freeHed.setFFREEHED_VDATEF(cursor.getString(cursor.getColumnIndex(FFREEHED_VDATEF)));
+                freeHed.setFFREEHED_VDATET(cursor.getString(cursor.getColumnIndex(FFREEHED_VDATET)));
+                freeHed.setFFREEHED_REMARKS(cursor.getString(cursor.getColumnIndex(FFREEHED_REMARKS)));
+                freeHed.setFFREEHED_RECORD_ID(cursor.getString(cursor.getColumnIndex(FFREEHED_RECORD_ID)));
+                freeHed.setFFREEHED_ITEM_QTY(cursor.getString(cursor.getColumnIndex(FFREEHED_ITEM_QTY)));
+                freeHed.setFFREEHED_FREE_IT_QTY(cursor.getString(cursor.getColumnIndex(FFREEHED_FREE_IT_QTY)));
+                freeHed.setFFREEHED_FTYPE(cursor.getString(cursor.getColumnIndex(FFREEHED_FTYPE)));
+                //freeHed.setFFREEHED_COSTCODE(cursor.getString(cursor.getColumnIndex(FFREEHED_COSTCODE)));
+
+                list.add(freeHed);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+            dB.close();
+        }
+        return list;
+    }
+    public ArrayList<FreeHed> getFreeIssueItemDetailByRefno(String itemCode) {
         if (dB == null) {
             open();
         } else if (!dB.isOpen()) {
@@ -639,7 +682,7 @@ public class FreeHedController {
 
         ArrayList<FreeHed> list = new ArrayList<FreeHed>();
 
-        String selectQuery = "select * from ffreehed where refno in (select refno from ffreedet where itemcode='" + itemCode + "') and ftype <> 'Flat' and date('now') between vdatef and vdatet";
+        String selectQuery = "select * from ffreehed where refno in (select refno from ffreedet where itemcode='" + itemCode + "')  and date('now') between vdatef and vdatet order by Priority asc LIMIT 1";
         Log.d( ">>>free-getRefoByItemCode", ">>>selectQuery"+selectQuery);
         String s = null;
         Cursor cursor = dB.rawQuery(selectQuery, null);
@@ -666,5 +709,40 @@ public class FreeHedController {
 
         return s;
     }
+    public String getRefoByItemCodeAndDebtor(String itemCode,String debcode) {
+        if (dB == null) {
+            open();
+        } else if (!dB.isOpen()) {
+            open();
+        }
 
+        ArrayList<FreeHed> list = new ArrayList<FreeHed>();
+
+        String selectQuery = "select * from ffreehed where refno in (select refno from ffreedeb where debcode='" + debcode + "') AND refno in (select refno from ffreedet where itemcode='" + itemCode + "') and date('now') between vdatef and vdatet order by Priority asc";
+        Log.d( ">>>free-getRefoByItemCode", ">>>selectQuery"+selectQuery);
+        String s = null;
+        Cursor cursor = dB.rawQuery(selectQuery, null);
+
+        try {
+            while (cursor.moveToNext()) {
+
+                FreeHed freeHed = new FreeHed();
+
+                s = cursor.getString(cursor.getColumnIndex(dbHelper.REFNO));
+                list.add(freeHed);
+
+            }
+        } catch (Exception e) {
+
+            Log.v(TAG + " Exception", e.toString());
+
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+            dB.close();
+        }
+
+        return s;
+    }
 }

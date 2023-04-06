@@ -12,6 +12,7 @@ import com.datamation.swdsfa.controller.FreeHedController;
 import com.datamation.swdsfa.controller.FreeItemController;
 import com.datamation.swdsfa.controller.FreeMslabController;
 import com.datamation.swdsfa.controller.FreeSlabController;
+import com.datamation.swdsfa.controller.OrderController;
 import com.datamation.swdsfa.helpers.DatabaseHelper;
 import com.datamation.swdsfa.helpers.SharedPref;
 import com.datamation.swdsfa.model.FreeHed;
@@ -61,6 +62,52 @@ public class FreeIssueModified2023 {
 
     }
 
+
+    public ArrayList<OrderDetail> sortAssortItems(ArrayList<OrderDetail> OrderList,String debcode) {
+        FreeHedController freeHedDS = new FreeHedController(context);
+        FreeDetController freeDetDS = new FreeDetController(context);
+        ArrayList<OrderDetail> newOrderList = new ArrayList<OrderDetail>();
+        List<String> AssortList = new ArrayList<String>();
+
+        for (int x = 0; x <= OrderList.size() - 1; x++) {
+            // get Assort list for each Item code
+            //    AssortList = freeDetDS.getAssortByRefno(freeHedDS.getRefoByItemCode(OrderList.get(x).getFORDERDET_ITEMCODE()));
+            AssortList = freeDetDS.getAssortByRefno(freeHedDS.getRefoByItemCodeAndDebtor(OrderList.get(x).getFORDERDET_ITEMCODE(),debcode));
+            Log.d( ">>>free-AssortList", ">>>AssortList"+AssortList.toString());
+            if (AssortList.size() > 0) {
+
+                for (int y = x + 1; y <= OrderList.size() - 1; y++) {
+
+                    for (int i = 0; i <= AssortList.size() - 1; i++) {
+
+                        if (OrderList.get(y).getFORDERDET_ITEMCODE().equals(AssortList.get(i))) {
+                            OrderList.get(x).setFORDERDET_QTY(String.valueOf(Integer.parseInt(OrderList.get(x).getFORDERDET_QTY()) + Integer.parseInt(OrderList.get(y).getFORDERDET_QTY())));
+                            OrderList.get(y).setFORDERDET_QTY("0");
+                        }
+
+                    }
+                }
+            }
+        }
+
+        // Remove zero quantities from Arraylist
+        for (int i = 0; i <= OrderList.size() - 1; i++) {
+
+            if (!OrderList.get(i).getFORDERDET_QTY().equals("0")) {
+
+                newOrderList.add(OrderList.get(i));
+            }
+
+        }
+
+        for (OrderDetail order : newOrderList) {
+
+            Log.v("Rashmi", order.getFORDERDET_ITEMCODE() + " - " + order.getFORDERDET_QTY());
+
+        }
+        return newOrderList;
+
+    }
     public ArrayList<OrderDetail> sortAssortItems(ArrayList<OrderDetail> OrderList) {
         FreeHedController freeHedDS = new FreeHedController(context);
         FreeDetController freeDetDS = new FreeDetController(context);
@@ -69,6 +116,7 @@ public class FreeIssueModified2023 {
 
         for (int x = 0; x <= OrderList.size() - 1; x++) {
             // get Assort list for each Item code
+            //    AssortList = freeDetDS.getAssortByRefno(freeHedDS.getRefoByItemCode(OrderList.get(x).getFORDERDET_ITEMCODE()));
             AssortList = freeDetDS.getAssortByRefno(freeHedDS.getRefoByItemCode(OrderList.get(x).getFORDERDET_ITEMCODE()));
             Log.d( ">>>free-AssortList", ">>>AssortList"+AssortList.toString());
             if (AssortList.size() > 0) {
@@ -105,7 +153,6 @@ public class FreeIssueModified2023 {
         return newOrderList;
 
     }
-
     /**************************************************get free issue itemcode (sale item) ******************************************************************/
     public String getSaleItemByItemCode(String itemCode) {
         if (dB == null) {
@@ -138,313 +185,324 @@ public class FreeIssueModified2023 {
         return saleItemToFree;
     }
 
-    /**************************************************By Rashmi******************************************************************/
+    /**************************************************By Rashmi 2023-04-05******************************************************************/
 
     public ArrayList<FreeItemDetails> getFreeItemsBySalesItem(ArrayList<OrderDetail> newOrderList,String debcode) {
 
         ArrayList<FreeItemDetails> freeList = new ArrayList<FreeItemDetails>();
-        int slabassorted = 0, flatAssort = 0, mixAssort = 0;
         FreeHedController freeHedDS = new FreeHedController(context);
-        FreeDetController freeDetDS = new FreeDetController(context);
-        ArrayList<OrderDetail> dets = filterFreeItemsFromOrder(newOrderList);// rashmi -2019-09-09 :
-      //  ArrayList<FreeHed> freeSchemes = removeDuplicates(freeHedDS.getFreeIssueItemDetailByItem(dets,debcode));//// rashmi -2019-09-17-for get free schemes
-        ArrayList<OrderDetail> assortDets = sortAssortItems(dets);//for free calculate
-        //commented by rashmi 2023/04/03 wrong calculation for flat scheme by totalqty
-        ArrayList<FreeIssueDetail> freeIssueDetailsflat = new ArrayList<FreeIssueDetail>();
-        ArrayList<FreeIssueDetail> freeIssueDetailsnotflat = new ArrayList<FreeIssueDetail>();
-        int count = 0;
-        for (OrderDetail det : dets) {
-            //flat calculation 2023-04-03
-//            Log.d( ">>>free-assortDets", ">>>assortDets"+assortDets.size());
-//            Log.d( ">>>free-assortDets", ">>>assortDets"+assortDets.toString());
-            count++;
-            ArrayList<FreeHed> filterSchemes = freeHedDS.getFreeIssueItemDetailByItem(det.getFORDERDET_ITEMCODE(),debcode);
-            Log.d( ">>>free-filterSchemesflat", ">>>filterSchemesflat"+filterSchemes.size());
-            Log.d(">>>free-freeSchemesflat ","countflat"+count+"-"+ filterSchemes.toString());
 
-            for (FreeHed free : filterSchemes) {
-                FreeIssueDetail freeIssueDetail = new FreeIssueDetail();
-                freeIssueDetail.setScheme(free.getFFREEHED_REFNO());
-                freeIssueDetail.setPriority(free.getFFREEHED_PRIORITY());
-                freeIssueDetail.setType(free.getFFREEHED_FTYPE());
-                freeIssueDetail.setItemcode(det.getFORDERDET_ITEMCODE());
-                freeIssueDetail.setQty(Integer.parseInt(det.getFORDERDET_QTY()));
-                freeIssueDetail.setFreehed_free_item_qty(free.getFFREEHED_FREE_IT_QTY());
-                freeIssueDetail.setFreehed_item_qty(free.getFFREEHED_ITEM_QTY());
-                freeIssueDetailsflat.add(freeIssueDetail);
-            }
+        ArrayList<OrderDetail> dets = sortAssortItems(newOrderList,debcode);
 
-        }
-        for (OrderDetail detAssort : assortDets) {
-            //flat calculation not flat 2023-04-03
-//            Log.d( ">>>free-assortDets", ">>>assortDets"+assortDets.size());
-//            Log.d( ">>>free-assortDets", ">>>assortDets"+assortDets.toString());
-            count++;
-            ArrayList<FreeHed> filterSchemesNotFlat = freeHedDS.getFreeIssueItemDetailByItem(detAssort.getFORDERDET_ITEMCODE(),debcode);
-            Log.d( ">>>free-filterSchemesnotflat", ">>>filterSchemesnotflat"+assortDets.size());
-            Log.d(">>>free-freeSchemesnotflat ","countnotflat"+count+"-"+ assortDets.toString());
 
-            for (FreeHed free : filterSchemesNotFlat) {
-                FreeIssueDetail freeIssueDetailNotFlat = new FreeIssueDetail();
-                freeIssueDetailNotFlat.setScheme(free.getFFREEHED_REFNO());
-                freeIssueDetailNotFlat.setPriority(free.getFFREEHED_PRIORITY());
-                freeIssueDetailNotFlat.setType(free.getFFREEHED_FTYPE());
-                freeIssueDetailNotFlat.setItemcode(detAssort.getFORDERDET_ITEMCODE());
-                freeIssueDetailNotFlat.setQty(Integer.parseInt(detAssort.getFORDERDET_QTY()));
-                freeIssueDetailNotFlat.setFreehed_free_item_qty(free.getFFREEHED_FREE_IT_QTY());
-                freeIssueDetailNotFlat.setFreehed_item_qty(free.getFFREEHED_ITEM_QTY());
-                freeIssueDetailsnotflat.add(freeIssueDetailNotFlat);
-            }
+        for (OrderDetail det : dets) {// ---------------------- order list----------------------
+            String debCodeStr = new OrderController(context).getRefnoByDebcode(det.getFORDERDET_REFNO());
+            String freeRefno = new FreeHedController(context).getRefoByItemCode(det.getFORDERDET_ITEMCODE());
+            Log.d("forddet", det.getFORDERDET_ITEMCODE());
+            // get record from freeHed about valid scheme
+            int slabassorted = 0, flatAssort = 0, mixAssort = 0;
+            ArrayList<FreeHed> arrayListchk = freeHedDS.getFreeIssueItemDetailByItem(det.getFORDERDET_ITEMCODE(),debCodeStr);
+            Log.d(">>>free", "arrayListchk"+arrayListchk.size());
+            Log.d(">>>free", "freelist"+arrayListchk.toString());
+           // ArrayList<FreeHed> arrayList = freeHedDS.getFreeIssueItemDetailByRefno(det.getFORDERDET_ITEMCODE());
 
-        }
-
-        ArrayList<FreeIssueDetail> filterListFlat = removeDuplicatesQtyFreeList(freeIssueDetailsflat);
-        ArrayList<FreeIssueDetail> filterListNotFlat = removeDuplicatesQtyFreeList(freeIssueDetailsnotflat);
-        // Menaka Edited
-        String Old_itemcode="";
-        String New_itemcode="";
-        int calQty = 0;
-        // Menaka Edited
-        for (FreeIssueDetail free : filterListFlat) {
-
-            int entedTotQty = free.getQty();
-            Log.d(">>>free-entedTotQty ","entedTotQty"+entedTotQty);
-    // Menaka Edited
-            New_itemcode = free.getItemcode();
-
-            if(Old_itemcode==New_itemcode){
-                free.setQty(entedTotQty-calQty);
-                entedTotQty = entedTotQty-calQty;
-                Log.d(">>>free-Old_itemcode==New_itemcode","entedTotQty"+entedTotQty);
+            if(arrayListchk.size()==0){
+                Log.d(">>>free", "NO FREE SCHEMES"+arrayListchk.toString());
+                //android.widget.Toast.makeText(context, "Not Eligible  FREE ISSUES SCHEMA....!", android.widget.Toast.LENGTH_LONG).show();
             }else{
-                calQty = 0;
-            }
-    // Menaka Edited
-            Log.d(">>>free-Inside ", free.getScheme() + " filter");
+                // selected item qty
+                int entedTotQtyIsZero = Integer.parseInt(det.getFORDERDET_QTY());
 
-            //  int entedTotQty = Integer.parseInt("100");
-            if (free.getType().equals("Flat")) {
-                Log.d(">>>free-Inside ", free.getScheme() + " FLAT");
-                // only-----
-                // flat scheme item qty => 12:1
-                int itemQty = (int) Float.parseFloat(free.getFreehed_item_qty());
-                Log.d(">>>free-Inside ", free.getFreehed_item_qty());
-                // Debtor code from selected debtor
-                String debCode = SharedPref.getInstance(context).getSelectedDebCode();
-                Log.d(">>>free-Inside ", debCode);
-                // get debtor count from FIS no
-                int debCount = new FreeDebController(context).getRefnoByDebCount(free.getScheme());
-                Log.d(">>>free-Inside ", debCount + "");
-                // select debtor from FIS no
-                int IsValidDeb = new FreeDebController(context).isValidDebForFreeIssue(free.getScheme(), debCode);
-                if (IsValidDeb == 1)
-                    Log.d(">>>free-IsValidDeb", " TRUE");
-                else
-                    Log.d(">>>free-IsValidDeb", "TRUE");
-                // get assort count from FIS no
-                int assortCount = new FreeDetController(context).getAssoCountByRefno(free.getScheme());
-                Log.d(">>>free-assortCount", free.getScheme() + " - " + assortCount);
+                if (entedTotQtyIsZero > 0) {
 
-                if (debCount > 0) {
+                    for (FreeHed freeHed : arrayListchk) {// --------Related free issue
+                        // list------
+                        int entedTotQty = Integer.parseInt(det.getFORDERDET_QTY());
+                        if (freeHed.getFFREEHED_PRIORITY().equals("1")) {
+                            // flat
+                            if (freeHed.getFFREEHED_FTYPE().equals("Flat")) {
+                                // -------Flat
+                                // only-----
+                                // flat scheme item qty => 12:1
+                                int itemQty = (int) Float.parseFloat(freeHed.getFFREEHED_ITEM_QTY());
+                                // Debtor code from order header ref no ORASA/00006
+                                String debCode = new OrderController(context).getRefnoByDebcode(det.getFORDERDET_REFNO());
+                                // get debtor count from FIS/098 no
+                                int debCount = new FreeDebController(context).getRefnoByDebCount(freeHed.getFFREEHED_REFNO());
+                                // select debtor from FIS no & R0001929
+                                int IsValidDeb = new FreeDebController(context).isValidDebForFreeIssue(freeHed.getFFREEHED_REFNO(), debCode);
+                                // get assort count from FIS no
+                                int assortCount = new FreeDetController(context).getAssoCountByRefno(freeHed.getFFREEHED_REFNO());
 
-                    // if debtor eligible for free issues
-                    if (IsValidDeb == 1) {
+                                // if its assorted
+                                if (assortCount > 1) {
 
+                                    flatAssort = flatAssort + entedTotQty;
 
-                        if ((int) Math.round(entedTotQty / itemQty) > 0) {
+                                    int index = 0;
+                                    boolean assortUpdate = false;
 
-                            FreeItemDetails details = new FreeItemDetails();
-                            details.setRefno(free.getScheme());
-                            details.setSaleItemList(new FreeItemController(context).getFreeItemsByRefno(free.getScheme()));
-                            details.setFreeQty((int) Math.round(entedTotQty / itemQty) * (int) Float.parseFloat(free.getFreehed_free_item_qty()));
-                           // free.setCalculatedFreeQty();
-                            calQty = (int) Math.round(entedTotQty / itemQty)* (int) itemQty;  // Menaka Edited
-                            freeList.add(details);
+                                    for (FreeItemDetails freeItemDetails : freeList) {
 
-                            Log.v(">>>free-Free Issues ", (int) Math.round(entedTotQty / itemQty) * (int) Float.parseFloat(free.getFreehed_free_item_qty()) + "");
-                            entedTotQty = (int) Math.round(entedTotQty % itemQty);
+                                        if (freeItemDetails.getRefno().equals(freeHed.getFFREEHED_REFNO())) {
+
+                                            freeList.get(index).setRefno(freeHed.getFFREEHED_REFNO());
+                                            freeList.get(index).setFreeIssueSelectedItem(det.getFORDERDET_ITEMCODE());
+                                            freeList.get(index).setSaleItemList(new FreeItemController(context).getFreeItemsByRefno(freeHed.getFFREEHED_REFNO()));
+
+                                            freeList.get(index).setFreeQty((int) Math.round(flatAssort / itemQty) * (int) Float.parseFloat(freeHed.getFFREEHED_FREE_IT_QTY()));
+                                            assortUpdate = true;
+                                        }
+
+                                        index++;
+                                    }
+
+                                    if (!assortUpdate) {// When 1st time running
+
+                                        // available for everyone
+
+                                        // IF entered qty/scheme qty is more
+                                        // than 0
+                                        if ((int) Math.round(entedTotQty / itemQty) > 0) {
+
+                                            FreeItemDetails details = new FreeItemDetails();
+                                            // details.setFreeItem(new
+                                            // FreeItemDS(context).getFreeItemsByRefno(freeHed.getFFREEHED_REFNO()));
+                                            details.setRefno(freeHed.getFFREEHED_REFNO());
+                                            details.setFreeIssueSelectedItem(det.getFORDERDET_ITEMCODE());
+                                            details.setSaleItemList(new FreeItemController(context).getFreeItemsByRefno(freeHed.getFFREEHED_REFNO()));
+
+                                            details.setFreeQty((int) Math.round(entedTotQty / itemQty) * (int) Float.parseFloat(freeHed.getFFREEHED_FREE_IT_QTY()));
+                                            freeList.add(details);
+
+                                            Log.v("Free Issues ", (int) Math.round(entedTotQty / itemQty) * (int) Float.parseFloat(freeHed.getFFREEHED_FREE_IT_QTY()) + "");
+                                            entedTotQty = (int) Math.round(entedTotQty % itemQty);
+                                        }
+
+                                    }
+
+                                    // if not assorted
+                                } else {
+
+                                    if ((int) Math.round(entedTotQty / itemQty) > 0) {
+
+                                        FreeItemDetails details = new FreeItemDetails();
+                                        // details.setFreeItem(new
+                                        // FreeItemDS(context).getFreeItemsByRefno(freeHed.getFFREEHED_REFNO()));
+                                        details.setRefno(freeHed.getFFREEHED_REFNO());
+                                        details.setFreeIssueSelectedItem(det.getFORDERDET_ITEMCODE());
+                                        details.setSaleItemList(new FreeItemController(context).getFreeItemsByRefno(freeHed.getFFREEHED_REFNO()));
+
+                                        details.setFreeQty((int) Math.round(entedTotQty / itemQty) * (int) Float.parseFloat(freeHed.getFFREEHED_FREE_IT_QTY()));
+                                        freeList.add(details);
+
+                                        Log.v("Free Issues ", (int) Math.round(entedTotQty / itemQty) * (int) Float.parseFloat(freeHed.getFFREEHED_FREE_IT_QTY()) + "");
+                                        entedTotQty = (int) Math.round(entedTotQty % itemQty);
+                                    }
+                                }
+
+                            }  else if (freeHed.getFFREEHED_FTYPE().equals("Mix")) {
+                                // slabAssort
+
+                                FreeMslabController freeMslabDS = new FreeMslabController(context);
+                                final ArrayList<FreeMslab> mixList;
+                                int assortCount = new FreeDetController(context).getAssoCountByRefno(freeHed.getFFREEHED_REFNO());
+                                if (assortCount > 1) {// if assorted
+                                    mixAssort = mixAssort + entedTotQty;
+                                    mixList = freeMslabDS.getMixDetails(freeHed.getFFREEHED_REFNO(), mixAssort);
+                                } else {
+                                    mixList = freeMslabDS.getMixDetails(freeHed.getFFREEHED_REFNO(), entedTotQty);
+                                }
+
+                                for (FreeMslab freeMslab : mixList) {
+
+                                    // all debtor for freeissues
+
+                                    if (assortCount > 1) {
+                                        int index = 0;
+                                        boolean assortUpdate = false;
+                                        for (FreeItemDetails freeItemDetails : freeList) {
+                                            if (freeItemDetails.getRefno().equals(freeHed.getFFREEHED_REFNO())) {
+
+                                                int itemQty = (int) Float.parseFloat(freeMslab.getFFREEMSLAB_ITEM_QTY());
+                                                freeList.get(index).setRefno(freeHed.getFFREEHED_REFNO());
+                                                freeList.get(index).setFreeIssueSelectedItem(det.getFORDERDET_ITEMCODE());
+                                                freeList.get(index).setSaleItemList(new FreeItemController(context).getFreeItemsByRefno(freeHed.getFFREEHED_REFNO()));
+
+                                                freeList.get(index).setFreeQty((int) (((Float.parseFloat(freeMslab.getFFREEMSLAB_FREE_IT_QTY()))/itemQty) * mixAssort));
+                                                assortUpdate = true;
+                                            }
+
+                                            index++;
+                                        }
+
+                                        if (!assortUpdate) {
+
+                                            FreeItemDetails details = new FreeItemDetails();
+                                            int itemQty = (int) Float.parseFloat(freeMslab.getFFREEMSLAB_ITEM_QTY());
+                                            details.setRefno(freeHed.getFFREEHED_REFNO());
+                                            details.setFreeIssueSelectedItem(det.getFORDERDET_ITEMCODE());
+                                            details.setSaleItemList(new FreeItemController(context).getFreeItemsByRefno(freeHed.getFFREEHED_REFNO()));
+
+                                            details.setFreeQty((int) (((Float.parseFloat(freeMslab.getFFREEMSLAB_FREE_IT_QTY()))/itemQty) * mixAssort));
+                                            freeList.add(details);
+                                        }
+
+                                    } else {
+                                        FreeItemDetails details = new FreeItemDetails();
+                                        int itemQty = (int) Float.parseFloat(freeMslab.getFFREEMSLAB_ITEM_QTY());
+                                        details.setRefno(freeHed.getFFREEHED_REFNO());
+                                        details.setFreeIssueSelectedItem(det.getFORDERDET_ITEMCODE());
+                                        details.setSaleItemList(new FreeItemController(context).getFreeItemsByRefno(freeHed.getFFREEHED_REFNO()));
+
+                                        details.setFreeQty((int) (((Float.parseFloat(freeMslab.getFFREEMSLAB_FREE_IT_QTY()))/itemQty) * entedTotQty));
+                                        freeList.add(details);
+                                    }
+                                }
+                            }
+                        }else {
+                            // flat
+                            if (freeHed.getFFREEHED_FTYPE().equals("Flat")) {// -------Flat
+                                // only-----
+                                // flat scheme item qty => 12:1
+                                int itemQty = (int) Float.parseFloat(freeHed.getFFREEHED_ITEM_QTY());
+                                // Debtor code from order header ref no ORASA/00006
+                                String debCode = new OrderController(context).getRefnoByDebcode(det.getFORDERDET_REFNO());
+                                // get debtor count from FIS/098 no
+                                int debCount = new FreeDebController(context).getRefnoByDebCount(freeHed.getFFREEHED_REFNO());
+                                // select debtor from FIS no & R0001929
+                                int IsValidDeb = new FreeDebController(context).isValidDebForFreeIssue(freeHed.getFFREEHED_REFNO(), debCode);
+                                // get assort count from FIS no
+                                int assortCount = new FreeDetController(context).getAssoCountByRefno(freeHed.getFFREEHED_REFNO());
+
+                                // if its assorted
+                                if (assortCount > 1) {
+
+                                    flatAssort = flatAssort + entedTotQty;
+
+                                    int index = 0;
+                                    boolean assortUpdate = false;
+
+                                    for (FreeItemDetails freeItemDetails : freeList) {
+
+                                        if (freeItemDetails.getRefno().equals(freeHed.getFFREEHED_REFNO())) {
+
+                                            freeList.get(index).setRefno(freeHed.getFFREEHED_REFNO());
+                                            freeList.get(index).setFreeIssueSelectedItem(det.getFORDERDET_ITEMCODE());
+                                            freeList.get(index).setSaleItemList(new FreeItemController(context).getFreeItemsByRefno(freeHed.getFFREEHED_REFNO()));
+
+                                            freeList.get(index).setFreeQty((int) Math.round(flatAssort / itemQty) * (int) Float.parseFloat(freeHed.getFFREEHED_FREE_IT_QTY()));
+                                            assortUpdate = true;
+                                        }
+
+                                        index++;
+                                    }
+
+                                    if (!assortUpdate) {// When 1st time running
+
+                                        // available for everyone
+
+                                        // IF entered qty/scheme qty is more
+                                        // than 0
+                                        if ((int) Math.round(entedTotQty / itemQty) > 0) {
+
+                                            FreeItemDetails details = new FreeItemDetails();
+                                            // details.setFreeItem(new
+                                            // FreeItemDS(context).getFreeItemsByRefno(freeHed.getFFREEHED_REFNO()));
+                                            details.setRefno(freeHed.getFFREEHED_REFNO());
+                                            details.setFreeIssueSelectedItem(det.getFORDERDET_ITEMCODE());
+                                            details.setSaleItemList(new FreeItemController(context).getFreeItemsByRefno(freeHed.getFFREEHED_REFNO()));
+
+                                            details.setFreeQty((int) Math.round(entedTotQty / itemQty) * (int) Float.parseFloat(freeHed.getFFREEHED_FREE_IT_QTY()));
+                                            freeList.add(details);
+
+                                            Log.v("Free Issues ", (int) Math.round(entedTotQty / itemQty) * (int) Float.parseFloat(freeHed.getFFREEHED_FREE_IT_QTY()) + "");
+                                            entedTotQty = (int) Math.round(entedTotQty % itemQty);
+                                        }
+                                    }
+
+                                    // if not assorted
+                                } else {
+                                    if ((int) Math.round(entedTotQty / itemQty) > 0) {
+
+                                        FreeItemDetails details = new FreeItemDetails();
+                                        // details.setFreeItem(new
+                                        // FreeItemDS(context).getFreeItemsByRefno(freeHed.getFFREEHED_REFNO()));
+                                        details.setRefno(freeHed.getFFREEHED_REFNO());
+                                        details.setFreeIssueSelectedItem(det.getFORDERDET_ITEMCODE());
+                                        details.setSaleItemList(new FreeItemController(context).getFreeItemsByRefno(freeHed.getFFREEHED_REFNO()));
+
+                                        details.setFreeQty((int) Math.round(entedTotQty / itemQty) * (int) Float.parseFloat(freeHed.getFFREEHED_FREE_IT_QTY()));
+                                        freeList.add(details);
+
+                                        Log.v("Free Issues ", (int) Math.round(entedTotQty / itemQty) * (int) Float.parseFloat(freeHed.getFFREEHED_FREE_IT_QTY()) + "");
+                                        entedTotQty = (int) Math.round(entedTotQty % itemQty);
+                                    }
+                                }
+
+                            }  else if (freeHed.getFFREEHED_FTYPE().equals("Mix")) {
+                                // slabAssort
+
+                                FreeMslabController freeMslabDS = new FreeMslabController(context);
+                                final ArrayList<FreeMslab> mixList;
+                                int assortCount = new FreeDetController(context).getAssoCountByRefno(freeHed.getFFREEHED_REFNO());
+                                if (assortCount > 1) {// if assorted
+                                    mixAssort = mixAssort + entedTotQty;
+                                    mixList = freeMslabDS.getMixDetails(freeHed.getFFREEHED_REFNO(), mixAssort);
+                                } else {
+                                    mixList = freeMslabDS.getMixDetails(freeHed.getFFREEHED_REFNO(), entedTotQty);
+                                }
+
+                                for (FreeMslab freeMslab : mixList) {
+
+                                    // all debtor for freeissues
+
+                                    if (assortCount > 1) {
+                                        int index = 0;
+                                        boolean assortUpdate = false;
+                                        for (FreeItemDetails freeItemDetails : freeList) {
+                                            if (freeItemDetails.getRefno().equals(freeHed.getFFREEHED_REFNO())) {
+
+                                                int itemQty = (int) Float.parseFloat(freeMslab.getFFREEMSLAB_ITEM_QTY());
+                                                freeList.get(index).setRefno(freeHed.getFFREEHED_REFNO());
+                                                freeList.get(index).setFreeIssueSelectedItem(det.getFORDERDET_ITEMCODE());
+                                                freeList.get(index).setSaleItemList(new FreeItemController(context).getFreeItemsByRefno(freeHed.getFFREEHED_REFNO()));
+                                                freeList.get(index).setFreeQty((int) (((Float.parseFloat(freeMslab.getFFREEMSLAB_FREE_IT_QTY()))/itemQty) * mixAssort));
+                                                assortUpdate = true;
+                                            }
+
+                                            index++;
+                                        }
+
+                                        if (!assortUpdate) {
+
+                                            FreeItemDetails details = new FreeItemDetails();
+                                            int itemQty = (int) Float.parseFloat(freeMslab.getFFREEMSLAB_ITEM_QTY());
+                                            details.setRefno(freeHed.getFFREEHED_REFNO());
+                                            details.setFreeIssueSelectedItem(det.getFORDERDET_ITEMCODE());
+                                            details.setSaleItemList(new FreeItemController(context).getFreeItemsByRefno(freeHed.getFFREEHED_REFNO()));
+                                            details.setFreeQty((int) (((Float.parseFloat(freeMslab.getFFREEMSLAB_FREE_IT_QTY()))/itemQty) * mixAssort));
+                                            freeList.add(details);
+                                        }
+
+                                    } else {
+                                        FreeItemDetails details = new FreeItemDetails();
+                                        int itemQty = (int) Float.parseFloat(freeMslab.getFFREEMSLAB_ITEM_QTY());
+                                        details.setRefno(freeHed.getFFREEHED_REFNO());
+                                        details.setFreeIssueSelectedItem(det.getFORDERDET_ITEMCODE());
+                                        details.setSaleItemList(new FreeItemController(context).getFreeItemsByRefno(freeHed.getFFREEHED_REFNO()));
+                                        details.setFreeQty((int) (((Float.parseFloat(freeMslab.getFFREEMSLAB_FREE_IT_QTY()))/itemQty) * entedTotQty));
+                                        freeList.add(details);
+                                    }
+                                }
+                            }
+
                         }
                     }
-
-                    // if ref no is NOT in FreeDeb
-                } else {
-
-                    if ((int) Math.round(entedTotQty / itemQty) > 0) {
-
-                        FreeItemDetails details = new FreeItemDetails();
-                        details.setRefno(free.getScheme());
-                        details.setSaleItemList(new FreeItemController(context).getFreeItemsByRefno(free.getScheme()));
-                        details.setFreeQty((int) Math.round(entedTotQty / itemQty) * (int) Float.parseFloat(free.getFreehed_free_item_qty()));
-                        calQty = (int) Math.round(entedTotQty / itemQty)* (int) itemQty;  // Menaka Edited
-                        freeList.add(details);
-
-                        Log.d(">>>free-Free Issues ", (int) Math.round(entedTotQty / itemQty) * (int) Float.parseFloat(free.getFreehed_free_item_qty()) + "");
-                        entedTotQty = (int) Math.round(entedTotQty % itemQty);
-                    }
                 }
-                //  }
             }
-            Old_itemcode = New_itemcode;
         }
-        for (FreeIssueDetail free : filterListNotFlat) {
 
-            int entedTotQty = free.getQty();
-            Log.d(">>>free-entedTotQty ","entedTotQty"+entedTotQty);
-            // Menaka Edited
-            New_itemcode = free.getItemcode();
-
-            if(Old_itemcode==New_itemcode){
-                free.setQty(entedTotQty-calQty);
-                entedTotQty = entedTotQty-calQty;
-                Log.d(">>>free-Old_itemcode==New_itemcode","entedTotQty"+entedTotQty);
-            }else{
-                calQty = 0;
-            }
-            // Menaka Edited
-            Log.d(">>>free-Inside ", free.getScheme() + " filter");
-
-            //  int entedTotQty = Integer.parseInt("100");
-                if (free.getType().equals("Slab")) {
-                Log.d(">>>free-Inside ", free.getScheme() + "Slab");
-                FreeSlabController freeSlabDS = new FreeSlabController(context);
-                final ArrayList<FreeSlab> slabList;
-
-                slabList = freeSlabDS.getSlabdetails(free.getScheme(), entedTotQty);
-
-
-                for (FreeSlab freeSlab : slabList) {
-
-                    String debCode = SharedPref.getInstance(context).getSelectedDebCode();
-                    int debCount = new FreeDebController(context).getRefnoByDebCount(free.getScheme());
-                    int IsValidDeb = new FreeDebController(context).isValidDebForFreeIssue(free.getScheme(), debCode);
-
-                    if (debCount > 0) {// selected debtors
-
-                        if (IsValidDeb == 1) {
-                            Log.d(">>>free-Stab", freeSlab.getFFREESLAB_FREE_QTY());
-                            FreeItemDetails details = new FreeItemDetails();
-                            details.setRefno(free.getScheme());
-                            details.setSaleItemList(new FreeItemController(context).getFreeItemsByRefno(free.getScheme()));
-                            details.setFreeQty((int) (Float.parseFloat(freeSlab.getFFREESLAB_FREE_QTY())));
-                            freeList.add(details);
-                        }
-
-                    } else {// all debtor for freeissues
-
-                        Log.d(">>>free-Stab", freeSlab.getFFREESLAB_FREE_QTY());
-                        FreeItemDetails details = new FreeItemDetails();
-                        details.setRefno(free.getScheme());
-                        details.setSaleItemList(new FreeItemController(context).getFreeItemsByRefno(free.getScheme()));
-                        details.setFreeQty((int) (Float.parseFloat(freeSlab.getFFREESLAB_FREE_QTY())));
-                        freeList.add(details);
-
-                    }
-                }
-            } else if (free.getType().equals("Mix")) {
-                Log.d(">>>free-Inside ", free.getScheme() + " Mix");
-                FreeMslabController freeMslabDS = new FreeMslabController(context);
-                final ArrayList<FreeMslab> mixList;
-                int assortCount = new FreeDetController(context).getAssoCountByRefno(free.getScheme());
-                mixList = freeMslabDS.getMixDetails(free.getScheme(), entedTotQty);
-                for (FreeMslab freeMslab : mixList) {
-                    String debCode = SharedPref.getInstance(context).getSelectedDebCode();
-                    int debCount = new FreeDebController(context).getRefnoByDebCount(free.getScheme());
-                    int IsValidDeb = new FreeDebController(context).isValidDebForFreeIssue(free.getScheme(), debCode);
-                    if (debCount > 0) {// selected debtors
-                        if (IsValidDeb == 1) {
-
-//                    if (assortCount > 1) {
-//
-//                        int index = 0;
-//                        boolean assortUpdate = false;
-//
-//                        for (FreeItemDetails freeItemDetails : freeList) {
-//                            if (freeItemDetails.getRefno().equals(free.getScheme())) {
-//
-//                                int itemQty = (int) Float.parseFloat(freeMslab.getFFREEMSLAB_ITEM_QTY());
-//                                freeList.get(index).setRefno(free.getScheme());
-//                                freeList.get(index).setFreeIssueSelectedItem("should be set");
-//                                freeList.get(index).setFreeQty((int) Math.round(mixAssort / itemQty) * (int) Float.parseFloat(freeMslab.getFFREEMSLAB_FREE_IT_QTY()));
-//
-//                                assortUpdate = true;
-//                            }
-//                            index++;
-//                        }
-//
-//                        if (!assortUpdate) {
-//
-//                            FreeItemDetails details = new FreeItemDetails();
-//                            int itemQty = (int) Float.parseFloat(freeMslab.getFFREEMSLAB_ITEM_QTY());
-//                            details.setRefno(free.getScheme());
-//                            details.setFreeIssueSelectedItem("should be set");
-//                            details.setFreeQty((int) Math.round(mixAssort / itemQty) * (int) Float.parseFloat(freeMslab.getFFREEMSLAB_FREE_IT_QTY()));
-//                            freeList.add(details);
-//                        }
-//
-//                    } else {
-
-                            FreeItemDetails details = new FreeItemDetails();
-                            int itemQty = (int) Float.parseFloat(freeMslab.getFFREEMSLAB_ITEM_QTY());
-                            details.setRefno(free.getScheme());
-                            details.setSaleItemList(new FreeItemController(context).getFreeItemsByRefno(free.getScheme()));
-                            details.setFreeQty((int) Math.round(entedTotQty / itemQty) * (int) Float.parseFloat(freeMslab.getFFREEMSLAB_FREE_IT_QTY()));
-                            freeList.add(details);
-
-                            //   }
-                        }
-
-                    } else {// all debtor for freeissues
-
-//                if (assortCount > 1) {
-//                    int index = 0;
-//                    boolean assortUpdate = false;
-//                    for (FreeItemDetails freeItemDetails : freeList) {
-//                        if (freeItemDetails.getRefno().equals(free.getScheme())) {
-//
-//                            int itemQty = (int) Float.parseFloat(freeMslab.getFFREEMSLAB_ITEM_QTY());
-//                            freeList.get(index).setRefno(free.getScheme());
-//                            freeList.get(index).setFreeIssueSelectedItem("should be set");
-//                            freeList.get(index).setFreeQty((int) Math.round(mixAssort / itemQty) * (int) Float.parseFloat(freeMslab.getFFREEMSLAB_FREE_IT_QTY()));
-//
-//                            assortUpdate = true;
-//                        }
-//
-//                        index++;
-//                    }
-//
-//                    if (!assortUpdate) {
-//
-//                        FreeItemDetails details = new FreeItemDetails();
-//                        int itemQty = (int) Float.parseFloat(freeMslab.getFFREEMSLAB_ITEM_QTY());
-//                        details.setRefno(free.getScheme());
-//                        details.setFreeIssueSelectedItem("should be set");
-//                        details.setFreeQty((int) Math.round(mixAssort / itemQty) * (int) Float.parseFloat(freeMslab.getFFREEMSLAB_FREE_IT_QTY()));
-//                        freeList.add(details);
-//                    }
-//
-//                } else {
-                        FreeItemDetails details = new FreeItemDetails();
-                        int itemQty = (int) Float.parseFloat(freeMslab.getFFREEMSLAB_ITEM_QTY());
-                        details.setRefno(free.getScheme());
-                        details.setSaleItemList(new FreeItemController(context).getFreeItemsByRefno(free.getScheme()));
-                        details.setFreeQty((int) Math.round(entedTotQty / itemQty) * (int) Float.parseFloat(freeMslab.getFFREEMSLAB_FREE_IT_QTY()));
-                        freeList.add(details);
-                        //  }
-                    }
-                }
-            }
-            Old_itemcode = New_itemcode;
-        }
-        //new combined freeIssueDetails loop close
-        //      }//end free scheme loop
-        //  }//end free items loop
-
-        //     }
-
-//            }else{
-//                Toast.makeText(context,"cannot proceed free calculation for zero quantities",Toast.LENGTH_LONG).show();
-//            }
-        // }
         return freeList;
 
     }
