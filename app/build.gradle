@@ -10,7 +10,7 @@ android {
         //versionCode 32
         versionCode 59 // for 8 inch tab
         //versionName "2.3.0"
-        versionName "4.3.8"// for 8 inch tab
+        versionName "4.3.9"// for 8 inch tab
         multiDexEnabled true
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
