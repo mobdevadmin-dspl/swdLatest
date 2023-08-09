@@ -339,24 +339,47 @@ public class FreeIssueModified2023 {
                                         if (!assortUpdate) {
 
                                             FreeItemDetails details = new FreeItemDetails();
-                                            int itemQty = (int) Float.parseFloat(freeMslab.getFFREEMSLAB_ITEM_QTY());
-                                            details.setRefno(freeHed.getFFREEHED_REFNO());
-                                            details.setFreeIssueSelectedItem(det.getFORDERDET_ITEMCODE());
-                                            details.setSaleItemList(new FreeItemController(context).getFreeItemsByRefno(freeHed.getFFREEHED_REFNO()));
 
-                                            details.setFreeQty((int) (((Float.parseFloat(freeMslab.getFFREEMSLAB_FREE_IT_QTY()))/itemQty) * mixAssort));
-                                            freeList.add(details);
+                                            // resolved to free item count issue 08/08/2023 --------------------------------
+
+                                            int freeItemQtyFromMSlab = (int) Float.parseFloat(freeMslab.getFFREEMSLAB_ITEM_QTY());
+                                            if (entedTotQty >= freeItemQtyFromMSlab)
+                                            {
+                                                details.setRefno(freeHed.getFFREEHED_REFNO());
+                                                details.setFreeIssueSelectedItem(det.getFORDERDET_ITEMCODE());
+                                                details.setSaleItemList(new FreeItemController(context).getFreeItemsByRefno(freeHed.getFFREEHED_REFNO()));
+
+                                                // have to update the calculation also
+
+//                                                details.setFreeQty((int) (((Float.parseFloat(freeMslab.getFFREEMSLAB_FREE_IT_QTY()))/freeItemQty) * mixAssort));
+
+                                                int actualFreeItemQty = (int)(mixAssort/freeItemQtyFromMSlab) * (int)(Float.parseFloat(freeMslab.getFFREEMSLAB_FREE_IT_QTY()));
+                                                details.setFreeQty(actualFreeItemQty);
+                                                freeList.add(details);
+                                            }
+
+                                            //-------------------------------------------------------------------
                                         }
 
                                     } else {
                                         FreeItemDetails details = new FreeItemDetails();
-                                        int itemQty = (int) Float.parseFloat(freeMslab.getFFREEMSLAB_ITEM_QTY());
-                                        details.setRefno(freeHed.getFFREEHED_REFNO());
-                                        details.setFreeIssueSelectedItem(det.getFORDERDET_ITEMCODE());
-                                        details.setSaleItemList(new FreeItemController(context).getFreeItemsByRefno(freeHed.getFFREEHED_REFNO()));
 
-                                        details.setFreeQty((int) (((Float.parseFloat(freeMslab.getFFREEMSLAB_FREE_IT_QTY()))/itemQty) * entedTotQty));
-                                        freeList.add(details);
+                                        // resolved to free item count issue 08/08/2023 --------------------------------
+
+                                        int freeItemQtyFromMSlab = (int) Float.parseFloat(freeMslab.getFFREEMSLAB_ITEM_QTY());
+                                        if (entedTotQty >= freeItemQtyFromMSlab)
+                                        {
+                                            details.setRefno(freeHed.getFFREEHED_REFNO());
+                                            details.setFreeIssueSelectedItem(det.getFORDERDET_ITEMCODE());
+                                            details.setSaleItemList(new FreeItemController(context).getFreeItemsByRefno(freeHed.getFFREEHED_REFNO()));
+
+                                            // // have to update the calculation also
+//                                            details.setFreeQty((int) (((Float.parseFloat(freeMslab.getFFREEMSLAB_FREE_IT_QTY()))/freeItemQty) * mixAssort));
+
+                                            int actualFreeItemQty = (int)(mixAssort/freeItemQtyFromMSlab) * (int)(Float.parseFloat(freeMslab.getFFREEMSLAB_FREE_IT_QTY()));
+                                            details.setFreeQty(actualFreeItemQty);
+                                            freeList.add(details);
+                                        }
                                     }
                                 }
                             }
